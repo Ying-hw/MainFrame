@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<test>
+  <!--trdtt-->
+  <trr>
+    <name>ttt</name>
+    <path>eee</path>
+    <rect>aaa</rect>
+  </trr>
+  <trrs>
+    <name>ttt</name>
+    <path>eee</path>
+    <rect>aaa</rect>
+  </trrs>
+  <trrss>
+    <name>ttt</name>
+    <path>eee</path>
+    <rect>aaa</rect>
+  </trrss>
+  <pluginconfig>
+	<plugin>
+		<name>LoginPlugin.dll</name>
+		<path>.</path>
+		<rect>178,256,456,100</rect>
+		<invalid>0</invalid>
+	</plugin>
+	<plugin>
+		<name>xxa.dll</name>
+		<path>.</path>
+		<rect>178,256,456,100</rect>
+		<invalid>0</invalid>
+	</plugin>
+	<plugin>
+		<name>xxx.dll</name>
+		<path>.</path>
+		<rect>178,256,456,100</rect>
+		<invalid>0</invalid>
+	</plugin>
+	<plugin>
+		<name>xxx.dll</name>
+		<path>.</path>
+		<rect>178,256,456,100</rect>
+		<invalid>0</invalid>
+	</plugin>
+	<plugin>
+		<name>xxx.dll</name>
+		<path>.</path>
+		<rect>178,256,456,100</rect>
+		<invalid>0</invalid>
+	</plugin>
+	<plugin>
+		<name>xxx.dll</name>
+		<path>.</path>
+		<rect>178,256,456,100</rect>
+		<invalid>0</invalid>
+	</plugin>
+</pluginconfig>
+</test>
