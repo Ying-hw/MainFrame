@@ -1,9 +1,14 @@
 #include "stdafx.h"
+#include "MainFrame.h"
+#include "MainWidget.h"
 #include "SignalQueue.h"
 
 
+SignalQueue* g_pSignal;
+
 SignalQueue::SignalQueue() : QThread(), m_isRuning(true)
 {
+	g_pSignal = this;
 	m_Mutex.lock();
 }
 
@@ -11,6 +16,10 @@ SignalQueue::SignalQueue() : QThread(), m_isRuning(true)
 SignalQueue::~SignalQueue()
 {
 	m_isRuning = false;
+}
+
+void SignalQueue::Send_Message(Signal_ signal_) {
+	push_queue(signal_);
 }
 
 void SignalQueue::push_queue(Signal_ signal_) {
@@ -40,15 +49,20 @@ void SignalQueue::selectSignal(Signal_ signal_) {
 		break;
 	case Signal_::WINDOWMIN:
 		break;
-	case Signal_::WINDOWSHOW:
-		break;
 	case Signal_::ISFIXEDSIZE:
 		break;
 	case Signal_::IGNORESIGNAL:
 		break;
 	case Signal_::FREEPLUG:
+	{
+		const QRect rect = static_cast<MainWidget*>(m_mapUser[User::MAINWIDGET])->geometry();
+		QString strRect = QString::number(rect.x()) + QString::number(rect.y()) +
+			QString::number(rect.width()) + QString::number(rect.height());
+		MainFrame::FreeLib(static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]), strRect);
+	}
 		break;
 	case Signal_::LOADPLUG:
+
 		break;
 	case Signal_::WRITELOG:
 		break;
@@ -59,4 +73,8 @@ void SignalQueue::selectSignal(Signal_ signal_) {
 
 void SignalQueue::doit() {
 
+}
+
+void SignalQueue::SetUserIdentify(void *pIdentify, User user) {
+	m_mapUser[user] = pIdentify;
 }

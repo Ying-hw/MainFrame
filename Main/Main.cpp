@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QLibrary>
 
+
 int main(int argc, char *argv[]) {
 	QApplication a(argc, argv);
 	QLibrary lib("./MainFrame.dll");
@@ -14,5 +15,6 @@ int main(int argc, char *argv[]) {
 	else {
 		qDebug() << lib.errorString();
 	}
+	
 	return a.exec();
 }

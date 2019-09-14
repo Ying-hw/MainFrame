@@ -4,7 +4,6 @@
 enum class Signal_{
 	WINDOWCLOSE,  
 	WINDOWEXIT,
-	WINDOWSHOW,
 	WINDOWMAX,
 	WINDOWMIN,
 	ISFIXEDSIZE,
@@ -14,6 +13,8 @@ enum class Signal_{
 	IGNORESIGNAL,
 	ALL
 };
+
+enum class User{MAINFRAME,MAINWIDGET};
 
 
 #endif //SIGNAL__

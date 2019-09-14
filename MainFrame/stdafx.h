@@ -7,6 +7,7 @@
 #include <QQueue>
 #include <QWaitCondition>
 #include <QMutex>
+#include <QMap>
 
-#define   CONFIG   "../Win32/Data/Config/"
-#define   LOG      "../Win32/Data/Log/"
+#define   CONFIG   "../Data/Config/"
+#define   LOG      "../Data/Log/"

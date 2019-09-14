@@ -58,14 +58,14 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).dll</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OutDir);C:\Users\adimn\Desktop\QQMAINPROGRAM\QQPlugin\Win32\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5Xmld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)*.h" "$(SolutionDir)..\..\QQMAINPROGRAM\MainProgram\include\" /y
-xcopy "$(TargetPath)" "$(SolutionDir)..\..\QQMAINPROGRAM\MainProgram\Win32\$(Configuration)\" /y
-xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\..\QQMAINPROGRAM\MainProgram\Win32\$(Configuration)\" /y</Command>
+      <Command>xcopy "$(ProjectDir)*.h" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\include\" /y
+xcopy "$(TargetPath)" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\Win32\$(Configuration)\" /y
+xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\Win32\$(Configuration)\" /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

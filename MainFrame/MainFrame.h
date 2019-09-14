@@ -2,9 +2,9 @@
 #define MAINFRAME_H
 
 #include "PluginInfo.h"
-#include "Signal.h"
 #include "SignalQueue.h"
  
+extern SignalQueue* g_pSignal;
 
 enum class LogGrade{
 	SeriousError,
@@ -24,17 +24,22 @@ public:
 		m_WaitCond.wakeOne();
 	}
 	void run();
+	static void FreeLib(MainFrame* pthis, QString strRect);
+	static void LoadLib(MainFrame* pthis);
 private:
 	void ReadPluginConfig();
+	void loadManage();
 	inline void WriteLog(const QString& strlog) {
 		m_logFile.write(strlog.toLocal8Bit());
 	}
+	void LoadPlugin(const QVector<PluginInfo>& m_vecPluginInfo);
+	QDomNode ReadXML();
 private:
-	QVector<PluginInfo> m_vecPluginInfo;
 	QFile m_logFile;
 	bool m_isRunning;
 	char *m_data;
 	QMutex m_Mutex_;
+	QLibrary m_Loadlib;
 	QWaitCondition m_WaitCond;
 };
 
