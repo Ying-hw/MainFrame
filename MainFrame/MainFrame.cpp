@@ -28,6 +28,7 @@ MainFrame::~MainFrame(){
 void MainFrame::ReadPluginConfig() {
 	QVector<PluginInfo> lstPlugin;
 	QDomNode node = ReadXML();
+	QString strname = node.nodeName();
 	while (!node.isNull()) {
 		if (node.hasChildNodes()) {
 			QDomNode ChildNode = node.firstChild();
@@ -99,12 +100,14 @@ void MainFrame::FreeLib(MainFrame* pthis, QString strRect) {
 	}
 }
 
+
+
 QDomNode MainFrame::ReadXML() {
 	QDomNode nodeFirst;
+	static QDomDocument DomRoot;
 	QFile PluginCon(QString(CONFIG) + "plugin.xml");
 	if (PluginCon.open(QIODevice::ReadOnly)) {
-		QByteArray PlugContent = PluginCon.readAll();
-		QDomDocument DomRoot;
+		QByteArray PlugContent = PluginCon.readAll();	
 		DomRoot.setContent(PlugContent);
 		PluginCon.close();
 		QDomNode node = DomRoot.documentElement();

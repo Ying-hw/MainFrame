@@ -138,6 +138,13 @@ xcopy "$(TargetPath)" "$(SolutionDir)..\..\QQMAINPROGRAM\MainProgram\Win32\$(Con
   <ItemGroup>
     <Xml Include="..\Win32\Data\Config\plugin.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

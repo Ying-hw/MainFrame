@@ -9,5 +9,6 @@
 #include <QMutex>
 #include <QMap>
 
+
 #define   CONFIG   "../Data/Config/"
 #define   LOG      "../Data/Log/"
