@@ -23,8 +23,8 @@ public:
 		case 3:
 			m_rPosition.setX(data.section(",", 0, 0).toInt());
 			m_rPosition.setY(data.section(",", 1, 1).toInt());
-			m_rPosition.setHeight(data.section(",", 2, 2).toInt());
-			m_rPosition.setWidth(data.section(",", 3, 3).toInt());
+			m_rPosition.setWidth(data.section(",", 2, 2).toInt());
+			m_rPosition.setHeight(data.section(",", 3, 3).toInt());
 			break;
 		case 4:
 			m_bIsIvalid = data.toInt();

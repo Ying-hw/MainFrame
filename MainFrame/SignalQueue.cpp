@@ -2,8 +2,7 @@
 #include "MainFrame.h"
 #include "MainWidget.h"
 #include "SignalQueue.h"
-
-
+#include "MainFrame_global.h"
 SignalQueue* g_pSignal;
 
 SignalQueue::SignalQueue() : QThread(), m_isRuning(true)
@@ -19,7 +18,7 @@ SignalQueue::~SignalQueue()
 }
 
 void SignalQueue::Send_Message(Signal_ signal_) {
-	push_queue(signal_);
+	g_pSignal->push_queue(signal_);
 }
 
 void SignalQueue::push_queue(Signal_ signal_) {
@@ -40,6 +39,7 @@ void SignalQueue::run() {
 void SignalQueue::selectSignal(Signal_ signal_) {
 	switch (signal_) {
 	case Signal_::WINDOWCLOSE:
+		emit close_Window();
 		break;
 	case Signal_::WINDOWEXIT:
 		//atexit(doit);
@@ -72,9 +72,12 @@ void SignalQueue::selectSignal(Signal_ signal_) {
 }
 
 void SignalQueue::doit() {
-
+	
 }
 
 void SignalQueue::SetUserIdentify(void *pIdentify, User user) {
 	m_mapUser[user] = pIdentify;
+	if (user == User::MAINWIDGET)
+		connect(this, SIGNAL(close_Window()), (MainWidget*)pIdentify
+			, SLOT(closeWindow()));
 }

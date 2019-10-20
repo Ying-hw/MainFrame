@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MainFrame.h"
+#include "MainWidget.h"
 
 MainFrame::MainFrame() : QThread(), m_isRunning(true), m_data(nullptr)
 {
@@ -54,9 +55,10 @@ void MainFrame::LoadPlugin(const QVector<PluginInfo>& vecPluginInfo) {
 				QString str = this->m_Loadlib.errorString();
 				qDebug() << str;
 			}
-			QFunctionPointer pFun = this->m_Loadlib.resolve("Handle");
-			if (pFun)
-				pFun();
+			typedef QWidget* (*pFunction)(void);
+			pFunction pfun = (pFunction)(this->m_Loadlib.resolve("Handle"));
+			if (pfun)
+				MainWidget::staticThis->setMain(pfun());
 		}});
 }
 

@@ -1,10 +1,13 @@
 #ifndef   __SIGNALQUEUE__
 #define   __SIGNALQUEUE__
+#include "MainFrame_global.h"
 
 #include "Signal.h"
 
-class SignalQueue : public QThread
+
+class MAINFRAME_EXPORT SignalQueue : public QThread
 {
+	Q_OBJECT
 public:
 	SignalQueue();
 	~SignalQueue();
@@ -13,8 +16,12 @@ public:
 	void selectSignal(const Signal_ signal_);
 	void push_queue(Signal_ signal_);
 	static void doit();
-	void Send_Message(Signal_ signal_);
+	static void Send_Message(Signal_ signal_);
 	void SetUserIdentify(void *, User user);
+signals:
+	void close_Window();
+	void minWindow();
+	void maxWindow();
 private:
 	bool m_isRuning;
 	QQueue<Signal_> m_queue;

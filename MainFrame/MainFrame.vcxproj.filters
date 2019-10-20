@@ -50,6 +50,18 @@
     <ClCompile Include="DllMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MainWidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MainWidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_SignalQueue.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_SignalQueue.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -61,7 +73,7 @@
     <ClInclude Include="PluginInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SignalQueue.h">
+    <ClInclude Include="MainFrame_global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -70,6 +82,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="MainWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SignalQueue.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
