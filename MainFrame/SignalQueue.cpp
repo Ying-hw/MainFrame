@@ -2,8 +2,8 @@
 #include "MainFrame.h"
 #include "MainWidget.h"
 #include "SignalQueue.h"
-#include "MainFrame_global.h"
 SignalQueue* g_pSignal;
+
 
 SignalQueue::SignalQueue() : QThread(), m_isRuning(true)
 {
@@ -15,14 +15,18 @@ SignalQueue::SignalQueue() : QThread(), m_isRuning(true)
 SignalQueue::~SignalQueue()
 {
 	m_isRuning = false;
+	wait();
 }
 
-void SignalQueue::Send_Message(Signal_ signal_) {
-	g_pSignal->push_queue(signal_);
+void SignalQueue::Send_Message(Signal_ signal_, void* param) {
+	QPair<Signal_, void *> p;
+	p.first = signal_;
+	p.second = param;
+	g_pSignal->push_queue(p);
 }
 
-void SignalQueue::push_queue(Signal_ signal_) {
-	m_queue.enqueue(signal_);
+void SignalQueue::push_queue(QPair<Signal_, void *> p) {
+	m_queue.enqueue(p);
 	m_waitMutex.wakeOne();
 }
 
@@ -36,8 +40,8 @@ void SignalQueue::run() {
 	}
 }
 
-void SignalQueue::selectSignal(Signal_ signal_) {
-	switch (signal_) {
+void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
+	switch (p.first) {
 	case Signal_::WINDOWCLOSE:
 		emit close_Window();
 		break;
@@ -48,6 +52,7 @@ void SignalQueue::selectSignal(Signal_ signal_) {
 	case Signal_::WINDOWMAX:
 		break;
 	case Signal_::WINDOWMIN:
+		emit minWindow();
 		break;
 	case Signal_::ISFIXEDSIZE:
 		break;
@@ -66,6 +71,13 @@ void SignalQueue::selectSignal(Signal_ signal_) {
 		break;
 	case Signal_::WRITELOG:
 		break;
+	case Signal_::RELOAD:
+	{
+		QWidget *that = static_cast<QWidget*>(p.second);
+		QRect rect = that->rect();
+		emit reload(that, rect);
+	}		
+		break;
 	default:
 		break;
 	}
@@ -77,7 +89,12 @@ void SignalQueue::doit() {
 
 void SignalQueue::SetUserIdentify(void *pIdentify, User user) {
 	m_mapUser[user] = pIdentify;
-	if (user == User::MAINWIDGET)
+	if (user == User::MAINWIDGET) {
 		connect(this, SIGNAL(close_Window()), (MainWidget*)pIdentify
 			, SLOT(closeWindow()));
+		connect(this, SIGNAL(minWindow()), (MainWidget*)pIdentify
+			, SLOT(minWindow()));
+		connect(this, SIGNAL(reload(QWidget*, const QRect &)), (MainWidget*)pIdentify
+			, SLOT(setMain(QWidget*, const QRect &)));
+	}
 }

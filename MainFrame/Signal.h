@@ -11,7 +11,7 @@ enum class Signal_{
 	FREEPLUG,
 	LOADPLUG,
 	IGNORESIGNAL,
-	ALL
+	RELOAD
 };
 
 enum class User{MAINFRAME,MAINWIDGET};

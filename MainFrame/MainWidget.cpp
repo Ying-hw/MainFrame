@@ -7,8 +7,20 @@ QRect g_Rects;
 void MainWidget::setMain(QWidget* pMain) {
 	m_pWidget = pMain;
 	Set_Qss();
-	setInitUi(); 
+	setInitUi(g_Rects); 
 	g_pSignal->SetUserIdentify(this, User::MAINWIDGET);
+	this->setWindowIcon(QIcon(QString(IMAGE) + "Titlepicture.JPG"));
+	show();
+}
+
+void MainWidget::setMain(QWidget* pMain, const QRect& rect)
+{
+	m_pWidget = pMain;
+	this->resize(rect.width(), rect.height());
+	gridLayout_2->addWidget(m_pWidget, 1, 0);
+	gridLayout_2->setContentsMargins(QMargins(0, 0, 0, 0));
+	gridLayout_2->setSpacing(0);
+	setLayout(gridLayout_2);
 	this->setWindowIcon(QIcon(QString(IMAGE) + "Titlepicture.JPG"));
 	show();
 }
@@ -24,10 +36,16 @@ void MainWidget::mousePressEvent(QMouseEvent* event) {
 }
 
 void MainWidget::paintEvent(QPaintEvent* event) {
+	QLine* lines = new QLine;
+	lines->setP1(QPoint(0, 10));
+	lines->setP2(QPoint(700, 10));
 	Q_UNUSED(event);
 	QStyleOption opt;
 	opt.init(this);
 	QPainter p(this);
+
+	p.setPen(QColor( 20, 100, 100));
+	p.drawLine(*lines);
 	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
@@ -37,6 +55,7 @@ void MainWidget::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void MainWidget::Set_Qss() {
+	setWindowFlags(Qt::FramelessWindowHint);
 	QFile QssFile(QString(CONFIG) + "DefaultQss9.qss");
 	if (!QssFile.open(QIODevice::ReadOnly))
 		QMessageBox::warning(this, QString::fromLocal8Bit("警告！"),
@@ -58,9 +77,22 @@ void MainWidget::closeWindow() {
 		close();
 }
 
-void MainWidget::setInitUi() {
-	setWindowFlags(Qt::FramelessWindowHint);
-	this->resize(g_Rects.width(), g_Rects.height());
+void MainWidget::minWindow() {
+	this->showMinimized();
+}
+
+void MainWidget::setInitUi(const QRect& rect) {
+	if (BtnClose != NULL)
+	{
+		BtnClose->close();
+		BtnMin->close();
+		BtnSet->close();
+	}
+	
+	qDebug() << rect.width();
+	qDebug() << rect.height();
+
+	this->resize(rect.width(), rect.height());
 	gridLayout_2 = new QGridLayout(this);
 
 	pHbLayout = new QHBoxLayout(this);
@@ -95,14 +127,23 @@ void MainWidget::setInitUi() {
 	BtnClose = new QPushButton(this);
 	BtnClose->setIcon(QIcon(QString(IMAGE) + "Standby.png"));
 	connect(BtnClose, &QPushButton::clicked, [](){
-		SignalQueue::Send_Message(Signal_::WINDOWCLOSE);
+		SignalQueue::Send_Message(Signal_::WINDOWCLOSE, nullptr);
 	});
+	connect(BtnMin, &QPushButton::clicked, [](){
+		SignalQueue::Send_Message(Signal_::WINDOWMIN, nullptr);
+	});
+
 	BtnClose->setFlat(true);
 	pHbLayout->addWidget(BtnClose);
 
 	BtnClose->setObjectName("BtnClose");
 	BtnMin->setObjectName("BtnMin");
 	BtnSet->setObjectName("BtnSet");
+	BtnClose->show();
+	BtnMin->show();
+	BtnSet->show();
+
+	if (m_pWidget->windowTitle() != "LoginSystem") BtnSet->hide();
 	
 	m_pWidget->setParent(this);
 	m_pWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -110,59 +151,12 @@ void MainWidget::setInitUi() {
 	gridLayout_2->addWidget(m_pWidget, 1, 0);
 	gridLayout_2->setContentsMargins(QMargins(0,0,0,0));
 	gridLayout_2->setSpacing(0);
+
+
 	setLayout(gridLayout_2);
 }
 
-/*MainWidget::MainWidget(QWidget* widget):
-QWidget(widget), m_pBar(new TitleBar(widget)) {
-	SetQApplicationQss();
-	SetInitSize();
-}
 
 
-MainWidget::~MainWidget()
-{
-}
-
-void MainWidget::SetInitSize() {
-	this->setGeometry(g_Rects.x(), g_Rects.y(), g_Rects.width(), g_Rects.height());
-	resize(g_Rects.width(), g_Rects.height());
-}
-
-void MainWidget::SetQApplicationQss() {
-	QFile QssFile(QString(CONFIG) + "DefaultQss.qss");
-	if (!QssFile.open(QIODevice::ReadOnly)) 
-		QMessageBox::warning(this, QString::fromLocal8Bit("警告！"),
-			QString::fromLocal8Bit("读取配置文件失败！！！"), QMessageBox::Ok);
-	else {
-		m_strQssConfig = QssFile.readAll();
-		qApp->setStyleSheet(m_strQssConfig);
-		m_pBar->Set_Qss(m_strQssConfig);
-		QssFile.close();
-	}
-}
-
-void MainWidget::closeWindow() {
-	if (QMessageBox::information(this, QString::fromLocal8Bit("是否退出！"),
-		QString::fromLocal8Bit("客官真的要退出吗！"), 
-		QMessageBox::Yes | QMessageBox::No)
-		== QMessageBox::No) 
-		return;
-	else
-		close();
-}
-
-void MainWidget::CloseWind(MainWidget* pthis) {
-	pthis->closeWindow();
-}
-
-void MainWidget::paintEvent(QPaintEvent* event) {
-	Q_UNUSED(event);
-	QStyleOption opt;
-	opt.init(this);
-	QPainter p(this);
-	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-}
-*/
 
 

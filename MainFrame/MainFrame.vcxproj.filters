@@ -76,6 +76,9 @@
     <ClInclude Include="MainFrame_global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MacroDefine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainFrame.h">

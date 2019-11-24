@@ -26,6 +26,7 @@ public:
 	void run();
 	static void FreeLib(MainFrame* pthis, QString strRect);
 	static void LoadLib(MainFrame* pthis);
+
 private:
 	void ReadPluginConfig();
 	void loadManage();
@@ -42,5 +43,6 @@ private:
 	QLibrary m_Loadlib;
 	QWaitCondition m_WaitCond;
 };
+
 
 #endif // MAINFRAME_H

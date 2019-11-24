@@ -12,9 +12,9 @@ class MAINFRAME_EXPORT MainWidget : public QWidget
 	Q_OBJECT
 public:
 	MainWidget(QWidget *ject = 0) : QWidget(ject),
-		m_pWidget(nullptr), m_isPress(false) {}
+		m_pWidget(nullptr), m_isPress(false), BtnClose(NULL) {}
 
-	void setInitUi();
+	void setInitUi(const QRect &rect);
 
 	void setMain(QWidget* pMain); 
 
@@ -30,7 +30,8 @@ public:
 
 public slots: 
 	void closeWindow();
-	
+	void minWindow();
+	void setMain(QWidget* pMain, const QRect& rect);
 private:
 	QString m_strQssConfig;
 	QPoint m_point;

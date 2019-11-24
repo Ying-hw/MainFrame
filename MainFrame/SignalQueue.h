@@ -5,6 +5,7 @@
 #include "Signal.h"
 
 
+
 class MAINFRAME_EXPORT SignalQueue : public QThread
 {
 	Q_OBJECT
@@ -13,18 +14,19 @@ public:
 	~SignalQueue();
 
 	void run();
-	void selectSignal(const Signal_ signal_);
-	void push_queue(Signal_ signal_);
+	void selectSignal(QPair<Signal_, void *> p);
+	void push_queue(QPair<Signal_, void *> p);
 	static void doit();
-	static void Send_Message(Signal_ signal_);
+	static void Send_Message(Signal_ signal_, void *param);
 	void SetUserIdentify(void *, User user);
 signals:
 	void close_Window();
 	void minWindow();
 	void maxWindow();
+	void reload(QWidget* that, const QRect &rect);
 private:
 	bool m_isRuning;
-	QQueue<Signal_> m_queue;
+	QQueue<QPair<Signal_, void *>> m_queue;
 	QWaitCondition m_waitMutex;
 	QMutex m_Mutex;
 	QMap<User, void*> m_mapUser;
