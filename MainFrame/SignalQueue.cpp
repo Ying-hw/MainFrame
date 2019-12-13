@@ -71,11 +71,11 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		break;
 	case Signal_::WRITELOG:
 		break;
-	case Signal_::RELOAD:
+	case Signal_::RELOADUI:
 	{
 		QWidget *that = static_cast<QWidget*>(p.second);
 		QRect rect = that->rect();
-		emit reload(that, rect);
+		emit RELOADUI(that, rect);
 	}		
 		break;
 	default:
@@ -94,7 +94,7 @@ void SignalQueue::SetUserIdentify(void *pIdentify, User user) {
 			, SLOT(closeWindow()));
 		connect(this, SIGNAL(minWindow()), (MainWidget*)pIdentify
 			, SLOT(minWindow()));
-		connect(this, SIGNAL(reload(QWidget*, const QRect &)), (MainWidget*)pIdentify
+		connect(this, SIGNAL(RELOADUI(QWidget*, const QRect &)), (MainWidget*)pIdentify
 			, SLOT(setMain(QWidget*, const QRect &)));
 	}
 }

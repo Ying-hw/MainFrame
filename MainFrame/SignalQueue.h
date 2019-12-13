@@ -23,7 +23,7 @@ signals:
 	void close_Window();
 	void minWindow();
 	void maxWindow();
-	void reload(QWidget* that, const QRect &rect);
+	void RELOADUI(QWidget* that, const QRect &rect);
 private:
 	bool m_isRuning;
 	QQueue<QPair<Signal_, void *>> m_queue;
