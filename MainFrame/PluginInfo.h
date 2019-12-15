@@ -6,9 +6,10 @@ class PluginInfo
 {
 public:
 	PluginInfo() :m_bIsIvalid{ false }, m_OffSet{}{}
-	QString m_str_name;
+	QString m_str_name; 
 	QString m_str_path;
 	bool m_bIsIvalid;
+	bool m_isStart;
 	QRect m_rPosition;
 public:
 	void operator<< (const QString& data) {
@@ -28,9 +29,11 @@ public:
 			break;
 		case 4:
 			m_bIsIvalid = data.toInt();
-			if (!m_bIsIvalid) 
-				g_Rects = m_rPosition;
 			break;
+		case 5:
+			m_isStart = data.toInt();
+			if (m_isStart)
+				g_Rects = m_rPosition;
 		default:
 			m_OffSet = 0;
 			break;

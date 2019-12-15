@@ -21,6 +21,7 @@ public:
 	void SetUserIdentify(void *, User user);
 signals:
 	void close_Window();
+	void exit_Window();
 	void minWindow();
 	void maxWindow();
 	void RELOADUI(QWidget* that, const QRect &rect);

@@ -15,6 +15,7 @@ enum class LogGrade{
 
 class Q_DECL_EXPORT MainFrame : public QThread
 {
+	Q_OBJECT
 public:
 	MainFrame();
 	~MainFrame();
@@ -24,17 +25,22 @@ public:
 		m_WaitCond.wakeOne();
 	}
 	void run();
-	static void FreeLib(MainFrame* pthis, QString strRect);
-	static void LoadLib(MainFrame* pthis);
-
-private:
-	void ReadPluginConfig();
-	void loadManage();
+	static void FreeLib(MainFrame* pthis, const QString& strRect);
+	static void LoadLib(MainFrame* pthis, const QString strTargetName);
 	inline void WriteLog(const QString& strlog) {
 		m_logFile.write(strlog.toLocal8Bit());
 	}
-	void LoadPlugin(const QVector<PluginInfo>& m_vecPluginInfo);
+signals:
+	void ReleaseWidget();
+	void InitWidget(bool isProgramStart);
+private:
+	void ReadPluginConfig();
+	void loadManage();
+	void LoadPlugin();
 	QDomNode ReadXML();
+private slots:
+	void ReleaseCurrentWidget();
+	void InitCurrentWidget(bool isProgramStart);
 private:
 	QFile m_logFile;
 	bool m_isRunning;
@@ -42,6 +48,7 @@ private:
 	QMutex m_Mutex_;
 	QLibrary m_Loadlib;
 	QWaitCondition m_WaitCond;
+	QVector<PluginInfo> m_Plugin;
 };
 
 

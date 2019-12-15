@@ -26,6 +26,7 @@ void SignalQueue::Send_Message(Signal_ signal_, void* param) {
 }
 
 void SignalQueue::push_queue(QPair<Signal_, void *> p) {
+	while (!m_queue.isEmpty());
 	m_queue.enqueue(p);
 	m_waitMutex.wakeOne();
 }
@@ -35,7 +36,7 @@ void SignalQueue::run() {
 		if (m_queue.isEmpty())
 			m_waitMutex.wait(&m_Mutex);
 		else
-			while (!m_queue.isEmpty())
+			while (!m_queue.isEmpty()) 
 				selectSignal(m_queue.dequeue());
 	}
 }
@@ -46,8 +47,7 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		emit close_Window();
 		break;
 	case Signal_::WINDOWEXIT:
-		//atexit(doit);
-		//exit();
+		emit exit_Window();
 		break;
 	case Signal_::WINDOWMAX:
 		break;
@@ -67,9 +67,16 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	}
 		break;
 	case Signal_::LOADPLUG:
-
+	{
+		QString strpTarget = (char *)p.second;
+		MainFrame::LoadLib(static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]), strpTarget);
+	}
 		break;
 	case Signal_::WRITELOG:
+	{
+		MainFrame* frame = static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]);
+		frame->WriteLog((const char *)p.second);
+	}
 		break;
 	case Signal_::RELOADUI:
 	{
@@ -77,6 +84,17 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		QRect rect = that->rect();
 		emit RELOADUI(that, rect);
 	}		
+		break;
+	case Signal_::SWITCHPLUGIN:
+	{
+		emit exit_Window();
+		const QRect rect = static_cast<MainWidget*>(m_mapUser[User::MAINWIDGET])->geometry();
+		QString strRect = QString::number(rect.x()) + QString::number(rect.y()) +
+			QString::number(rect.width()) + QString::number(rect.height());
+		MainFrame::FreeLib(static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]), strRect);
+		QString strpTarget = (char *)p.second;
+		MainFrame::LoadLib(static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]), strpTarget);
+	}
 		break;
 	default:
 		break;
@@ -92,8 +110,10 @@ void SignalQueue::SetUserIdentify(void *pIdentify, User user) {
 	if (user == User::MAINWIDGET) {
 		connect(this, SIGNAL(close_Window()), (MainWidget*)pIdentify
 			, SLOT(closeWindow()));
+		connect(this, SIGNAL(exit_Window()), (MainWidget*)pIdentify
+			, SLOT(hide()));
 		connect(this, SIGNAL(minWindow()), (MainWidget*)pIdentify
-			, SLOT(minWindow()));
+			, SLOT(showMinimized()));
 		connect(this, SIGNAL(RELOADUI(QWidget*, const QRect &)), (MainWidget*)pIdentify
 			, SLOT(setMain(QWidget*, const QRect &)));
 	}

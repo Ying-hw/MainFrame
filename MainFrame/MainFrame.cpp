@@ -6,16 +6,10 @@ MainFrame::MainFrame() : QThread(), m_isRunning(true), m_data(nullptr)
 {
 	QString strDate = QDate::currentDate().toString(Qt::ISODate);
 	m_logFile.setFileName(QString(LOG) + strDate + ".txt");
-	if (m_logFile.open(QIODevice::Append)) {
-		QString strTips = QString::fromLocal8Bit("»¶Ó­»ØÀ´\r\n");
-		WriteLog(strTips);
-		m_logFile.close();
-	}
-	else
-	{
-		QString errstr = m_logFile.errorString();
-	}
+	m_logFile.open(QIODevice::Append);
 	ReadPluginConfig();
+	connect(this, SIGNAL(ReleaseWidget()), this, SLOT(ReleaseCurrentWidget()));
+	connect(this, SIGNAL(InitWidget(bool)), this, SLOT(InitCurrentWidget(bool)));
 	g_pSignal->SetUserIdentify(this, User::MAINFRAME);
 	this->start();
 }
@@ -26,8 +20,14 @@ MainFrame::~MainFrame(){
 	m_Loadlib.unload();
 }
 
+void MainFrame::ReleaseCurrentWidget() {
+	MainWidget::staticThis->m_pWidget->deleteLater();
+	delete MainWidget::staticThis->m_pWidget;
+	MainWidget::staticThis->m_pWidget = NULL;
+	m_Loadlib.unload();
+}
+
 void MainFrame::ReadPluginConfig() {
-	QVector<PluginInfo> lstPlugin;
 	QDomNode node = ReadXML();
 	QString strname = node.nodeName();
 	while (!node.isNull()) {
@@ -38,27 +38,25 @@ void MainFrame::ReadPluginConfig() {
 				plug << ChildNode.toElement().text();
 				ChildNode = ChildNode.nextSibling();
 			}
-			lstPlugin.push_front(plug);
+			m_Plugin.push_front(plug);
 		}
 		node = node.nextSibling();
 	}
-	LoadPlugin(lstPlugin);
+	LoadPlugin();
 }
 
-void MainFrame::LoadPlugin(const QVector<PluginInfo>& vecPluginInfo) {
-	std::for_each(vecPluginInfo.begin(), vecPluginInfo.end(),
+void MainFrame::LoadPlugin() {
+	std::for_each(m_Plugin.begin(), m_Plugin.end(),
 		[this](const PluginInfo& info){
-		if (!info.m_bIsIvalid) {
+		if (info.m_isStart) {
 			this->m_Loadlib.setFileName(info.m_str_name);
-			if (!this->m_Loadlib.load())
-			{
+			if (!this->m_Loadlib.load()) {
 				QString str = this->m_Loadlib.errorString();
 				qDebug() << str;
+				WriteLog(str);
+				return;
 			}
-			typedef QWidget* (*pFunction)(void);
-			pFunction pfun = (pFunction)(this->m_Loadlib.resolve("Handle"));
-			if (pfun)
-				MainWidget::staticThis->setMain(pfun());
+			InitCurrentWidget(true);
 		}});
 }
 
@@ -74,8 +72,7 @@ void MainFrame::run() {
 	}
 }
 
-void MainFrame::FreeLib(MainFrame* pthis, QString strRect) {
-	pthis->m_Loadlib.unload();
+void MainFrame::FreeLib(MainFrame* pthis, const QString& strRect) {
 	QDomNode node = pthis->ReadXML();
 	while (!node.isNull()) {
 		if (node.hasChildNodes()) {
@@ -93,16 +90,16 @@ void MainFrame::FreeLib(MainFrame* pthis, QString strRect) {
 		}
 		node = node.nextSibling();
 	}
-	FILE* Pfile = fopen(strcat(CONFIG, "plugin.xml"), "r+");
+	QString strPlugin = QString(CONFIG) + "plugin.xml";
+	FILE* Pfile = fopen(strPlugin.toStdString().c_str(), "r+");
 	if (Pfile) {
 		QTextStream text(Pfile, QIODevice::WriteOnly);
 		text.setCodec("utf-8");
 		text << node.toDocument();
 		fclose(Pfile);
 	}
+	emit pthis->ReleaseWidget();
 }
-
-
 
 QDomNode MainFrame::ReadXML() {
 	QDomNode nodeFirst;
@@ -122,6 +119,30 @@ QDomNode MainFrame::ReadXML() {
 	return nodeFirst;
 }
 
-void MainFrame::LoadLib(MainFrame* pthis) {
+void MainFrame::LoadLib(MainFrame* pthis, const QString strTargetName) {
+	
+	pthis->m_Loadlib.setFileName("./" + strTargetName);
+	if (!pthis->m_Loadlib.load()) {
+		QString str = pthis->m_Loadlib.errorString();
+		pthis->WriteLog(str);
+	}
+	else {
+		std::for_each(pthis->m_Plugin.begin(), pthis->m_Plugin.end(), [&](const PluginInfo& info){
+			if (info.m_str_name == strTargetName) 
+				g_Rects = info.m_rPosition;
+		});
+		emit pthis->InitWidget(false);
+	}
+}
 
+void MainFrame::InitCurrentWidget(bool isProgramStart) {
+	typedef QWidget* (*pFunction)(void);
+	pFunction pfun = (pFunction)(m_Loadlib.resolve("Handle"));
+	if (pfun)
+		if (isProgramStart)
+			MainWidget::staticThis->setMain(pfun());
+		else
+			MainWidget::staticThis->setMain(pfun(), g_Rects);
+	else
+		qDebug() << QString::fromLocal8Bit("¿ÕµÄ");
 }

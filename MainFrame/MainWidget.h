@@ -15,28 +15,20 @@ public:
 		m_pWidget(nullptr), m_isPress(false), BtnClose(NULL) {}
 
 	void setInitUi(const QRect &rect);
-
 	void setMain(QWidget* pMain); 
-
 	void mousePressEvent(QMouseEvent* event);
-	
 	void mouseMoveEvent(QMouseEvent* event);
-
 	void Set_Qss();
-
 	void paintEvent(QPaintEvent* event);
-
 	static MainWidget* staticThis;
-
+	QWidget* m_pWidget;
 public slots: 
 	void closeWindow();
-	void minWindow();
 	void setMain(QWidget* pMain, const QRect& rect);
 private:
 	QString m_strQssConfig;
 	QPoint m_point;
 	bool m_isPress;
-	QWidget* m_pWidget;
 	QGridLayout *gridLayout_2;
 	QHBoxLayout *pHbLayout;
 	QPushButton *BtnPicture;

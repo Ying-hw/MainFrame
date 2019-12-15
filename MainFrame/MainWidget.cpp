@@ -77,10 +77,6 @@ void MainWidget::closeWindow() {
 		close();
 }
 
-void MainWidget::minWindow() {
-	this->showMinimized();
-}
-
 void MainWidget::setInitUi(const QRect& rect) {
 	if (BtnClose != NULL)
 	{
@@ -88,13 +84,8 @@ void MainWidget::setInitUi(const QRect& rect) {
 		BtnMin->close();
 		BtnSet->close();
 	}
-	
-	qDebug() << rect.width();
-	qDebug() << rect.height();
-
 	this->resize(rect.width(), rect.height());
 	gridLayout_2 = new QGridLayout(this);
-
 	pHbLayout = new QHBoxLayout(this);
 
 	BtnPicture = new QPushButton(this);
@@ -144,15 +135,12 @@ void MainWidget::setInitUi(const QRect& rect) {
 	BtnSet->show();
 
 	if (m_pWidget->windowTitle() != "LoginSystem") BtnSet->hide();
-	
 	m_pWidget->setParent(this);
 	m_pWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	gridLayout_2->addLayout(pHbLayout, 0, 0);
 	gridLayout_2->addWidget(m_pWidget, 1, 0);
 	gridLayout_2->setContentsMargins(QMargins(0,0,0,0));
 	gridLayout_2->setSpacing(0);
-
-
 	setLayout(gridLayout_2);
 }
 
