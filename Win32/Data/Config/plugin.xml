@@ -4,38 +4,71 @@
 	<plugin>
 		<name>LoginPlugin</name>
 		<path>.</path>
-		<rect>500,600,1000,1000</rect>
+		<rect>500,300,700,600</rect>
 		<invalid>0</invalid>
+    <start>1</start>
+    <childProject>
+      <name>Register</name>
+      <rect>800,300,400,900</rect>
+    </childProject>
+    <childProject>
+      <name>BackPassword</name>
+      <rect>500,500,500,500</rect>
+    </childProject>
 	</plugin>
 	<plugin>
-		<name>xxa.dll</name>
+		<name>ChatMessagePlugin</name>
+		<path>.</path>
+		<rect>178,256,380,900</rect>
+		<invalid>0</invalid>
+    <start>0</start>
+    <childProject>
+    </childProject>
+	</plugin>
+	<plugin>
+		<name>FriendListPlugin</name>
+		<path>.</path>
+		<rect>500,256,500,1000</rect>
+		<invalid>0</invalid>
+    <start>0</start>
+    <childProject>
+    </childProject>
+	</plugin>
+	<plugin>
+		<name>FtpSharesPlugin</name>
 		<path>.</path>
 		<rect>178,256,456,100</rect>
-		<invalid>1</invalid>
+		<invalid>0</invalid>
+    <start>0</start>
+    <childProject>
+    </childProject>
 	</plugin>
 	<plugin>
-		<name>xxx.dll</name>
-		<path>.</path>
-		<rect>178,256,457,100</rect>
-		<invalid>1</invalid>
-	</plugin>
-	<plugin>
-		<name>xxx.dll</name>
-		<path>.</path>
-		<rect>178,256,458,100</rect>
-		<invalid>1</invalid>
-	</plugin>
-	<plugin>
-		<name>xxx.dll</name>
+		<name>MailboxPlugin</name>
 		<path>.</path>
 		<rect>178,256,456,100</rect>
-		<invalid>1</invalid>
+		<invalid>0</invalid>
+    <start>0</start>
+    <childProject>
+    </childProject>
 	</plugin>
 	<plugin>
-		<name>xxx.dll</name>
+		<name>QQSpacePlugin</name>
 		<path>.</path>
 		<rect>178,256,456,100</rect>
-		<invalid>1</invalid>
+		<invalid>0</invalid>
+    <start>0</start>
+    <childProject>
+    </childProject>
 	</plugin>
+  <plugin>
+    <name>VideoChatPlugin</name>
+    <path>.</path>
+    <rect>178,256,456,100</rect>
+    <invalid>0</invalid>
+    <start>0</start>
+    <childProject>
+    </childProject>
+  </plugin>
 </pluginconfig>
 </test>

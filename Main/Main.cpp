@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]) {
 	QApplication a(argc, argv);
-	QLibrary lib("./MainFrame.dll");
+	QLibrary lib("./MainLogicFrame.dll");
 	if (lib.load()) {
 		QFunctionPointer fun = lib.resolve("Handle");
 		if (fun) 
