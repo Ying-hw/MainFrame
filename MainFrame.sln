@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetWorkFrame", "NetWorkFram
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginControl", "PluginControl\PluginControl.vcxproj", "{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testregion", "testregion\testregion.vcxproj", "{BBF3F538-01E2-461F-B1D6-53CC63DEED33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -33,6 +35,10 @@ Global
 		{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}.Debug|Win32.Build.0 = Debug|Win32
 		{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}.Release|Win32.ActiveCfg = Release|Win32
 		{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}.Release|Win32.Build.0 = Release|Win32
+		{BBF3F538-01E2-461F-B1D6-53CC63DEED33}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BBF3F538-01E2-461F-B1D6-53CC63DEED33}.Debug|Win32.Build.0 = Debug|Win32
+		{BBF3F538-01E2-461F-B1D6-53CC63DEED33}.Release|Win32.ActiveCfg = Release|Win32
+		{BBF3F538-01E2-461F-B1D6-53CC63DEED33}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,6 +3,7 @@
 
 #include "PluginInfo.h"
 #include "SignalQueue.h"
+#include "plugin.pb.h"
  
 extern SignalQueue* g_pSignal;
 
@@ -25,25 +26,26 @@ public:
 		m_WaitCond.wakeOne();
 	}
 	void run();
-
-	const QRect FindChildUiLocation(QWidget* targetWidget);
-	static void FreeLib(MainFrame* pthis, const QString& strRect);
+	const QRect FindChildUiLocation(const QWidget* targetWidget, const QString& TypeName);
+	static void FreeLib(MainFrame* pthis);
 	static void LoadLib(MainFrame* pthis, const QString strTargetName);
 	inline void WriteLog(const QString& strlog) {
 		m_logFile.write(strlog.toLocal8Bit());
 	}
 public slots:
-	void MakePluginsProtobufFile(void* source, bool isExit);
+	void MakePluginsProtobufFile(void* source);
+	void UpdataGeometry();
 signals:
 	void ReleaseWidget();
-	void InitWidget(bool isProgramStart, const QRect& rect);
+	void InitWidget(const PluginInfo* targetPlug);
 private:
 	void ReadPluginConfig();
 	void FindPlugin();
 	void StartPluginControl();
+	void UpdateConfigFile();
 private slots:
 	void ReleaseCurrentWidget();
-	void InitCurrentWidget(bool isProgramStart, const QRect& rect);
+	void InitCurrentWidget(const PluginInfo* targetPlug);
 private:
 	QFile m_logFile;
 	bool m_isRunning;
@@ -52,5 +54,7 @@ private:
 	QLibrary m_Loadlib;
 	QWaitCondition m_WaitCond;
 	QVector<PluginInfo> m_PluginConfig;
+	QString m_CurrentWindowName;
+	Allplugins m_pAllPlugins;
 };
 #endif // MAINFRAME_H

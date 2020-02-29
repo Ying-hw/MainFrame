@@ -11,10 +11,11 @@ Animation::Animation(QWidget *parent)
 
 Animation::~Animation()
 {
-	
+	 
 }
 
 void Animation::showEvent(QShowEvent* event) {
+	
 	QPropertyAnimation *animation = new QPropertyAnimation(MainWidget::staticThis, "windowOpacity");
 	animation->setDuration(700);
 	animation->setStartValue(0);
@@ -40,13 +41,13 @@ void Animation::showEvent(QShowEvent* event) {
 }
 
 void Animation::closeAnimation(bool closeHide) {
-	QPropertyAnimation *animation = new QPropertyAnimation(MainWidget::staticThis, "windowOpacity");
-	animation->setDuration(500);
-	animation->setStartValue(1);
-	animation->setEndValue(0);
-	animation->start();
-	if (closeHide) 
-		connect(animation, &QPropertyAnimation::finished, this, &QWidget::close);
-	else 
-		connect(animation, &QPropertyAnimation::finished, MainWidget::staticThis, &QWidget::hide);
+ 	QPropertyAnimation *animation = new QPropertyAnimation(MainWidget::staticThis, "windowOpacity");
+ 	animation->setDuration(300);
+ 	animation->setStartValue(1);
+ 	animation->setEndValue(0);
+ 	animation->start();
+ 	if (closeHide) 
+ 		connect(animation, &QPropertyAnimation::finished, this, &QWidget::close);
+ 	else 
+ 		connect(animation, &QPropertyAnimation::finished, MainWidget::staticThis, &QWidget::hide);
 }
