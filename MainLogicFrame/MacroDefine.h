@@ -3,15 +3,15 @@
 #include "SignalQueue.h"
 #include "Signal.h"
 #include <QString>
+#include <QObject>
 
-#define SIGNALVALUE
+#define SIGNAL_VALUE
 #define PARAM		
-#define SEND_SIGNAL(SIGNALVALUE, PARAM) \
-if (SIGNALVALUE == Signal_::RELOADUI) \
-	SENDSIGNAL(SIGNALVALUE, PARAM, typeid(PARAM).name()); \
+
+#define SEND_SIGNAL(SIGNAL_VALUE, PARAM) \
+if constexpr (SIGNAL_VALUE == Signal_::RELOADUI) \
+	SENDSIGNAL(PARAM); \
 else \
-	SENDSIGNAL(SIGNALVALUE, PARAM); 
-
-	 
-
+	SENDSIGNAL(SIGNAL_VALUE, PARAM);
+	
 #endif  //__MACTODEFINE_H__

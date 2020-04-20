@@ -1,4 +1,4 @@
-#include <QtWidgets/QApplication>
+#include <QApplication>
 #include <QMessageBox>
 #include <QDebug>
 #include <QLibrary>
@@ -15,6 +15,5 @@ int main(int argc, char *argv[]) {
 	else {
 		qDebug() << lib.errorString();
 	}
-	
 	return a.exec();
 }

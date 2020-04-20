@@ -11,10 +11,8 @@ SignalQueue::SignalQueue() : QThread(), m_isRuning(true)
 	m_Mutex.lock();
 }
 
-
 SignalQueue::~SignalQueue()
 {
-	m_isRuning = false;
 }
 
 void SignalQueue::Send_Message(Signal_ signal_, void* param) {
@@ -24,9 +22,9 @@ void SignalQueue::Send_Message(Signal_ signal_, void* param) {
 	g_pSignal->push_queue(p);
 }
 
-void SignalQueue::Send_Message(Signal_ signal_, void *param, QString strParamType) {
-	g_pSignal->m_ParamInfo.params = param;
-	g_pSignal->m_ParamInfo.strType = strParamType;
+void SignalQueue::Send_Message(Signal_ signal_, void *widget, QString strWidgetType) {
+	g_pSignal->m_ParamInfo.params = widget;
+	g_pSignal->m_ParamInfo.strType = strWidgetType;
 	Send_Message(signal_, &g_pSignal->m_ParamInfo);
 }
 
@@ -119,22 +117,36 @@ void SignalQueue::doit() {
 
 void SignalQueue::SetUserIdentify(void *pIdentify, User user) {
 	m_mapUser[user] = pIdentify;
-	if (user == User::MAINWIDGET) {
+	switch (user)
+	{
+	case User::MAINFRAME:
+		connect(this, SIGNAL(MakeFile(void *)), (MainFrame*)pIdentify, SLOT(MakePluginsProtobufFile(void*)));
+		connect(this, SIGNAL(UpdateWindowGeometry()), (MainFrame*)pIdentify, SLOT(UpdataGeometry()));
+		break;
+	case User::MAINWIDGET:
 		connect(this, SIGNAL(close_Window()), MainWidget::staticThis
 			, SLOT(closeWindow()));
 		connect(this, SIGNAL(minWindow()), MainWidget::staticThis
 			, SLOT(showMinimized()));
 		connect(this, SIGNAL(ReloadUI(QWidget*, const QRect &)), MainWidget::staticThis
 			, SLOT(setMain(QWidget*, const QRect &)));
-	}	
-	else {
-		connect(this, SIGNAL(MakeFile(void *)), (MainFrame*)pIdentify, SLOT(MakePluginsProtobufFile(void*)));
-		connect(this, SIGNAL(UpdateWindowGeometry()), (MainFrame*)pIdentify, SLOT(UpdataGeometry()));
+		break;
+	case User::MESSAGE:
+		break;
+	default:
+		break;
 	}
 }
 
 void SignalQueue::DeleteAll() {
 	delete static_cast<MainWidget*>(m_mapUser[User::MAINWIDGET]);
 	delete static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]);
+	m_isRuning = false;
+	m_waitMutex.wakeOne();
+	deleteLater();
 	delete this;
+}
+
+void * SignalQueue::ReturnUser(User user) {
+	return m_mapUser[user];
 }

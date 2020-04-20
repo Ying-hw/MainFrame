@@ -14,24 +14,19 @@ enum class LogGrade{
 	Tips
 };
 
-class Q_DECL_EXPORT MainFrame : public QThread
+class Q_DECL_EXPORT MainFrame : public QObject
 {
 	Q_OBJECT
 public:
 	MainFrame();
 	~MainFrame();
-
-	inline void SendSharesCentent(char* centent) {
-		m_data = centent;
-		m_WaitCond.wakeOne();
-	}
-	void run();
 	const QRect FindChildUiLocation(const QWidget* targetWidget, const QString& TypeName);
 	static void FreeLib(MainFrame* pthis);
 	static void LoadLib(MainFrame* pthis, const QString strTargetName);
 	inline void WriteLog(const QString& strlog) {
 		m_logFile.write(strlog.toLocal8Bit());
 	}
+
 public slots:
 	void MakePluginsProtobufFile(void* source);
 	void UpdataGeometry();
@@ -48,13 +43,10 @@ private slots:
 	void InitCurrentWidget(const PluginInfo* targetPlug);
 private:
 	QFile m_logFile;
-	bool m_isRunning;
-	char *m_data;
-	QMutex m_Mutex_;
 	QLibrary m_Loadlib;
-	QWaitCondition m_WaitCond;
 	QVector<PluginInfo> m_PluginConfig;
 	QString m_CurrentWindowName;
 	Allplugins m_pAllPlugins;
 };
+
 #endif // MAINFRAME_H

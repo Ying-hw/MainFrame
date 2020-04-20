@@ -72,9 +72,8 @@ void MainWidget::closeWindow() {
 	}
 }
 
-MainWidget::MainWidget(QWidget *ject /*= 0*/) : QWidget(ject), m_pWidget(nullptr), m_isTopMenuPress(false), 
-		BtnClose(NULL), BtnSet(NULL), 
-		m_isPress(false), glx(MAXINT32) {
+MainWidget::MainWidget(QWidget *ject /*= 0*/) : QWidget(ject), m_pWidget(nullptr),
+		BtnClose(NULL), BtnSet(NULL) {
 }
 
 void MainWidget::setInitUi(const QRect& rect) {
