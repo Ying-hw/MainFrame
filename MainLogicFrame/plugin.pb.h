@@ -313,34 +313,6 @@ class plugins : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::std::string* release_name();
   void set_allocated_name(::std::string* name);
 
-  // bytes location = 6;
-  void clear_location();
-  static const int kLocationFieldNumber = 6;
-  const ::std::string& location() const;
-  void set_location(const ::std::string& value);
-  #if LANG_CXX11
-  void set_location(::std::string&& value);
-  #endif
-  void set_location(const char* value);
-  void set_location(const void* value, size_t size);
-  ::std::string* mutable_location();
-  ::std::string* release_location();
-  void set_allocated_location(::std::string* location);
-
-  // bytes title = 7;
-  void clear_title();
-  static const int kTitleFieldNumber = 7;
-  const ::std::string& title() const;
-  void set_title(const ::std::string& value);
-  #if LANG_CXX11
-  void set_title(::std::string&& value);
-  #endif
-  void set_title(const char* value);
-  void set_title(const void* value, size_t size);
-  ::std::string* mutable_title();
-  ::std::string* release_title();
-  void set_allocated_title(::std::string* title);
-
   // bytes path = 8;
   void clear_path();
   static const int kPathFieldNumber = 8;
@@ -367,8 +339,6 @@ class plugins : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::RepeatedPtrField< ::plugins_childplugin > child_;
   ::google::protobuf::internal::ArenaStringPtr name_;
-  ::google::protobuf::internal::ArenaStringPtr location_;
-  ::google::protobuf::internal::ArenaStringPtr title_;
   ::google::protobuf::internal::ArenaStringPtr path_;
   bool isstart_;
   mutable int _cached_size_;
@@ -719,112 +689,6 @@ inline void plugins::set_isstart(bool value) {
   
   isstart_ = value;
   // @@protoc_insertion_point(field_set:plugins.isStart)
-}
-
-// bytes location = 6;
-inline void plugins::clear_location() {
-  location_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline const ::std::string& plugins::location() const {
-  // @@protoc_insertion_point(field_get:plugins.location)
-  return location_.GetNoArena();
-}
-inline void plugins::set_location(const ::std::string& value) {
-  
-  location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:plugins.location)
-}
-#if LANG_CXX11
-inline void plugins::set_location(::std::string&& value) {
-  
-  location_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:plugins.location)
-}
-#endif
-inline void plugins::set_location(const char* value) {
-  GOOGLE_DCHECK(value != NULL);
-  
-  location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:plugins.location)
-}
-inline void plugins::set_location(const void* value, size_t size) {
-  
-  location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:plugins.location)
-}
-inline ::std::string* plugins::mutable_location() {
-  
-  // @@protoc_insertion_point(field_mutable:plugins.location)
-  return location_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* plugins::release_location() {
-  // @@protoc_insertion_point(field_release:plugins.location)
-  
-  return location_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void plugins::set_allocated_location(::std::string* location) {
-  if (location != NULL) {
-    
-  } else {
-    
-  }
-  location_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), location);
-  // @@protoc_insertion_point(field_set_allocated:plugins.location)
-}
-
-// bytes title = 7;
-inline void plugins::clear_title() {
-  title_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline const ::std::string& plugins::title() const {
-  // @@protoc_insertion_point(field_get:plugins.title)
-  return title_.GetNoArena();
-}
-inline void plugins::set_title(const ::std::string& value) {
-  
-  title_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:plugins.title)
-}
-#if LANG_CXX11
-inline void plugins::set_title(::std::string&& value) {
-  
-  title_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:plugins.title)
-}
-#endif
-inline void plugins::set_title(const char* value) {
-  GOOGLE_DCHECK(value != NULL);
-  
-  title_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:plugins.title)
-}
-inline void plugins::set_title(const void* value, size_t size) {
-  
-  title_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:plugins.title)
-}
-inline ::std::string* plugins::mutable_title() {
-  
-  // @@protoc_insertion_point(field_mutable:plugins.title)
-  return title_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* plugins::release_title() {
-  // @@protoc_insertion_point(field_release:plugins.title)
-  
-  return title_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void plugins::set_allocated_title(::std::string* title) {
-  if (title != NULL) {
-    
-  } else {
-    
-  }
-  title_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), title);
-  // @@protoc_insertion_point(field_set_allocated:plugins.title)
 }
 
 // bytes path = 8;

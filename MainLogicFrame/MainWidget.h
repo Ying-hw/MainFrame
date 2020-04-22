@@ -3,11 +3,11 @@
 #include "Signal.h"
 #include "SignalQueue.h"
 #include "MainFrame_global.h"
+#include "Animation.h"
 
 extern SignalQueue* g_pSignal;
 
-class MAINFRAME_EXPORT MainWidget : public QWidget
-{
+class MAINFRAME_EXPORT MainWidget : public Animation {
 	Q_OBJECT
 public:
 	MainWidget(QWidget *ject = 0);
@@ -21,7 +21,6 @@ public:
 public:
 	static MainWidget* staticThis;
 	QWidget* m_pWidget;
-
 public slots: 
 	void closeWindow();
 	void setMain(QWidget* pMain, const QRect& rect);

@@ -118,8 +118,6 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::plugins, name_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::plugins, isstart_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::plugins, location_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::plugins, title_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::plugins, path_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::plugins, child_),
   ~0u,  // no _has_bits_
@@ -132,7 +130,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::plugins_childplugin)},
   { 8, -1, sizeof(::plugins)},
-  { 19, -1, sizeof(::Allplugins)},
+  { 17, -1, sizeof(::Allplugins)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -163,16 +161,15 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\014plugin.proto\"\277\001\n\007plugins\022\014\n\004name\030\004 \001(\014"
-      "\022\017\n\007isStart\030\005 \001(\010\022\020\n\010location\030\006 \001(\014\022\r\n\005t"
-      "itle\030\007 \001(\014\022\014\n\004path\030\010 \001(\014\022#\n\005child\030\t \003(\0132"
-      "\024.plugins.childplugin\032A\n\013childplugin\022\021\n\t"
-      "childname\030\001 \001(\014\022\020\n\010location\030\002 \001(\014\022\r\n\005tit"
-      "le\030\003 \001(\014\"&\n\nAllplugins\022\030\n\006plugin\030\001 \003(\0132\010"
-      ".pluginsB\002H\001b\006proto3"
+      "\n\014plugin.proto\"\236\001\n\007plugins\022\014\n\004name\030\004 \001(\014"
+      "\022\017\n\007isStart\030\005 \001(\010\022\014\n\004path\030\010 \001(\014\022#\n\005child"
+      "\030\t \003(\0132\024.plugins.childplugin\032A\n\013childplu"
+      "gin\022\021\n\tchildname\030\001 \001(\014\022\020\n\010location\030\002 \001(\014"
+      "\022\r\n\005title\030\003 \001(\014\"&\n\nAllplugins\022\030\n\006plugin\030"
+      "\001 \003(\0132\010.pluginsB\002H\001b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 260);
+      descriptor, 227);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "plugin.proto", &protobuf_RegisterTypes);
 }
@@ -530,8 +527,6 @@ void plugins::InitAsDefaultInstance() {
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int plugins::kNameFieldNumber;
 const int plugins::kIsStartFieldNumber;
-const int plugins::kLocationFieldNumber;
-const int plugins::kTitleFieldNumber;
 const int plugins::kPathFieldNumber;
 const int plugins::kChildFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -554,14 +549,6 @@ plugins::plugins(const plugins& from)
   if (from.name().size() > 0) {
     name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.name_);
   }
-  location_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.location().size() > 0) {
-    location_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.location_);
-  }
-  title_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.title().size() > 0) {
-    title_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.title_);
-  }
   path_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.path().size() > 0) {
     path_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.path_);
@@ -572,8 +559,6 @@ plugins::plugins(const plugins& from)
 
 void plugins::SharedCtor() {
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  location_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  title_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   path_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   isstart_ = false;
   _cached_size_ = 0;
@@ -586,8 +571,6 @@ plugins::~plugins() {
 
 void plugins::SharedDtor() {
   name_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  location_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  title_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   path_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -622,8 +605,6 @@ void plugins::Clear() {
 
   child_.Clear();
   name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  location_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  title_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   path_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   isstart_ = false;
   _internal_metadata_.Clear();
@@ -659,30 +640,6 @@ bool plugins::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &isstart_)));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      // bytes location = 6;
-      case 6: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(50u /* 50 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
-                input, this->mutable_location()));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      // bytes title = 7;
-      case 7: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(58u /* 58 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
-                input, this->mutable_title()));
         } else {
           goto handle_unusual;
         }
@@ -749,18 +706,6 @@ void plugins::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->isstart(), output);
   }
 
-  // bytes location = 6;
-  if (this->location().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
-      6, this->location(), output);
-  }
-
-  // bytes title = 7;
-  if (this->title().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
-      7, this->title(), output);
-  }
-
   // bytes path = 8;
   if (this->path().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
@@ -798,20 +743,6 @@ void plugins::SerializeWithCachedSizes(
   // bool isStart = 5;
   if (this->isstart() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(5, this->isstart(), target);
-  }
-
-  // bytes location = 6;
-  if (this->location().size() > 0) {
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
-        6, this->location(), target);
-  }
-
-  // bytes title = 7;
-  if (this->title().size() > 0) {
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
-        7, this->title(), target);
   }
 
   // bytes path = 8;
@@ -864,20 +795,6 @@ size_t plugins::ByteSizeLong() const {
         this->name());
   }
 
-  // bytes location = 6;
-  if (this->location().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::BytesSize(
-        this->location());
-  }
-
-  // bytes title = 7;
-  if (this->title().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::BytesSize(
-        this->title());
-  }
-
   // bytes path = 8;
   if (this->path().size() > 0) {
     total_size += 1 +
@@ -924,14 +841,6 @@ void plugins::MergeFrom(const plugins& from) {
 
     name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.name_);
   }
-  if (from.location().size() > 0) {
-
-    location_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.location_);
-  }
-  if (from.title().size() > 0) {
-
-    title_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.title_);
-  }
   if (from.path().size() > 0) {
 
     path_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.path_);
@@ -967,8 +876,6 @@ void plugins::InternalSwap(plugins* other) {
   using std::swap;
   child_.InternalSwap(&other->child_);
   name_.Swap(&other->name_);
-  location_.Swap(&other->location_);
-  title_.Swap(&other->title_);
   path_.Swap(&other->path_);
   swap(isstart_, other->isstart_);
   _internal_metadata_.Swap(&other->_internal_metadata_);

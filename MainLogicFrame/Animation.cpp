@@ -3,33 +3,28 @@
 #include "MainWidget.h"
 
 Animation::Animation(QWidget *parent)
-	: QWidget(parent), m_IsShow(true)
+	: QWidget(parent), m_IsShow(true),
+	  m_Animation_Opacity( NULL ),
+	  m_Animation_Geometry( NULL )
 {
+	
 }
 
 Animation::~Animation()
 {
-	 
+	delete m_Animation_Opacity;
+	delete m_Animation_Geometry;
+	m_Animation_Geometry = NULL;
+	m_Animation_Opacity = NULL;
 }
 
-void Animation::showEvent(QShowEvent* event) {
+void Animation::showEvent(QShowEvent *event) {
 	if (!m_IsShow)
 		return;
-	QPropertyAnimation *animation = new QPropertyAnimation(MainWidget::staticThis, "windowOpacity");
-	animation->setDuration(700);
-	animation->setStartValue(0);
-	animation->setEndValue(1);
-	animation->setEasingCurve(QEasingCurve::Linear);
 
-	QDesktopWidget deskTop;
-	QPropertyAnimation *animation2 = new QPropertyAnimation(MainWidget::staticThis, "geometry");
-	animation2->setDuration(300);
-	animation2->setStartValue(QRect(0, 0, deskTop.width(), deskTop.height()));
-	animation2->setEndValue(MainWidget::staticThis->geometry());
-
-	QParallelAnimationGroup *group = new QParallelAnimationGroup;
-	group->addAnimation(animation);
-	group->addAnimation(animation2);
+	QParallelAnimationGroup* group = new QParallelAnimationGroup(this);;
+	group->addAnimation(m_Animation_Opacity);
+	group->addAnimation(m_Animation_Geometry);
 	group->start();
 
 	QGraphicsDropShadowEffect *m_pShadow = new QGraphicsDropShadowEffect(MainWidget::staticThis);
@@ -37,6 +32,7 @@ void Animation::showEvent(QShowEvent* event) {
 	m_pShadow->setBlurRadius(10);
 	m_pShadow->setOffset(4, 4);
 	MainWidget::staticThis->setGraphicsEffect(m_pShadow);
+	//m_IsShow = false;
 }
 
 void Animation::setAnimation(bool isShow /*= true*/)
@@ -46,19 +42,40 @@ void Animation::setAnimation(bool isShow /*= true*/)
 
 void Animation::hideEvent(QHideEvent *event)
 {
-
+	//closeAnimation(false);
 }
 
 void Animation::closeAnimation(bool closeHide) {
 	if (!m_IsShow)
 		return;
- 	QPropertyAnimation *animation = new QPropertyAnimation(MainWidget::staticThis, "windowOpacity");
- 	animation->setDuration(300);
- 	animation->setStartValue(1);
- 	animation->setEndValue(0);
  	if (closeHide) 
- 		connect(animation, &QPropertyAnimation::finished, this, &QWidget::close);
+ 		connect(m_Animation_Opacity, &QPropertyAnimation::finished, this, &QWidget::close);
  	else 
- 		connect(animation, &QPropertyAnimation::finished, MainWidget::staticThis, &QWidget::hide);
-	animation->start();
+ 		connect(m_Animation_Opacity, &QPropertyAnimation::finished, MainWidget::staticThis, &QWidget::hide);
+	m_Animation_Opacity->start();
+	//m_IsShow = false;
+}
+
+void Animation::InitAanimation()
+{
+	if (m_Animation_Opacity) {
+		delete m_Animation_Opacity;
+		m_Animation_Opacity = NULL;
+	}
+	if (m_Animation_Geometry) {
+		delete m_Animation_Geometry;
+		m_Animation_Geometry = NULL;
+	}
+	m_Animation_Opacity = new QPropertyAnimation(MainWidget::staticThis, "windowOpacity");
+	m_Animation_Geometry = new QPropertyAnimation(MainWidget::staticThis, "geometry");
+
+	m_Animation_Opacity->setDuration(400);
+	m_Animation_Opacity->setStartValue(0);
+	m_Animation_Opacity->setEndValue(1);
+	m_Animation_Opacity->setEasingCurve(QEasingCurve::Linear);
+
+	QDesktopWidget deskTop;
+	m_Animation_Geometry->setDuration(300);
+	m_Animation_Geometry->setStartValue(QRect(0, 0, deskTop.width(), deskTop.height()));
+	m_Animation_Geometry->setEndValue(MainWidget::staticThis->geometry());
 }

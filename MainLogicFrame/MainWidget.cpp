@@ -4,12 +4,13 @@
 
 void MainWidget::setMain(QWidget* pMain, const QRect& rect, const QString& strTitle) {
 	m_pWidget = pMain;
-	connect(g_pSignal, SIGNAL(close_Window(bool)), static_cast<Animation*>(m_pWidget), SLOT(closeAnimation(bool)));
+	connect(g_pSignal, SIGNAL(close_Window(bool)), this, SLOT(closeAnimation(bool)));
 	if (BtnSet)
 		if (m_pWidget->windowTitle() != "LoginSystem") BtnSet->hide();
 		else BtnSet->show();
 	Set_Qss();
 	setInitUi(rect);
+	InitAanimation();
 	g_pSignal->SetUserIdentify(this, User::MAINWIDGET);
 	this->setWindowTitle(strTitle.toLocal8Bit().data());
 	this->setWindowIcon(QIcon(QString(IMAGE) + "Titlepicture.JPG"));
@@ -20,20 +21,24 @@ void MainWidget::setMain(QWidget* pMain, const QRect& rect, const QString& strTi
 
 void MainWidget::setMain(QWidget* pMain, const QRect& rect)
 {
+	m_pWidget->close();
 	m_pWidget = pMain;
 	if (BtnSet)
 		if (m_pWidget->windowTitle() != "LoginSystem") BtnSet->hide();
 		else BtnSet->show();
 	!rect.isValid() ? this->setGeometry(pMain->geometry()) : this->setGeometry(rect);
 	m_pWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
+	InitAanimation();
 	gridLayout_2->addWidget(m_pWidget, 1, 0);
 	gridLayout_2->setContentsMargins(QMargins(3, 0, 3, 3));
 	gridLayout_2->setSpacing(0);
 	setLayout(gridLayout_2);
 	this->setWindowTitle(pMain->windowTitle());
 	this->setWindowIcon(QIcon(QString(IMAGE) + "Titlepicture.JPG"));
+	m_pWidget->show();
 	show();
+	this->update();
+	this->repaint();
 }
 
 void MainWidget::paintEvent(QPaintEvent* event) {
@@ -72,7 +77,7 @@ void MainWidget::closeWindow() {
 	}
 }
 
-MainWidget::MainWidget(QWidget *ject /*= 0*/) : QWidget(ject), m_pWidget(nullptr),
+MainWidget::MainWidget(QWidget *ject /*= 0*/) : Animation(ject), m_pWidget(nullptr),
 		BtnClose(NULL), BtnSet(NULL) {
 }
 

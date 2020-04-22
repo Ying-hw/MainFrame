@@ -8,13 +8,17 @@ class MAINFRAME_EXPORT Animation : public QWidget
 public:
 	Animation(QWidget *parent = 0);
 	~Animation();
-	void showEvent(QShowEvent* event);
+	void showEvent(QShowEvent *event);
 	void setAnimation(bool isShow = true);
 	void hideEvent(QHideEvent *event);
+	void InitAanimation();
 public slots:
 	void closeAnimation(bool closeHide);
 private:
 	bool m_IsShow;
+	QPropertyAnimation* m_Animation_Opacity;
+	QPropertyAnimation* m_Animation_Geometry;
 };
+
 
 #endif // ANIMATION_H

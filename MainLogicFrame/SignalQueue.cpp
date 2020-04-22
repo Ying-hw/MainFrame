@@ -35,13 +35,12 @@ void SignalQueue::push_queue(QPair<Signal_, void *> p) {
 }
 
 void SignalQueue::run() {
-	while (m_isRuning) {
+	while (m_isRuning) 
 		if (m_queue.isEmpty())
 			m_waitMutex.wait(&m_Mutex);
 		else
 			while (!m_queue.isEmpty()) 
 				selectSignal(m_queue.dequeue());
-	}
 }
 
 void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
@@ -86,8 +85,10 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		static_cast<MainFrame*>(m_mapUser[User::MAINFRAME])->UpdataGeometry();
 		QRect rect = static_cast<MainFrame*>(m_mapUser[User::MAINFRAME])
 			->FindChildUiLocation(that, g_pSignal->m_ParamInfo.strType);
+
+		qDebug() << "geometry==" << rect;
 		emit close_Window(false);
-		msleep(500);
+		msleep(400);
 		emit ReloadUI(that, rect);
 	}		
 		break;
