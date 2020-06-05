@@ -5,7 +5,7 @@
 SignalQueue* g_pSignal;
 
 
-SignalQueue::SignalQueue() : QThread(), m_isRuning(true)
+SignalQueue::SignalQueue() : QThread(), m_isRuning(true), m_CurrentSignal(Signal_::INVALID)
 {
 	g_pSignal = this;
 	m_Mutex.lock();
@@ -13,9 +13,12 @@ SignalQueue::SignalQueue() : QThread(), m_isRuning(true)
 
 SignalQueue::~SignalQueue()
 {
+	m_isRuning = false;
+	m_Mutex.unlock();
 }
 
-void SignalQueue::Send_Message(Signal_ signal_, void* param) {
+void SignalQueue::Send_Message(Signal_ signal_, void* param) { 
+	g_pSignal->m_CurrentSignal = signal_;    
 	QPair<Signal_, void *> p;
 	p.first = signal_;
 	p.second = param;
@@ -26,6 +29,11 @@ void SignalQueue::Send_Message(Signal_ signal_, void *widget, QString strWidgetT
 	g_pSignal->m_ParamInfo.params = widget;
 	g_pSignal->m_ParamInfo.strType = strWidgetType;
 	Send_Message(signal_, &g_pSignal->m_ParamInfo);
+}          
+
+void* SignalQueue::GetTargetInstance(QString strTarget)
+{
+	return MainFrame::LoadLib(static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]), strTarget, true);
 }
 
 void SignalQueue::push_queue(QPair<Signal_, void *> p) {
@@ -43,15 +51,12 @@ void SignalQueue::run() {
 				selectSignal(m_queue.dequeue());
 }
 
-void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
+void SignalQueue::selectSignal(QPair<Signal_, void *> p) { 
 	switch (p.first) {
 	case Signal_::WINDOWCLOSE:
-		emit UpdateWindowGeometry();
-		emit close_Window();
-		break;
 	case Signal_::WINDOWEXIT:
-		emit UpdateWindowGeometry();
-		emit close_Window(true);
+		emit UpdateWindowGeometry();  
+		emit ExitSystem();
 		break;
 	case Signal_::WINDOWMAX:
 		break;
@@ -61,44 +66,36 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	case Signal_::IGNORESIGNAL:
 		break;
 	case Signal_::FREEPLUG:
-	{
-		const QRect rect = static_cast<MainWidget*>(m_mapUser[User::MAINWIDGET])->geometry();
-		QString strRect = QString("%1,%2,%3,%4").arg(rect.x()).arg(rect.y()).arg(rect.width()).arg(rect.height());
-		MainFrame::FreeLib(static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]));
-	}
+		MainFrame::FreeLib(static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME]));
 		break;
-	case Signal_::LOADPLUG:
+	case Signal_::LOADPLUG: 
 	{
-		QString strpTarget = (char *)p.second;
-		MainFrame::LoadLib(static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]), strpTarget);
+		QString strpTarget = (char *)p.second; 
+		MainFrame::LoadLib(static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME]), strpTarget);
 	}
 		break;
 	case Signal_::WRITELOG:
-	{
-		MainFrame* frame = static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]);
-		frame->WriteLog((const char *)p.second);
-	}
+		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->WriteLog((const char *)p.second);
 		break;
 	case Signal_::RELOADUI:
 	{
-		QWidget *that = static_cast<QWidget*>(g_pSignal->m_ParamInfo.params);
-		static_cast<MainFrame*>(m_mapUser[User::MAINFRAME])->UpdataGeometry();
-		QRect rect = static_cast<MainFrame*>(m_mapUser[User::MAINFRAME])
-			->FindChildUiLocation(that, g_pSignal->m_ParamInfo.strType);
-
-		qDebug() << "geometry==" << rect;
-		emit close_Window(false);
-		msleep(400);
+		ParamInfo* paraminfo = (ParamInfo *)p.second;
+		QWidget *that = static_cast<QWidget*>(paraminfo->params);
+		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->UpdataGeometry();
+		QRect rect = static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->FindChildUiLocation(that, paraminfo->strType);
+		emit hide_Window();
+		msleep(800);
 		emit ReloadUI(that, rect);
 	}		
 		break;
 	case Signal_::SWITCHPLUGIN:
-	{
-		emit close_Window(true); 
-		msleep(500);
-		MainFrame::FreeLib(static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]));
-		QString strpTarget = (char *)p.second;
-		MainFrame::LoadLib(static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]), strpTarget);
+	{ 
+		ParamInfo* paraminfo = (ParamInfo *)p.second;
+		if (!paraminfo->isAllShow) {
+			emit close_Window();
+			MainFrame::FreeLib(static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME]));
+		}
+		MainFrame::LoadLib(static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME]), (char*)paraminfo->params);
 	}
 		break;
 	case Signal_::PLUGINNAMECHANGED:
@@ -116,23 +113,22 @@ void SignalQueue::doit() {
 	
 }
 
-void SignalQueue::SetUserIdentify(void *pIdentify, User user) {
-	m_mapUser[user] = pIdentify;
-	switch (user)
+void SignalQueue::SetUserIdentify(void *pIdentify, SystemUser SystemUser) {
+	m_mapUser[SystemUser] = pIdentify;
+	switch (SystemUser)
 	{
-	case User::MAINFRAME:
+	case SystemUser::MAINFRAME:
 		connect(this, SIGNAL(MakeFile(void *)), (MainFrame*)pIdentify, SLOT(MakePluginsProtobufFile(void*)));
 		connect(this, SIGNAL(UpdateWindowGeometry()), (MainFrame*)pIdentify, SLOT(UpdataGeometry()));
 		break;
-	case User::MAINWIDGET:
-		connect(this, SIGNAL(close_Window()), MainWidget::staticThis
-			, SLOT(closeWindow()));
-		connect(this, SIGNAL(minWindow()), MainWidget::staticThis
-			, SLOT(showMinimized()));
-		connect(this, SIGNAL(ReloadUI(QWidget*, const QRect &)), MainWidget::staticThis
-			, SLOT(setMain(QWidget*, const QRect &)));
+	case SystemUser::MAINWIDGET:
+		connect(this, SIGNAL(ExitSystem()), MainWidget::staticThis, SLOT(closeWindow()));
+		connect(this, SIGNAL(minWindow()), MainWidget::staticThis, SLOT(showMinimized()));
+		connect(this, SIGNAL(ReloadUI(QWidget*, const QRect &)), MainWidget::staticThis, SLOT(setMain(QWidget*, const QRect &)));
+		connect(this, SIGNAL(close_Window()), MainWidget::staticThis, SLOT(close()));
+		connect(this, SIGNAL(hide_Window()), MainWidget::staticThis, SLOT(hide()));
 		break;
-	case User::MESSAGE:
+	case SystemUser::MESSAGE:
 		break;
 	default:
 		break;
@@ -140,14 +136,15 @@ void SignalQueue::SetUserIdentify(void *pIdentify, User user) {
 }
 
 void SignalQueue::DeleteAll() {
-	delete static_cast<MainWidget*>(m_mapUser[User::MAINWIDGET]);
-	delete static_cast<MainFrame*>(m_mapUser[User::MAINFRAME]);
+	delete static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]);
+	delete static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME]);
 	m_isRuning = false;
 	m_waitMutex.wakeOne();
 	deleteLater();
 	delete this;
 }
 
-void * SignalQueue::ReturnUser(User user) {
-	return m_mapUser[user];
+void * SignalQueue::ReturnUser(SystemUser SystemUser) {
+	return m_mapUser[SystemUser];
 }
+

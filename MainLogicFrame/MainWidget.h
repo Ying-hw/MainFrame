@@ -16,7 +16,6 @@ public:
 	void setMain(QWidget* pMain, const QRect& rect, const QString& strTitle);
 	void Set_Qss();
 	void paintEvent(QPaintEvent* event);
-	void region(const QPoint &cursorGlobalPoint);
 
 public:
 	static MainWidget* staticThis;

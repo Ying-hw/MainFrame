@@ -1,0 +1,14 @@
+#
+*.ipch
+*.tlog
+*.log
+*.obj
+*.pch
+*.txt
+*.props
+*.pdb
+*.ilk
+*.exp
+*.aps
+*.qm
+*.db

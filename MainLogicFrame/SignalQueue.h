@@ -7,11 +7,15 @@
 class SignalQueue;
 extern MAINFRAME_EXPORT SignalQueue* g_pSignal;
 
-#define SENDSIGNAL SignalQueue::Recv_Message
+#define SENDSIGNAL SignalQueue::Recv_Message 
+#define GETINSTANCE SignalQueue::GetTargetInstance
 
 struct ParamInfo{
+	ParamInfo() :params(NULL), isAllShow(false) {}
+	ParamInfo(void * param, QString strTarget, bool isShow):params(param), strType(strTarget), isAllShow(isShow) {}
 	void *params;
 	QString strType;
+	bool isAllShow;
 };
 
 class MAINFRAME_EXPORT SignalQueue : public QThread
@@ -25,16 +29,18 @@ public:
 	void selectSignal(QPair<Signal_, void *> p);
 	void push_queue(QPair<Signal_, void *> p);
 	static void doit();
-	static void Send_Message(Signal_ signal_, void *param);
-	static void Send_Message(Signal_ signal_, void *widget, QString strWidgetType);
-	void SetUserIdentify(void *, User user);
+	static void Send_Message(Signal_ signal_, void *param); 
+	static void Send_Message(Signal_ signal_, void *widget, QString strWidgetType); 
+	static void* GetTargetInstance(QString strTarget);
+	void SetUserIdentify(void *, SystemUser user);
 	void DeleteAll();
-	void *ReturnUser(User user);
+	void *ReturnUser(SystemUser user);
 	template<typename T> static void Recv_Message(Signal_ SIG, T t);
 	template<typename T> static void Recv_Message(T* t);
 signals:
-	void close_Window(bool isClose);
+	void hide_Window();
 	void close_Window();
+	void ExitSystem();
 	void minWindow();
 	void maxWindow();
 	void ReloadUI(QWidget* that, const QRect &rect);
@@ -45,8 +51,9 @@ private:
 	QQueue<QPair<Signal_, void *>> m_queue;
 	QWaitCondition m_waitMutex;
 	QMutex m_Mutex;
-	QMap<User, void*> m_mapUser;
+	QMap<SystemUser, void*> m_mapUser; 
 	ParamInfo m_ParamInfo;
+	Signal_ m_CurrentSignal;
 };
 
 template<typename T>

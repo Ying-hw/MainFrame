@@ -2,23 +2,13 @@
 #include "MainFrame.h"
 #include "MainWidget.h"
 
-#define LOCATION
-#define STRTOLOCATION(LOCATION) QRect(LOCATION.section(",",0,0).toInt(), \
-									LOCATION.section(",", 1, 1).toInt(), \
-									LOCATION.section(",", 2, 2).toInt(), \
-									LOCATION.section(",", 3, 3).toInt());
-
-#define LOCATIONTOSTR(LOCATION) QString("%1,%2,%3,%4").arg(LOCATION->geometry().x()) \
-										.arg(LOCATION->geometry().y()).arg(LOCATION->geometry().width()) \
-										.arg(LOCATION->geometry().height());
-
 MainFrame::MainFrame() : QObject() {
 	QString strDate = QDate::currentDate().toString(Qt::ISODate);
 	m_logFile.setFileName(QString(LOG) + strDate + ".txt");
 	m_logFile.open(QIODevice::Append);
 	connect(this, SIGNAL(ReleaseWidget()), this, SLOT(ReleaseCurrentWidget()));
 	connect(this, SIGNAL(InitWidget(const PluginInfo*)), this, SLOT(InitCurrentWidget(const PluginInfo*)));
-	g_pSignal->SetUserIdentify(this, User::MAINFRAME);
+	g_pSignal->SetUserIdentify(this, SystemUser::MAINFRAME);
 	StartPluginControl();
 }
 
@@ -111,22 +101,46 @@ void MainFrame::LoadLib(MainFrame* pthis, const QString strTargetName) {
 			qDebug() << pthis->m_Loadlib.fileName();
 			pthis->WriteLog(str);
 		}
-		else {
+		else { 
 			pthis->m_CurrentWindowName = targetPlug->m_str_name;
 			emit pthis->InitWidget(targetPlug);
 		}
 	}
 }
 
+void* MainFrame::LoadLib(MainFrame* pthis, const QString strTargetName, bool noShow)
+{
+	PluginInfo* targetPlug = std::find_if(pthis->m_PluginConfig.begin(), pthis->m_PluginConfig.end(), [&](const PluginInfo& plug) {
+		return plug.m_str_name == strTargetName;
+	});
+	if (targetPlug) {
+		pthis->m_Loadlib.setFileName(targetPlug->m_str_path + "/" + strTargetName);
+		if (!pthis->m_Loadlib.load()) {
+			QString str = pthis->m_Loadlib.errorString();
+			qDebug() << pthis->m_Loadlib.fileName();
+			pthis->WriteLog(str);
+		}
+		else {
+			typedef QWidget* (*pFunction)();
+			pFunction pfun = (pFunction)(pthis->m_Loadlib.resolve("Handle"));
+			if (pfun) {
+				QWidget* target = pfun();
+				return target;
+			}
+		}
+	}
+	return nullptr;
+}
+
 void MainFrame::InitCurrentWidget(const PluginInfo* targetPlug) {
-	typedef QWidget* (*pFunction)();
+	typedef QWidget* (*pFunction)();     
 	pFunction pfun = (pFunction)(m_Loadlib.resolve("Handle"));
 	if (pfun) {
 		QWidget* target = pfun();
 		const QRect rect = FindChildUiLocation(target, target->metaObject()->className());
 		if (targetPlug->m_isStart)
 			MainWidget::staticThis->setMain(target, rect, target->windowTitle());
-		else
+		else 
 			MainWidget::staticThis->setMain(target, rect);
 	}
 	else

@@ -3,7 +3,13 @@
 #include "MacroDefine.h"
 #include <QHostInfo>
 
-NetWork::NetWork(QAbstractSocket::SocketType Type) : m_Type(Type){}
+NetWork::NetWork(QAbstractSocket::SocketType Type, QObject* parent) : QObject(parent), m_Type(Type), m_pReply(nullptr) {
+	QUrl url;
+	url.setScheme("ftp");
+	url.setHost("ftp://192.168.1.48");
+	QNetworkRequest Request(url);
+	m_pReply = m_AccessMan.get(Request);
+}
 
 NetWork::~NetWork(){}
 

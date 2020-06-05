@@ -5,12 +5,13 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QUdpSocket>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 class MAINFRAME_EXPORT NetWork : public QObject
 {
-	Q_OBJECT
 public:
-	NetWork(QAbstractSocket::SocketType Type);
+	NetWork(QAbstractSocket::SocketType Type, QObject* parent = 0);
 	~NetWork();
 
 protected:
@@ -25,6 +26,8 @@ private:
 	QTcpSocket m_Tcp;
 	QUdpSocket m_Udp;
 	QAbstractSocket::SocketType m_Type;	
+	QNetworkAccessManager m_AccessMan;
+	QNetworkReply* m_pReply;
 };
 
 #endif // NETWORK_H

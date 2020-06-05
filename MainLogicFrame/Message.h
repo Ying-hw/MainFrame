@@ -3,8 +3,7 @@
 #include "SignalQueue.h"
 
 namespace CommonTemplate{
-
-		class  Type {
+		class Type {
 		public:
 			Type() : m_param(nullptr) {}
 template<typename type>
@@ -14,7 +13,7 @@ template<typename type>
 			void* m_param;
 		};
 
-		class  Params_Array {
+		class Params_Array {
 		public:
 			Params_Array() {};
 template<typename Type>
@@ -29,7 +28,7 @@ template<typename Type>
 		};
 
 template<int size>
-		class  RegisterType {
+		class RegisterType {
 		public:
 			RegisterType() {}
 			void ExpandValues(void) {
@@ -55,17 +54,16 @@ template<typename... Tn>
 				static RegisterType<sizeof...(Tn)> m_RegType; 
 				m_RegType.ExpandValues(types...);
 				m_Params = m_RegType.GetTypesArray();
-				g_pSignal->SetUserIdentify(m_Params, User::MESSAGE);
+				g_pSignal->SetUserIdentify(m_Params, SystemUser::MESSAGE);
 			}	
 
 template<typename index>
 			static void * Get(index index_) {
-				Params_Array* pArray = (Params_Array*)g_pSignal->ReturnUser(User::MESSAGE);
+				Params_Array* pArray = (Params_Array*)g_pSignal->ReturnUser(SystemUser::MESSAGE);
 				int i = 0;
 				for (i; (pArray + i)->GetParam().m_param != nullptr; i++);
-				if (index_ < i && index_ > -1) {
+				if (index_ < i && index_ > -1) 
 					return pArray[index_].GetParam().m_param;
-				}
 				return nullptr;
 			} 
 			Params_Array* m_Params;
@@ -75,5 +73,7 @@ template<typename... Tn> void Send_Message(Tn... types) {
 			CommonTemplate::InitType Init(types...);
 		}
 }
+
+
 
 #endif // MESSAGE_H

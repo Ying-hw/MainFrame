@@ -22,17 +22,10 @@ void Animation::showEvent(QShowEvent *event) {
 	if (!m_IsShow)
 		return;
 
-	QParallelAnimationGroup* group = new QParallelAnimationGroup(this);;
+	QParallelAnimationGroup* group = new QParallelAnimationGroup(this);
 	group->addAnimation(m_Animation_Opacity);
 	group->addAnimation(m_Animation_Geometry);
 	group->start();
-
-	QGraphicsDropShadowEffect *m_pShadow = new QGraphicsDropShadowEffect(MainWidget::staticThis);
-	m_pShadow->setColor(QColor(0, 0, 0, 85));
-	m_pShadow->setBlurRadius(10);
-	m_pShadow->setOffset(4, 4);
-	MainWidget::staticThis->setGraphicsEffect(m_pShadow);
-	//m_IsShow = false;
 }
 
 void Animation::setAnimation(bool isShow /*= true*/)
@@ -42,18 +35,24 @@ void Animation::setAnimation(bool isShow /*= true*/)
 
 void Animation::hideEvent(QHideEvent *event)
 {
-	//closeAnimation(false);
+	closeAnimation(false);
+}
+
+void Animation::closeEvent(QCloseEvent *event)
+{
+	closeAnimation(true);
 }
 
 void Animation::closeAnimation(bool closeHide) {
-	if (!m_IsShow)
+	if (!m_IsShow) {
+		qDebug("RETURN");
 		return;
- 	if (closeHide) 
- 		connect(m_Animation_Opacity, &QPropertyAnimation::finished, this, &QWidget::close);
- 	else 
- 		connect(m_Animation_Opacity, &QPropertyAnimation::finished, MainWidget::staticThis, &QWidget::hide);
-	m_Animation_Opacity->start();
-	//m_IsShow = false;
+	}
+	//设置关闭时的动画
+	m_Animation_Opacity->setDuration(600);
+	m_Animation_Opacity->setStartValue(1);
+	m_Animation_Opacity->setEndValue(0);
+	m_Animation_Opacity->setEasingCurve(QEasingCurve::Linear);
 }
 
 void Animation::InitAanimation()
@@ -69,13 +68,13 @@ void Animation::InitAanimation()
 	m_Animation_Opacity = new QPropertyAnimation(MainWidget::staticThis, "windowOpacity");
 	m_Animation_Geometry = new QPropertyAnimation(MainWidget::staticThis, "geometry");
 
-	m_Animation_Opacity->setDuration(400);
+	m_Animation_Opacity->setDuration(600);
 	m_Animation_Opacity->setStartValue(0);
 	m_Animation_Opacity->setEndValue(1);
 	m_Animation_Opacity->setEasingCurve(QEasingCurve::Linear);
 
 	QDesktopWidget deskTop;
-	m_Animation_Geometry->setDuration(300);
+	m_Animation_Geometry->setDuration(500);
 	m_Animation_Geometry->setStartValue(QRect(0, 0, deskTop.width(), deskTop.height()));
 	m_Animation_Geometry->setEndValue(MainWidget::staticThis->geometry());
 }
