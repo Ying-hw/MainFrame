@@ -91,10 +91,8 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	case Signal_::SWITCHPLUGIN:
 	{ 
 		ParamInfo* paraminfo = (ParamInfo *)p.second;
-		if (!paraminfo->isAllShow) {
-			emit close_Window();
-			MainFrame::FreeLib(static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME]));
-		}
+		emit close_Window();
+		MainFrame::FreeLib(static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME]));
 		MainFrame::LoadLib(static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME]), (char*)paraminfo->params);
 	}
 		break;

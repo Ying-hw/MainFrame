@@ -11,11 +11,10 @@ extern MAINFRAME_EXPORT SignalQueue* g_pSignal;
 #define GETINSTANCE SignalQueue::GetTargetInstance
 
 struct ParamInfo{
-	ParamInfo() :params(NULL), isAllShow(false) {}
-	ParamInfo(void * param, QString strTarget, bool isShow):params(param), strType(strTarget), isAllShow(isShow) {}
+	ParamInfo() :params(NULL) {}
+	ParamInfo(void * param, QString strTarget, bool isShow):params(param), strType(strTarget) {}
 	void *params;
 	QString strType;
-	bool isAllShow;
 };
 
 class MAINFRAME_EXPORT SignalQueue : public QThread

@@ -147,11 +147,11 @@ void MainFrame::InitCurrentWidget(const PluginInfo* targetPlug) {
 		qDebug() << QString::fromLocal8Bit("¿ÕµÄ");
 }
 
-const QRect MainFrame::FindChildUiLocation(const QWidget* targetWidget, const QString& TypeName) {
+const QRect MainFrame::FindChildUiLocation(const QWidget* targetWidget, const QString& ChildName) {
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size(); i++) 
 		if (m_pAllPlugins.plugin(i).name() == m_CurrentWindowName.toStdString()) 
 			for (int j = 0; j < m_pAllPlugins.mutable_plugin(i)->child_size();j++) 
-				if (m_pAllPlugins.mutable_plugin(i)->mutable_child(j)->childname() == TypeName.toStdString()) {
+				if (m_pAllPlugins.mutable_plugin(i)->mutable_child(j)->childname() == ChildName.toStdString()) {
 					QString strRect = QString::fromStdString(m_pAllPlugins.mutable_plugin(i)->mutable_child(j)->location());
 					return STRTOLOCATION(strRect);
 				} 
@@ -159,7 +159,7 @@ const QRect MainFrame::FindChildUiLocation(const QWidget* targetWidget, const QS
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size(); i++) 
 		if (m_pAllPlugins.plugin(i).name() == m_CurrentWindowName.toStdString()) {
 			plugins_childplugin* pChilds = m_pAllPlugins.mutable_plugin(i)->add_child();
-			pChilds->set_childname(TypeName.toStdString());
+			pChilds->set_childname(ChildName.toStdString());
 			pChilds->set_title(targetWidget->windowTitle().toStdString());
 			QString strLocation = LOCATIONTOSTR(targetWidget);
 			pChilds->set_location(strLocation.toStdString());

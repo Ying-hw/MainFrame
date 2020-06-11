@@ -53,10 +53,13 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NetWork.cpp">
+    <ClCompile Include="plugin.pb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="plugin.pb.cc">
+    <ClCompile Include="HintFrameWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractNetWork.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -82,9 +85,6 @@
     <ClInclude Include="PluginInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NetWork.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MainFrame.h">
@@ -97,6 +97,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Animation.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="HintFrameWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AbstractNetWork.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
