@@ -259,9 +259,11 @@ xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AbstractNetWork.cpp" />
+    <ClCompile Include="AbstractWidget.cpp" />
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="HintFrameWidget.cpp" />
+    <ClCompile Include="MessageThread.cpp" />
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="MainWidget.cpp" />
     <ClCompile Include="plugin.pb.cc" />
@@ -278,13 +280,15 @@ xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x
     </QtMoc>
     <QtMoc Include="HintFrameWidget.h" />
     <QtMoc Include="AbstractNetWork.h" />
+    <QtMoc Include="AbstractWidget.h" />
+    <QtMoc Include="MessageThread.h" />
     <ClInclude Include="MacroDefine.h" />
     <ClInclude Include="MainFrame_global.h" />
     <QtMoc Include="MainFrame.h">
     </QtMoc>
     <QtMoc Include="MainWidget.h">
     </QtMoc>
-    <ClInclude Include="Message.h" />
+    <ClInclude Include="MessageTemplate.h" />
     <ClInclude Include="plugin.pb.h" />
     <ClInclude Include="PluginInfo.h" />
     <ClInclude Include="Signal.h" />

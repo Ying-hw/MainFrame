@@ -12,7 +12,7 @@ extern MAINFRAME_EXPORT SignalQueue* g_pSignal;
 
 struct ParamInfo{
 	ParamInfo() :params(NULL) {}
-	ParamInfo(void * param, QString strTarget, bool isShow):params(param), strType(strTarget) {}
+	ParamInfo(void * param, QString strTarget):params(param), strType(strTarget) {}
 	void *params;
 	QString strType;
 };

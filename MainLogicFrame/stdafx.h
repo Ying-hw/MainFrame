@@ -9,6 +9,3 @@
 #include <QVector>
 
 
-#define   CONFIG   "../Data/Config/"
-#define   LOG      "../Data/Log/"
-#define   IMAGE    "../Data/Image/"

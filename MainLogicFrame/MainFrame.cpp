@@ -1,8 +1,11 @@
  #include "stdafx.h"
 #include "MainFrame.h"
 #include "MainWidget.h"
+#include "MessageThread.h"
 
-MainFrame::MainFrame() : QObject() {
+MainFrame::MainFrame() : QObject(), m_pMsgThread(NULL) {
+	m_pMsgThread = new MessageThread(this);
+	m_pMsgThread->start();
 	QString strDate = QDate::currentDate().toString(Qt::ISODate);
 	m_logFile.setFileName(QString(LOG) + strDate + ".txt");
 	m_logFile.open(QIODevice::Append);
@@ -16,12 +19,18 @@ MainFrame::~MainFrame() {
 	m_logFile.close();
 	m_Loadlib.unload();
 	UpdateConfigFile();
+	if (m_pMsgThread)
+	{
+		delete m_pMsgThread;
+		m_pMsgThread = NULL;
+	}
 }
 
+// \todo待完成，当有多个插件加载的时候释放目标错误
 void MainFrame::ReleaseCurrentWidget() {
 	MainWidget::staticThis->m_pWidget->deleteLater();
 	delete MainWidget::staticThis->m_pWidget;
-	MainWidget::staticThis->m_pWidget = NULL;
+	MainWidget::staticThis->m_pWidget = NULL;	
 	m_Loadlib.unload();
 }
 
@@ -78,10 +87,8 @@ void MainFrame::FindPlugin() {
 				WriteLog(str);
 				return;
 			}
-			else {
-				m_CurrentWindowName = info.m_str_name;
+			else 
 				InitCurrentWidget(&info);
-			}
 		}});
 }
 
@@ -102,7 +109,6 @@ void MainFrame::LoadLib(MainFrame* pthis, const QString strTargetName) {
 			pthis->WriteLog(str);
 		}
 		else { 
-			pthis->m_CurrentWindowName = targetPlug->m_str_name;
 			emit pthis->InitWidget(targetPlug);
 		}
 	}
@@ -125,6 +131,8 @@ void* MainFrame::LoadLib(MainFrame* pthis, const QString strTargetName, bool noS
 			pFunction pfun = (pFunction)(pthis->m_Loadlib.resolve("Handle"));
 			if (pfun) {
 				QWidget* target = pfun();
+				pthis->m_CurrentloadedPlugName = strTargetName;
+				pthis->m_mapAbstractWidget[strTargetName] = qobject_cast<AbstractWidget*>(target);
 				return target;
 			}
 		}
@@ -132,11 +140,18 @@ void* MainFrame::LoadLib(MainFrame* pthis, const QString strTargetName, bool noS
 	return nullptr;
 }
 
+void MainFrame::InitializeNetInterface(AbstractNetWork* net)
+{
+	net->initCommunication();
+}
+
 void MainFrame::InitCurrentWidget(const PluginInfo* targetPlug) {
 	typedef QWidget* (*pFunction)();     
 	pFunction pfun = (pFunction)(m_Loadlib.resolve("Handle"));
 	if (pfun) {
 		QWidget* target = pfun();
+		m_mapAbstractWidget[targetPlug->m_str_name] = qobject_cast<AbstractWidget*>(target);
+		m_CurrentloadedPlugName = targetPlug->m_str_name;
 		const QRect rect = FindChildUiLocation(target, target->metaObject()->className());
 		if (targetPlug->m_isStart)
 			MainWidget::staticThis->setMain(target, rect, target->windowTitle());
@@ -149,15 +164,15 @@ void MainFrame::InitCurrentWidget(const PluginInfo* targetPlug) {
 
 const QRect MainFrame::FindChildUiLocation(const QWidget* targetWidget, const QString& ChildName) {
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size(); i++) 
-		if (m_pAllPlugins.plugin(i).name() == m_CurrentWindowName.toStdString()) 
+		if (m_pAllPlugins.plugin(i).name() == m_CurrentloadedPlugName.toStdString())
 			for (int j = 0; j < m_pAllPlugins.mutable_plugin(i)->child_size();j++) 
 				if (m_pAllPlugins.mutable_plugin(i)->mutable_child(j)->childname() == ChildName.toStdString()) {
 					QString strRect = QString::fromStdString(m_pAllPlugins.mutable_plugin(i)->mutable_child(j)->location());
-					return STRTOLOCATION(strRect);
+					return STRTOLOCATION(strRect)
 				} 
 
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size(); i++) 
-		if (m_pAllPlugins.plugin(i).name() == m_CurrentWindowName.toStdString()) {
+		if (m_pAllPlugins.plugin(i).name() == m_CurrentloadedPlugName.toStdString()) {
 			plugins_childplugin* pChilds = m_pAllPlugins.mutable_plugin(i)->add_child();
 			pChilds->set_childname(ChildName.toStdString());
 			pChilds->set_title(targetWidget->windowTitle().toStdString());
@@ -165,6 +180,25 @@ const QRect MainFrame::FindChildUiLocation(const QWidget* targetWidget, const QS
 			pChilds->set_location(strLocation.toStdString());
 		}
 	return targetWidget->geometry();
+}
+
+bool MainFrame::CheckIsRuningPlug(const QString& strPlugName, const QString& strChildName, CommonTemplate::InitType* type)
+{
+	if (m_mapAbstractWidget.contains(strPlugName) && m_mapAbstractWidget[strPlugName] == MainWidget::staticThis->m_pWidget) {
+		m_pMsgThread->pushinQueue(m_mapAbstractWidget[strPlugName], type);
+		return true;
+	}
+	if (m_mapAbstractWidget.contains(strChildName) && m_mapAbstractWidget[strChildName] == MainWidget::staticThis->m_pWidget) {
+		m_pMsgThread->pushinQueue(m_mapAbstractWidget[strChildName], type);
+		return true;
+	}
+	return false;
+}
+
+bool MainFrame::CheckIsRuningPlug(const QString& strPlugName, const QString& strChildName)
+{
+	return m_mapAbstractWidget.contains(strPlugName) && m_mapAbstractWidget[strPlugName] == MainWidget::staticThis->m_pWidget
+		|| m_mapAbstractWidget.contains(strChildName) && m_mapAbstractWidget[strChildName] == MainWidget::staticThis->m_pWidget;
 }
 
 void MainFrame::MakePluginsProtobufFile(void* source)

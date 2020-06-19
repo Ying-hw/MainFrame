@@ -5,6 +5,10 @@
 #include "MainFrame_global.h"
 #include "Animation.h"
 
+#define   CONFIG   "../Data/Config/"
+#define   LOG      "../Data/Log/"
+#define   IMAGE    "../Data/Image/"
+
 extern SignalQueue* g_pSignal;
 
 class MAINFRAME_EXPORT MainWidget : public Animation {

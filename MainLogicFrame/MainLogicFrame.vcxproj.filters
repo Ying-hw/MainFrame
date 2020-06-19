@@ -62,6 +62,12 @@
     <ClCompile Include="AbstractNetWork.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AbstractWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -76,13 +82,13 @@
     <ClInclude Include="plugin.pb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Message.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MacroDefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PluginInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageTemplate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -103,6 +109,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="AbstractNetWork.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AbstractWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MessageThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

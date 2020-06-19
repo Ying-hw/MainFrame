@@ -3,7 +3,7 @@
 #include "SignalQueue.h"
 #include "Signal.h"
 #include <QString>
-#include "Message.h"
+#include "MessageTemplate.h"
 #ifndef MAINFRAME_LIB
 #include "sqlPlugin.h"
 #endif
@@ -11,12 +11,12 @@
 #define SEND_MESSAGE		CommonTemplate::Send_Message
 #define GET_MESSAGE			CommonTemplate::InitType::Get
 
+
 #ifndef MAINFRAME_LIB
 	#define  GET_DATA sqlPlugin::DataLib::GetDataLibInstance()->GetSelectInstance()->GetData
     #define	 EXECUTE	sqlPlugin::DataLib::GetDataLibInstance()->GetSelectInstance()->ExecuteSql
 	#define  OPEN_DATATBASE sqlPlugin::DataLib::GetDataLibInstance()->openDataLib
 #endif
-
 
 #define SIGNAL_VALUE
 #define PARAM		

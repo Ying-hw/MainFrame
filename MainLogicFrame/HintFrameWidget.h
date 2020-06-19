@@ -1,7 +1,5 @@
 #ifndef __HINTFRAMEWIDGET__
 #define __HINTFRAMEWIDGET__
-#include <QWidget>
-
 
 class HintFrameWidget : public QWidget
 {

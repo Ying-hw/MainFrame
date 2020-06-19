@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MainWidget.h"
 #include "MainFrame.h"
+#include "MessageThread.h"
 
 MainWidget* MainWidget::staticThis = new MainWidget;
 

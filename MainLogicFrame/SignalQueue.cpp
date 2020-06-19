@@ -96,6 +96,9 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		MainFrame::LoadLib(static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME]), (char*)paraminfo->params);
 	}
 		break;
+	case Signal_::INITIALIZENETWORK:
+		MainFrame::InitializeNetInterface((AbstractNetWork*)p.second);
+		break;
 	case Signal_::PLUGINNAMECHANGED:
 
 		break;
@@ -145,4 +148,5 @@ void SignalQueue::DeleteAll() {
 void * SignalQueue::ReturnUser(SystemUser SystemUser) {
 	return m_mapUser[SystemUser];
 }
+
 

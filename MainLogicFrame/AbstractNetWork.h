@@ -9,6 +9,13 @@
 #include <QNetworkReply>
 #include <QHostInfo>
 
+struct socketAddrInfo {
+	socketAddrInfo(QHostAddress addr, int port) : m_addr(addr), m_port(port) {}
+	socketAddrInfo() {};
+	QHostAddress m_addr;
+	int m_port;
+};
+
 class MAINFRAME_EXPORT AbstractNetWork : public QObject
 {
 	Q_OBJECT
@@ -20,14 +27,15 @@ public:
 		SMTP,
 		HTTP
 	};
-	AbstractNetWork(ProtoType Type, QObject* parent = 0);
+	AbstractNetWork(ProtoType Type, QHostAddress addrs, int port, QObject* parent = 0);
 	virtual ~AbstractNetWork();
-protected:
 	virtual int SendMsg(const QString& strContent);
-	virtual void initCommunication(ProtoType type, QHostAddress address, int port);
+	void initCommunication();
+	void* ReturnCurrentTargetSocket();
+	void SetAddrInfo(QHostAddress host, int port);
 protected slots:
 	virtual int RecvMessage() = 0;
-	virtual void ProcessError() = 0;
+	virtual void ProcessError();
 	virtual void connected();
 private slots:
 	void SelectNetabOnline();
@@ -40,6 +48,7 @@ private:
 	QNetworkReply* m_pReply;
 	QTimer timer;
 	bool isNeytErrorWidgetShow;
+	socketAddrInfo m_addrInfo;
 };
 
 #endif // NETWORK_H
