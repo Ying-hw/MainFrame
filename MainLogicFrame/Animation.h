@@ -1,7 +1,6 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
 #include "MainFrame_global.h"
-#include <QPropertyAnimation>
 
 class MAINFRAME_EXPORT Animation : public QWidget
 {

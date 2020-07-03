@@ -7,5 +7,6 @@
 #include <QMutex>
 #include <QMap>
 #include <QVector>
+#include <QPropertyAnimation>
 
 

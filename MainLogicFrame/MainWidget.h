@@ -4,6 +4,7 @@
 #include "SignalQueue.h"
 #include "MainFrame_global.h"
 #include "Animation.h"
+#include "AbstractWidget.h"
 
 #define   CONFIG   "../Data/Config/"
 #define   LOG      "../Data/Log/"
@@ -15,19 +16,18 @@ class MAINFRAME_EXPORT MainWidget : public Animation {
 	Q_OBJECT
 public:
 	MainWidget(QWidget *ject = 0);
-
+	~MainWidget();
 	void setInitUi(const QRect &rect);
-	void setMain(QWidget* pMain, const QRect& rect, const QString& strTitle);
+	void setMain(AbstractWidget* pMain, const QRect& rect, const QString& strTitle);
 	void Set_Qss();
 	void paintEvent(QPaintEvent* event);
+	QWidget* GetInstance();
 
-public:
-	static MainWidget* staticThis;
-	QWidget* m_pWidget;
 public slots: 
 	void closeWindow();
 	void setMain(QWidget* pMain, const QRect& rect);
 private:
+	QWidget* m_pWidget;
 	QString m_strQssConfig;
 	QGridLayout *gridLayout_2;
 	QHBoxLayout *pHbLayout;
@@ -35,6 +35,8 @@ private:
 	QPushButton *BtnSet;
 	QPushButton *BtnMin;
 	QPushButton *BtnClose;
+	SignalQueue* m_pSigQueue;
+	friend class MainFrame;
 };
 
 class TDragProxy :public QObject

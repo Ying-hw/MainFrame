@@ -1,22 +1,21 @@
 #include "stdafx.h"
-#include "MainWidget.h"
 #include "HintFrameWidget.h"
 
-HintFrameWidget::HintFrameWidget(QString strHint, QObject* parent /*= 0*/) : m_strHintText(strHint)
+HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint, QObject* parent) : m_strHintText(strHint)
 {
 	setWindowFlags(Qt::FramelessWindowHint);
-	initSize();
+	initSize(originPoint);
 }
 
-void HintFrameWidget::initSize()
+void HintFrameWidget::initSize(const QPoint& originPoint)
 {
-	QRect rect = MainWidget::staticThis->rect();
 	QFont f;
 	f.setFamily("Microsoft YaHei");
 	f.setPixelSize(18);  //此处应该根据系统的分辨率调整
 	QFontMetrics fm(f);
 	QRect re = fm.boundingRect(m_strHintText);
-	rect.setSize(QSize(re.width(), re.height() * 3));
+	re.setTopLeft(originPoint);
+	re.setSize(QSize(re.width(), re.height() * 3));
 	this->setGeometry(re);
 }
 

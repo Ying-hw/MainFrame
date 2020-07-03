@@ -9,7 +9,7 @@ MainFrame::MainFrame() : QObject(), m_pMsgThread(NULL) {
 	QString strDate = QDate::currentDate().toString(Qt::ISODate);
 	m_logFile.setFileName(QString(LOG) + strDate + ".txt");
 	m_logFile.open(QIODevice::Append);
-	connect(this, SIGNAL(ReleaseWidget()), this, SLOT(ReleaseCurrentWidget()));
+	connect(this, SIGNAL(ReleaseWidget(const QString&)), this, SLOT(ReleaseCurrentWidget(const QString&)));
 	connect(this, SIGNAL(InitWidget(const PluginInfo*)), this, SLOT(InitCurrentWidget(const PluginInfo*)));
 	g_pSignal->SetUserIdentify(this, SystemUser::MAINFRAME);
 	StartPluginControl();
@@ -17,32 +17,53 @@ MainFrame::MainFrame() : QObject(), m_pMsgThread(NULL) {
 
 MainFrame::~MainFrame() {
 	m_logFile.close();
-	m_Loadlib.unload();
+	for (QLibrary* lib : m_LstLoadlib) {
+		lib->unload();
+		delete lib;
+		lib = NULL;
+	}
 	UpdateConfigFile();
 	if (m_pMsgThread)
 	{
 		delete m_pMsgThread;
 		m_pMsgThread = NULL;
 	}
+	for (MainWidget* Tgt: m_mapMainWidget)
+	{
+		if (Tgt) {
+			delete Tgt;
+			Tgt = NULL;
+		}
+	}
 }
 
 // \todo待完成，当有多个插件加载的时候释放目标错误
-void MainFrame::ReleaseCurrentWidget() {
-	MainWidget::staticThis->m_pWidget->deleteLater();
-	delete MainWidget::staticThis->m_pWidget;
-	MainWidget::staticThis->m_pWidget = NULL;	
-	m_Loadlib.unload();
+void MainFrame::ReleaseCurrentWidget(const QString& strPlugName) {
+	if (m_mapMainWidget.contains(m_mapAbstractWidget[strPlugName])) {
+		delete m_mapMainWidget[m_mapAbstractWidget[strPlugName]];
+		m_mapMainWidget.remove(m_mapAbstractWidget[strPlugName]);
+		m_mapAbstractWidget.remove(strPlugName);
+	}
+	
+	for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin();
+		it != m_LstLoadlib.end();it++) {
+		if ((*it)->fileName().contains(strPlugName)) {
+			(*it)->unload();
+			m_LstLoadlib.erase(it);
+			return;
+		}
+	}
 }
 
 
 void MainFrame::StartPluginControl() {
-	m_Loadlib.setFileName(QString("./PluginControl"));
-	if (m_Loadlib.load()) {
-		void (*pFunction)() = m_Loadlib.resolve("Handle");
+	QLibrary lib(QString("./PluginControl"));
+	if (lib.load()) {
+		void (*pFunction)() = lib.resolve("Handle");
 		pFunction();
 	}
 	else
-		QMessageBox::warning(NULL, QString::fromLocal8Bit("错误"), m_Loadlib.errorString());
+		QMessageBox::warning(NULL, QString::fromLocal8Bit("错误"), lib.errorString());
 }
 
 void MainFrame::UpdateConfigFile() {
@@ -80,91 +101,108 @@ void MainFrame::FindPlugin() {
 	std::for_each(m_PluginConfig.begin(), m_PluginConfig.end(),
 		[this](const PluginInfo& info){
 		if (info.m_isStart) {
-			this->m_Loadlib.setFileName(info.m_str_path + "/" + info.m_str_name);
-			if (!this->m_Loadlib.load()) {
-				QString str = this->m_Loadlib.errorString();
-				qDebug() << str;
-				WriteLog(str);
+			QLibrary* lib = new QLibrary(info.m_str_path + "/" + info.m_str_name);
+			if (!lib->load()) {
+				QString strError = lib->errorString();
+				qDebug() << strError;
+				m_logFile.write(strError.toLocal8Bit());
 				return;
 			}
-			else 
+			else {
+				this->m_LstLoadlib.append(lib);
 				InitCurrentWidget(&info);
+			}
 		}});
 }
 
-void MainFrame::FreeLib(MainFrame* pthis) {
-	pthis->UpdataGeometry();
-	emit pthis->ReleaseWidget();
+void MainFrame::FreeLib(QWidget* pTgt) {
+	for (QMap<QString, AbstractWidget*>::iterator it = m_mapAbstractWidget.begin();
+		it != m_mapAbstractWidget.end();it++) 
+		if ((*it) == pTgt)
+			FreeLib(it.key());
 }
 
-void MainFrame::LoadLib(MainFrame* pthis, const QString strTargetName) {
-	PluginInfo* targetPlug =  std::find_if(pthis->m_PluginConfig.begin(), pthis->m_PluginConfig.end(), [&](const PluginInfo& plug){
+void MainFrame::FreeLib(const QString& strPlugName)
+{
+	UpdataGeometry();
+	emit ReleaseWidget(strPlugName);
+}
+
+void MainFrame::LoadLib(const QString strTargetName) {
+	PluginInfo* targetPlug =  std::find_if(m_PluginConfig.begin(), m_PluginConfig.end(), [&](const PluginInfo& plug){
 		return plug.m_str_name == strTargetName;
 	});
 	if (targetPlug) {
-		pthis->m_Loadlib.setFileName(targetPlug->m_str_path + "/" + strTargetName);
-		if (!pthis->m_Loadlib.load()) {
-			QString str = pthis->m_Loadlib.errorString();
-			qDebug() << pthis->m_Loadlib.fileName();
-			pthis->WriteLog(str);
+		for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin();
+			it != m_LstLoadlib.end();it++) 
+			if ((*it)->fileName().contains(targetPlug->m_str_name)) 
+				return;
+		QLibrary* lib = new QLibrary(targetPlug->m_str_path + "/" + strTargetName);
+		if (!lib->load()) {
+			QString strError = lib->errorString();
+			qDebug() << lib->fileName();
+			m_logFile.write(strError.toLocal8Bit());
 		}
 		else { 
-			emit pthis->InitWidget(targetPlug);
+			m_LstLoadlib.append(lib);
+			emit InitWidget(targetPlug);
 		}
 	}
 }
 
-void* MainFrame::LoadLib(MainFrame* pthis, const QString strTargetName, bool noShow)
+void* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 {
-	PluginInfo* targetPlug = std::find_if(pthis->m_PluginConfig.begin(), pthis->m_PluginConfig.end(), [&](const PluginInfo& plug) {
+	PluginInfo* targetPlug = std::find_if(m_PluginConfig.begin(), m_PluginConfig.end(), [&](const PluginInfo& plug) {
 		return plug.m_str_name == strTargetName;
 	});
 	if (targetPlug) {
-		pthis->m_Loadlib.setFileName(targetPlug->m_str_path + "/" + strTargetName);
-		if (!pthis->m_Loadlib.load()) {
-			QString str = pthis->m_Loadlib.errorString();
-			qDebug() << pthis->m_Loadlib.fileName();
-			pthis->WriteLog(str);
+		QLibrary* lib = new QLibrary(targetPlug->m_str_path + "/" + strTargetName);
+		if (!lib->load()) {
+			QString strError = lib->errorString();
+			qDebug() << lib->fileName();
+			m_logFile.write(strError.toLocal8Bit());
 		}
 		else {
 			typedef QWidget* (*pFunction)();
-			pFunction pfun = (pFunction)(pthis->m_Loadlib.resolve("Handle"));
-			if (pfun) {
-				QWidget* target = pfun();
-				pthis->m_CurrentloadedPlugName = strTargetName;
-				pthis->m_mapAbstractWidget[strTargetName] = qobject_cast<AbstractWidget*>(target);
-				return target;
-			}
+			pFunction pfun = (pFunction)(lib->resolve("Handle"));
+			if (pfun) 
+				return pfun();
 		}
 	}
 	return nullptr;
 }
 
-void MainFrame::InitializeNetInterface(AbstractNetWork* net)
+void MainFrame::Initialize_NetInterface(AbstractNetWork* net)
 {
 	net->initCommunication();
 }
 
+SignalQueue* MainFrame::GetTgtSigQueueInstance(AbstractWidget* pTgtChild)
+{
+	return m_mapMainWidget[pTgtChild]->m_pSigQueue;
+}
+
 void MainFrame::InitCurrentWidget(const PluginInfo* targetPlug) {
 	typedef QWidget* (*pFunction)();     
-	pFunction pfun = (pFunction)(m_Loadlib.resolve("Handle"));
+	pFunction pfun = (pFunction)(m_LstLoadlib.last()->resolve("Handle"));
 	if (pfun) {
 		QWidget* target = pfun();
 		m_mapAbstractWidget[targetPlug->m_str_name] = qobject_cast<AbstractWidget*>(target);
-		m_CurrentloadedPlugName = targetPlug->m_str_name;
-		const QRect rect = FindChildUiLocation(target, target->metaObject()->className());
-		if (targetPlug->m_isStart)
-			MainWidget::staticThis->setMain(target, rect, target->windowTitle());
-		else 
-			MainWidget::staticThis->setMain(target, rect);
+		const QRect rect = FindChildUiLocation(target, target->metaObject()->className(), "");
+		MainWidget* pmainWidget = new MainWidget;
+		m_mapMainWidget[qobject_cast<AbstractWidget*>(target)] = pmainWidget;
+		pmainWidget->setMain(qobject_cast<AbstractWidget*>(target), rect, target->windowTitle());
+		pmainWidget->InitAanimation();
+		pmainWidget->show();
 	}
 	else
 		qDebug() << QString::fromLocal8Bit("空的");
 }
 
-const QRect MainFrame::FindChildUiLocation(const QWidget* targetWidget, const QString& ChildName) {
+const QRect MainFrame::FindChildUiLocation(const QWidget* targetWidget, const QString& ChildName, const QString& strParent) {
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size(); i++) 
-		if (m_pAllPlugins.plugin(i).name() == m_CurrentloadedPlugName.toStdString())
+		for(QList<QLibrary*>::iterator it = m_LstLoadlib.begin();it != m_LstLoadlib.end();it++)
+		if ((*it)->fileName().contains(QString::fromStdString(m_pAllPlugins.plugin(i).name())))
 			for (int j = 0; j < m_pAllPlugins.mutable_plugin(i)->child_size();j++) 
 				if (m_pAllPlugins.mutable_plugin(i)->mutable_child(j)->childname() == ChildName.toStdString()) {
 					QString strRect = QString::fromStdString(m_pAllPlugins.mutable_plugin(i)->mutable_child(j)->location());
@@ -172,7 +210,7 @@ const QRect MainFrame::FindChildUiLocation(const QWidget* targetWidget, const QS
 				} 
 
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size(); i++) 
-		if (m_pAllPlugins.plugin(i).name() == m_CurrentloadedPlugName.toStdString()) {
+		if (m_pAllPlugins.plugin(i).name() == strParent.toStdString()) {
 			plugins_childplugin* pChilds = m_pAllPlugins.mutable_plugin(i)->add_child();
 			pChilds->set_childname(ChildName.toStdString());
 			pChilds->set_title(targetWidget->windowTitle().toStdString());
@@ -184,11 +222,12 @@ const QRect MainFrame::FindChildUiLocation(const QWidget* targetWidget, const QS
 
 bool MainFrame::CheckIsRuningPlug(const QString& strPlugName, const QString& strChildName, CommonTemplate::InitType* type)
 {
-	if (m_mapAbstractWidget.contains(strPlugName) && m_mapAbstractWidget[strPlugName] == MainWidget::staticThis->m_pWidget) {
+	MainWidget* mainWidget = static_cast<MainWidget*>(g_pSignal->ReturnUser(SystemUser::MAINWIDGET));
+	if (m_mapAbstractWidget.contains(strPlugName) && m_mapAbstractWidget[strPlugName] == mainWidget->GetInstance()) {
 		m_pMsgThread->pushinQueue(m_mapAbstractWidget[strPlugName], type);
 		return true;
 	}
-	if (m_mapAbstractWidget.contains(strChildName) && m_mapAbstractWidget[strChildName] == MainWidget::staticThis->m_pWidget) {
+	if (m_mapAbstractWidget.contains(strChildName) && m_mapAbstractWidget[strChildName] == mainWidget->GetInstance()) {
 		m_pMsgThread->pushinQueue(m_mapAbstractWidget[strChildName], type);
 		return true;
 	}
@@ -197,8 +236,9 @@ bool MainFrame::CheckIsRuningPlug(const QString& strPlugName, const QString& str
 
 bool MainFrame::CheckIsRuningPlug(const QString& strPlugName, const QString& strChildName)
 {
-	return m_mapAbstractWidget.contains(strPlugName) && m_mapAbstractWidget[strPlugName] == MainWidget::staticThis->m_pWidget
-		|| m_mapAbstractWidget.contains(strChildName) && m_mapAbstractWidget[strChildName] == MainWidget::staticThis->m_pWidget;
+	MainWidget* mainWidget = static_cast<MainWidget*>(g_pSignal->ReturnUser(SystemUser::MAINWIDGET));
+	return m_mapAbstractWidget.contains(strPlugName) && m_mapAbstractWidget[strPlugName] == mainWidget->GetInstance()
+		|| m_mapAbstractWidget.contains(strChildName) && m_mapAbstractWidget[strChildName] == mainWidget->GetInstance();
 }
 
 void MainFrame::MakePluginsProtobufFile(void* source)
@@ -237,8 +277,8 @@ void MainFrame::MakePluginsProtobufFile(void* source)
 }
 
 void MainFrame::UpdataGeometry() {
-	QWidget* currentWidget = MainWidget::staticThis;
-	QString strName = MainWidget::staticThis->m_pWidget->metaObject()->className();
+	MainWidget* currentWidget = static_cast<MainWidget*>(g_pSignal->ReturnUser(SystemUser::MAINWIDGET));
+	QString strName = currentWidget->GetInstance()->metaObject()->className();
 	for (int i = 0; i < m_pAllPlugins.plugin_size();i++) {
 		for (int j = 0; j < m_pAllPlugins.mutable_plugin(i)->child_size(); j++) {
 			plugins_childplugin* plug = m_pAllPlugins.mutable_plugin(i)->mutable_child(j);

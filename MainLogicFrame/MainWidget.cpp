@@ -2,7 +2,7 @@
 #include "MainWidget.h"
 #include "Animation.h"
 
-void MainWidget::setMain(QWidget* pMain, const QRect& rect, const QString& strTitle) {
+void MainWidget::setMain(AbstractWidget* pMain, const QRect& rect, const QString& strTitle) {
 	m_pWidget = pMain;
 	if (BtnSet)
 		if (m_pWidget->windowTitle() != "LoginSystem") BtnSet->hide();
@@ -10,7 +10,6 @@ void MainWidget::setMain(QWidget* pMain, const QRect& rect, const QString& strTi
 	Set_Qss();
 	setInitUi(rect);
 	InitAanimation();
-	g_pSignal->SetUserIdentify(this, SystemUser::MAINWIDGET);
 	this->setWindowTitle(strTitle.toLocal8Bit().data());
 	this->setWindowIcon(QIcon(QString(IMAGE) + "Titlepicture.JPG"));
 	show();
@@ -49,6 +48,11 @@ void MainWidget::paintEvent(QPaintEvent* event) {
 	style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 }
 
+QWidget* MainWidget::GetInstance()
+{
+	return m_pWidget;
+}
+
 void MainWidget::Set_Qss() {
 	setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowSystemMenuHint 
 		| Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
@@ -73,13 +77,26 @@ void MainWidget::closeWindow() {
 		return;
 	else {
 		close();
-		g_pSignal->DeleteAll();
+		g_pSignal->DeleteAll(this);
 	}
 }
 
 MainWidget::MainWidget(QWidget *ject /*= 0*/) : Animation(ject), m_pWidget(nullptr),
-		BtnClose(NULL), BtnSet(NULL), gridLayout_2(NULL) {
+		BtnClose(NULL), BtnSet(NULL), gridLayout_2(NULL), m_pSigQueue(NULL) {
 	setAttribute(Qt::WA_TranslucentBackground);
+	m_pSigQueue = new SignalQueue;
+	m_pSigQueue->start();
+	m_pSigQueue->SetUserIdentify(this, SystemUser::MAINWIDGET);
+}
+
+MainWidget::~MainWidget()
+{
+	if (m_pWidget) {
+		delete m_pWidget;
+		m_pWidget = NULL;
+	}
+	delete m_pSigQueue;
+	m_pSigQueue = NULL;
 }
 
 void MainWidget::setInitUi(const QRect& rect) {
@@ -124,11 +141,11 @@ void MainWidget::setInitUi(const QRect& rect) {
 
 	BtnClose = new QPushButton(this);
 	BtnClose->setIcon(QIcon(QString(IMAGE) + "Standby.png"));
-	connect(BtnClose, &QPushButton::clicked, [](){
-		SignalQueue::Send_Message(Signal_::WINDOWCLOSE, nullptr);
+	connect(BtnClose, &QPushButton::clicked, [this](){
+		m_pSigQueue->Send_Message(Signal_::WINDOWCLOSE, nullptr);
 	});
-	connect(BtnMin, &QPushButton::clicked, [](){
-		SignalQueue::Send_Message(Signal_::WINDOWMIN, nullptr);
+	connect(BtnMin, &QPushButton::clicked, [this](){
+		m_pSigQueue->Send_Message(Signal_::WINDOWMIN, nullptr);
 	});
 
 	BtnClose->setFlat(true);

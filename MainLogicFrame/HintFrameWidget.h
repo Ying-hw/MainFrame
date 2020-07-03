@@ -5,8 +5,8 @@ class HintFrameWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	HintFrameWidget(QString strHint, QObject* parent = 0);
-	void initSize();
+	HintFrameWidget(QString strHint, QPoint originPoint, QObject* parent = 0);
+	void initSize(const QPoint& originPoint);
 	void showEvent(QShowEvent *event);
 	void closeEvent(QCloseEvent *event);
 private:

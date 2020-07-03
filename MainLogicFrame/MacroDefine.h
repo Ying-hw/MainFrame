@@ -1,8 +1,6 @@
-#ifndef __MACRODEFINE_H__
+#ifndef __MACTODEFINE_H__
 #define __MACTODEFINE_H__
-#include "SignalQueue.h"
-#include "Signal.h"
-#include <QString>
+
 #include "MessageTemplate.h"
 #ifndef MAINFRAME_LIB
 #include "sqlPlugin.h"
@@ -18,14 +16,4 @@
 	#define  OPEN_DATATBASE sqlPlugin::DataLib::GetDataLibInstance()->openDataLib
 #endif
 
-#define SIGNAL_VALUE
-#define PARAM		
-#define PARAM1
-
-#define SEND_SIGNAL(SIGNAL_VALUE, PARAM) \
-if constexpr (SIGNAL_VALUE == Signal_::RELOADUI) \
-	SENDSIGNAL(PARAM); \
-else \
-	SENDSIGNAL(SIGNAL_VALUE, PARAM);
-	
 #endif  //__MACTODEFINE_H__

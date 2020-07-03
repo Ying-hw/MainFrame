@@ -1,6 +1,5 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
-//#include "SignalQueue.h"
 #include "MainFrame.h"
 
 namespace CommonTemplate{
@@ -34,9 +33,6 @@ namespace CommonTemplate{
 			RegisterType() {}
 			void ExpandValues(void) {
 				m_Types[size] = Params_Array();
-
-
-
 			}
 	template<typename T1, typename... Tn>
 			void ExpandValues(T1 t, Tn... types) {
@@ -79,6 +75,8 @@ namespace CommonTemplate{
 				return &Init;
 			}
 }
+
+
 static bool Send_MessageThread(QString target, QString instance, CommonTemplate::InitType* init) {
 	MainFrame* frame = (MainFrame*)g_pSignal->ReturnUser(SystemUser::MAINFRAME);
 	return frame->CheckIsRuningPlug(target, instance, init);

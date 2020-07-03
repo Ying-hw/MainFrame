@@ -94,10 +94,8 @@ void* AbstractNetWork::ReturnCurrentTargetSocket()
 		break;
 	case ProtoType::TCP:
 		return (void*)&m_Tcp;
-		break;
 	case ProtoType::UDP:
 		return (void*)&m_Udp;
-		break;
 	case ProtoType::SMTP:
 		break;
 	default:
@@ -123,6 +121,11 @@ void AbstractNetWork::connected()
 	qDebug() << strHintError;
 }
 
+void AbstractNetWork::SetCommunicationProtocol(ProtoType type)
+{
+	m_prototype = type;
+}
+
 void AbstractNetWork::SelectNetabOnline()
 {
 	QHostInfo::lookupHost("www.baidu.com", this, SLOT(processSelectResult(QHostInfo)));
@@ -132,7 +135,8 @@ void AbstractNetWork::processSelectResult(QHostInfo host)
 {
 	if (host.error() != QHostInfo::NoError) {
 		if (!isNeytErrorWidgetShow) {
-			HintFrameWidget* hint = new HintFrameWidget(host.errorString(), this);
+			QDesktopWidget destop;
+			HintFrameWidget* hint = new HintFrameWidget(host.errorString(), destop.rect().center(), this);
 			hint->show();
 			ProcessError();
 		}

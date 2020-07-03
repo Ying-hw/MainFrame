@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Animation.h"
-#include "MainWidget.h"
 
 Animation::Animation(QWidget *parent)
 	: QWidget(parent), m_IsShow(true),
@@ -65,8 +64,8 @@ void Animation::InitAanimation()
 		delete m_Animation_Geometry;
 		m_Animation_Geometry = NULL;
 	}
-	m_Animation_Opacity = new QPropertyAnimation(MainWidget::staticThis, "windowOpacity");
-	m_Animation_Geometry = new QPropertyAnimation(MainWidget::staticThis, "geometry");
+	m_Animation_Opacity = new QPropertyAnimation(this, "windowOpacity");
+	m_Animation_Geometry = new QPropertyAnimation(this, "geometry");
 
 	m_Animation_Opacity->setDuration(600);
 	m_Animation_Opacity->setStartValue(0);
@@ -76,5 +75,5 @@ void Animation::InitAanimation()
 	QDesktopWidget deskTop;
 	m_Animation_Geometry->setDuration(500);
 	m_Animation_Geometry->setStartValue(QRect(0, 0, deskTop.width(), deskTop.height()));
-	m_Animation_Geometry->setEndValue(MainWidget::staticThis->geometry());
+	m_Animation_Geometry->setEndValue(this->geometry());
 }

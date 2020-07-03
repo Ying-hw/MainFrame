@@ -33,6 +33,7 @@ public:
 	void initCommunication();
 	void* ReturnCurrentTargetSocket();
 	void SetAddrInfo(QHostAddress host, int port);
+	void SetCommunicationProtocol(ProtoType type);
 protected slots:
 	virtual int RecvMessage() = 0;
 	virtual void ProcessError();
