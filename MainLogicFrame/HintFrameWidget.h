@@ -1,7 +1,8 @@
 #ifndef __HINTFRAMEWIDGET__
 #define __HINTFRAMEWIDGET__
+#include "MainFrame_global.h"
 
-class HintFrameWidget : public QWidget
+class MAINFRAME_EXPORT HintFrameWidget : public QWidget
 {
 	Q_OBJECT
 public:
