@@ -15,7 +15,9 @@ SignalQueue::SignalQueue() : QThread(), m_isRuning(true), m_CurrentSignal(Signal
 SignalQueue::~SignalQueue()
 {
 	m_isRuning = false;
-	m_Mutex.unlock();
+	m_waitMutex.wakeOne();
+	sleep(1);
+	deleteLater();
 }
 
 void SignalQueue::Send_Message(Signal_ signal_, void* param) { 
@@ -26,14 +28,15 @@ void SignalQueue::Send_Message(Signal_ signal_, void* param) {
 	push_queue(p);
 }
 
-void SignalQueue::Send_Message(Signal_ signal_, void *widget, const QString strChild, const QString strParent) {
+void SignalQueue::Send_Message(Signal_ signal_, void *widget, const QString strChild, const QString strParent, AbstractWidget* Tgt) {
 	m_ParamInfo.params = widget;
 	m_ParamInfo.strTgtName = strChild;
 	m_ParamInfo.m_strPerious = strParent;
+	m_ParamInfo.perious = Tgt;
 	Send_Message(signal_, &m_ParamInfo);
 }          
 
-void SignalQueue::Send_Message(Signal_ signal_, void *param, QWidget* that)
+void SignalQueue::Send_Message(Signal_ signal_, void *param, AbstractWidget* that)
 {
 	m_ParamInfo.params = param;
 	m_ParamInfo.perious = that;
@@ -89,9 +92,9 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	case Signal_::RELOADUI:
 	{
 		ParamInfo* paraminfo = (ParamInfo *)p.second;
-		QWidget *that = static_cast<QWidget*>(paraminfo->params);
-		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->UpdataGeometry();
-		QRect rect = static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->FindChildUiLocation(that, paraminfo->strTgtName, paraminfo->m_strPerious);
+		AbstractWidget *that = static_cast<AbstractWidget*>(paraminfo->params);
+		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->UpdataGeometry(paraminfo->perious);
+		QRect rect = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->FindChildUiLocation(that, paraminfo->strTgtName, paraminfo->m_strPerious);
 		emit hide_Window();
 		msleep(800);
 		emit ReloadUI(that, rect);
@@ -134,7 +137,7 @@ void SignalQueue::SetUserIdentify(void *pIdentify, SystemUser SysUser) {
 	case SystemUser::MAINWIDGET:
 		connect(this, SIGNAL(ExitSystem()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(closeWindow()));
 		connect(this, SIGNAL(minWindow()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(showMinimized()));
-		connect(this, SIGNAL(ReloadUI(QWidget*, const QRect &)), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(setMain(QWidget*, const QRect &)));
+		connect(this, SIGNAL(ReloadUI(AbstractWidget*, const QRect &)), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(setMain(AbstractWidget*, const QRect &)));
 		connect(this, SIGNAL(close_Window()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(close()));
 		connect(this, SIGNAL(hide_Window()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(hide()));
 		break;
@@ -146,23 +149,22 @@ void SignalQueue::SetUserIdentify(void *pIdentify, SystemUser SysUser) {
 }
 
 void SignalQueue::DeleteAll(MainWidget* pTgtWidget) {
-	if (pTgtWidget != static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET])) {
-		for (QMap<SystemUser, void*>::iterator it = m_mapUser.begin();
-			it != m_mapUser.end();it++) 
-			if (static_cast<MainWidget*>((*it)) == pTgtWidget) {
-				m_mapUser.erase(it);
-				break;
-			}
-		delete pTgtWidget;
-		pTgtWidget = NULL;
+	static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->UpdataGeometry(pTgtWidget->GetInstance());
+	for (QMap<SystemUser, void*>::iterator it = m_mapUser.begin();
+		it != m_mapUser.end();it++) 
+		if (static_cast<MainWidget*>((*it)) == pTgtWidget) {
+			m_mapUser.erase(it);
+			break;
+		}
+	int size = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->RemoveWidget(pTgtWidget);
+	delete pTgtWidget;
+	pTgtWidget = NULL;
+	if (size > 0) 
 		return;
-	}
-	delete static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]);
-	delete static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME]);
+	delete static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
 	m_isRuning = false;
 	m_waitMutex.wakeOne();
 	deleteLater();
-	delete this;
 }
 
 void * SignalQueue::ReturnUser(SystemUser SystemUser) {

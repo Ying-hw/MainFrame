@@ -1,4 +1,4 @@
-#include <QtWidgets>
+#include <QDomNode>
 #include <QFile>
 #include <QMessageBox>
 #include <QThread>
@@ -7,6 +7,6 @@
 #include <QMutex>
 #include <QMap>
 #include <QVector>
-#include <QPropertyAnimation>
+#include <QtWidgets>
 
 

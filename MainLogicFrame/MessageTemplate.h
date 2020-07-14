@@ -79,7 +79,7 @@ namespace CommonTemplate{
 
 static bool Send_MessageThread(QString target, QString instance, CommonTemplate::InitType* init) {
 	MainFrame* frame = (MainFrame*)g_pSignal->ReturnUser(SystemUser::MAINFRAME);
-	return frame->CheckIsRuningPlug(target, instance, init);
+	return frame->SendMsgThread(target, instance, init);
 }
 
 #endif // MESSAGE_H

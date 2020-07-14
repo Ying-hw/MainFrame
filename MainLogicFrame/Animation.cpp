@@ -43,10 +43,8 @@ void Animation::closeEvent(QCloseEvent *event)
 }
 
 void Animation::closeAnimation(bool closeHide) {
-	if (!m_IsShow) {
-		qDebug("RETURN");
+	if (!m_IsShow) 
 		return;
-	}
 	//设置关闭时的动画
 	m_Animation_Opacity->setDuration(600);
 	m_Animation_Opacity->setStartValue(1);

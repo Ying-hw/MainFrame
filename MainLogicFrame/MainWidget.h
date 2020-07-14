@@ -5,6 +5,8 @@
 #include "MainFrame_global.h"
 #include "Animation.h"
 #include "AbstractWidget.h"
+#include <QGridLayout>
+
 
 #define   CONFIG   "../Data/Config/"
 #define   LOG      "../Data/Log/"
@@ -21,13 +23,13 @@ public:
 	void setMain(AbstractWidget* pMain, const QRect& rect, const QString& strTitle);
 	void Set_Qss();
 	void paintEvent(QPaintEvent* event);
-	QWidget* GetInstance();
+	AbstractWidget* GetInstance();
 
 public slots: 
 	void closeWindow();
-	void setMain(QWidget* pMain, const QRect& rect);
+	void setMain(AbstractWidget* pMain, const QRect& rect);
 private:
-	QWidget* m_pWidget;
+	AbstractWidget* m_pWidget;
 	QString m_strQssConfig;
 	QGridLayout *gridLayout_2;
 	QHBoxLayout *pHbLayout;

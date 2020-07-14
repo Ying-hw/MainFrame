@@ -17,12 +17,11 @@ void MainWidget::setMain(AbstractWidget* pMain, const QRect& rect, const QString
 	mpDragProxy->SetBorderWidth(5, 5, 5, 5);
 }
 
-void MainWidget::setMain(QWidget* pMain, const QRect& rect)
+void MainWidget::setMain(AbstractWidget* pMain, const QRect& rect)
 {
 	if (m_pWidget) {
 		m_pWidget->close();
 	}
-	
 	m_pWidget = pMain;
 	if (BtnSet)
 		if (m_pWidget->windowTitle() != "LoginSystem") BtnSet->hide();
@@ -48,7 +47,7 @@ void MainWidget::paintEvent(QPaintEvent* event) {
 	style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 }
 
-QWidget* MainWidget::GetInstance()
+AbstractWidget* MainWidget::GetInstance()
 {
 	return m_pWidget;
 }
@@ -95,8 +94,10 @@ MainWidget::~MainWidget()
 		delete m_pWidget;
 		m_pWidget = NULL;
 	}
-	delete m_pSigQueue;
-	m_pSigQueue = NULL;
+	if (m_pSigQueue) {
+		delete m_pSigQueue;
+		m_pSigQueue = NULL;
+	}
 }
 
 void MainWidget::setInitUi(const QRect& rect) {

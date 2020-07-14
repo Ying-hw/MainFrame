@@ -50,7 +50,7 @@ public:
 	/// \param[in] ChildName 子节点名称
 	/// \param[in] strParent 父项名称
 	/// \retval 返回界面位置
-	const QRect FindChildUiLocation(const QWidget* targetWidget, const QString& ChildName, const QString& strParent);
+	const QRect FindChildUiLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent);
 
 	/// \brief 检查给定的插件或者实例是否在运行状态中
 	/// 如果给定的插件或者实例正在加载的状态就运行消息线程，给上层插件主动发消息
@@ -58,19 +58,19 @@ public:
 	/// \param[in] strChildName 实例名称
 	/// \param[in] type 消息实例
 	/// \retval 返回true代表给定的插件名称或者实例名称正在运行中，返回false没有在运行
-	bool CheckIsRuningPlug(const QString& strPlugName, const QString& strChildName, CommonTemplate::InitType* type);
+	bool SendMsgThread(const QString& strPlugName, const QString& strChildName, CommonTemplate::InitType* type);
 
 	/// \brief 检查给定的插件或者实例是否在运行状态中
 	/// 如果给定的插件或者实例正在加载的状态就运行消息线程，给上层插件主动发消息
 	/// \param[in] strPlugName 插件名称
 	/// \param[in] strChildName 实例名称
 	/// \retval 返回true代表给定的插件名称或者实例名称正在运行中，返回false没有在运行
-	bool CheckIsRuningPlug(const QString& strPlugName, const QString& strChildName);
+	bool CheckPlugIsRuning(const QString& strPlugName, const QString& strChildName);
 
 	/// \brief 释放已经加载的插件
 	/// \param[in] pthis this指针
 	/// \param[in] that 目标实例
-	void FreeLib(QWidget* that);
+	void FreeLib(AbstractWidget* that);
 
 	/// \brief 释放已经加载的插件
 	/// \param[in] strPlugName 插件名称
@@ -81,8 +81,8 @@ public:
 	/// \param[in] strTargetName 目标插件名称
 	void LoadLib(const QString strTargetName);
 
-	/// \brief 待废弃
-	void* LoadLib(const QString strTargetName, bool noShow);
+	/// \brief 返回插件实例 ------- 待废弃
+	AbstractWidget* LoadLib(const QString strTargetName, bool noShow);
 
 	/// \brief 初始化网络抽象类
 	/// 通过父类指针指向子类，实现多态虚函数特性，可自由调用子类接口
@@ -94,11 +94,22 @@ public:
 	/// \retval 返回信号集实例
 	SignalQueue* GetTgtSigQueueInstance(AbstractWidget* pTgtChild);
 
+	/// \brief 更新该插件所有的窗口位置
+	/// \param strPlugName 插件名称
+	void UpdataGeometry(const QString& strPlugName);
+
+	/// \brief 删除对应的widget
+	/// 在释放之前删除对应的界面，并且返回剩余数量
+	/// \param[in] mainWidget 对应的widget
+	/// \retval 返回剩余数量
+	int RemoveWidget(MainWidget* mainWidget);
+
 public slots:
 	void MakePluginsProtobufFile(void* source);  //待废弃
 	
 	/// \brief 更新窗口位置
-	void UpdataGeometry();
+	/// \param Tgt 窗口位置
+	void UpdataGeometry(AbstractWidget* Tgt);
 signals:
 	/// \brief 释放插件信号
 	/// \param[in] strPlugName 插件名称
@@ -107,9 +118,10 @@ signals:
 	/// \brief 初始化插件中的界面
 	/// \param[in] targetPlug 目标插件信息
 	void InitWidget(const PluginInfo* targetPlug);
+	
 private:
 	/// \brief 读取插件配置文件
-	void ReadPluginConfig();
+	void ConfigPlug();
 
 	/// \brief 查找插件
 	/// 查找启动插件，在插件配置中有启动优先级标识
@@ -120,6 +132,11 @@ private:
 
 	/// \brief 更新配置文件 
 	void UpdateConfigFile();
+
+	/// \brief 读取XML文件
+	/// \retval 返回读取到的根节点
+	QDomNode ReadXML();
+
 private slots:
 	/// \brief 释放当前插件界面
 	/// \param[in] strPlugName 插件名称

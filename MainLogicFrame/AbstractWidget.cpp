@@ -36,7 +36,7 @@ int AbstractWidget::CalculateResolution(const int& size)
 bool AbstractWidget::PlugIsRuning(const QString& strPlug, const QString& strInstance)
 {
 	MainFrame* frame = (MainFrame *)g_pSignal->ReturnUser(SystemUser::MAINFRAME);
-	return frame->CheckIsRuningPlug(strPlug, strInstance);
+	return frame->CheckPlugIsRuning(strPlug, strInstance);
 }
 
 void AbstractWidget::SendSIG(Signal_ sig, void *arg)
@@ -47,7 +47,7 @@ void AbstractWidget::SendSIG(Signal_ sig, void *arg)
 	switch (sig)
 	{
 	case Signal_::RELOADUI:
-		pTgtQueue->Recv_Message((AbstractWidget*)arg, strName);
+		pTgtQueue->Recv_Message((AbstractWidget*)arg, strName, this);
 		break;
 	case Signal_::INVALID:
 		break;

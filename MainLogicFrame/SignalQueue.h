@@ -6,14 +6,16 @@
 
 class SignalQueue;
 class MainWidget;
+class AbstractWidget;
+
 extern MAINFRAME_EXPORT SignalQueue* g_pSignal;
 #define GETINSTANCE SignalQueue::GetTargetInstance
 
 struct ParamInfo{
 	ParamInfo() :params(NULL), perious(NULL) {}
-	ParamInfo(void * param, QString strTarget):params(param), strTgtName(strTarget) {}
+	ParamInfo(void * param, QString strTarget) : params(param), strTgtName(strTarget) {}
 	void *params;
-	QWidget *perious;
+	AbstractWidget *perious;
 	QString m_strPerious;
 	QString strTgtName;
 };
@@ -30,23 +32,23 @@ public:
 	void push_queue(QPair<Signal_, void *> p);
 	static void doit();
 	void Send_Message(Signal_ signal_, void *param); 
-	void Send_Message(Signal_ signal_, void *widget, const QString strChild, const QString strParent); 
-	void Send_Message(Signal_ signal_, void *param, QWidget* that);
+	void Send_Message(Signal_ signal_, void *widget, const QString strChild, const QString strParent, AbstractWidget* Tgt); 
+	void Send_Message(Signal_ signal_, void *param, AbstractWidget* that);
 	static void* GetTargetInstance(QString strTarget);
 	void SetUserIdentify(void *, SystemUser user);
 	void DeleteAll(MainWidget* pTgtWidget);
 	void *ReturnUser(SystemUser user);
 	void removeUser(SystemUser SysUser);
-	template<typename T> void Recv_Message(Signal_ SIG, T t, QWidget* that);
+	template<typename T> void Recv_Message(Signal_ SIG, T t, AbstractWidget* that);
 	template<typename T> void Recv_Message(Signal_ SIG, T t);
-	template<typename T> void Recv_Message(T* t, const QString strParent);
+	template<typename T> void Recv_Message(T* t, const QString strParent, AbstractWidget* Tgt);
 signals:
 	void hide_Window();
 	void close_Window();
 	void ExitSystem();
 	void minWindow();
 	void maxWindow();
-	void ReloadUI(QWidget* that, const QRect &rect);
+	void ReloadUI(AbstractWidget* that, const QRect &rect);
 	void MakeFile(void *source);
 	void UpdateWindowGeometry();
 private:
@@ -66,14 +68,14 @@ void SignalQueue::Recv_Message(Signal_ SIG, T t)
 }
 
 template<typename T>
-void SignalQueue::Recv_Message(T* t, const QString strParent)
+void SignalQueue::Recv_Message(T* t, const QString strParent, AbstractWidget* TgtWidget)
 {
 	qDebug() << t->metaObject()->className();
-	Send_Message(Signal_::RELOADUI, t, t->metaObject()->className(), strParent);
+	Send_Message(Signal_::RELOADUI, t, t->metaObject()->className(), strParent, TgtWidget);
 }
 
 template<typename T>
-void SignalQueue::Recv_Message(Signal_ SIG, T t, QWidget* that)
+void SignalQueue::Recv_Message(Signal_ SIG, T t, AbstractWidget* that)
 {
 	Send_Message(Signal_::SWITCHPLUGIN, t, that);
 }

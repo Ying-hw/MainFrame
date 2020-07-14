@@ -10,7 +10,8 @@ MessageThread::MessageThread(QObject* parent /*= 0*/) : QThread(parent), m_isRun
 MessageThread::~MessageThread()
 {
 	m_isRuning = false;
-	m_Mutex.unlock();
+	m_waitMutex.wakeOne();
+	deleteLater();
 }
 
 void MessageThread::run()
