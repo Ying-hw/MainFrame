@@ -7,7 +7,6 @@ void MainWidget::setMain(AbstractWidget* pMain, const QRect& rect, const QString
 	if (BtnSet)
 		if (m_pWidget->windowTitle() != "LoginSystem") BtnSet->hide();
 		else BtnSet->show();
-	Set_Qss();
 	setInitUi(rect);
 	InitAanimation();
 	this->setWindowTitle(strTitle.toLocal8Bit().data());
@@ -15,28 +14,6 @@ void MainWidget::setMain(AbstractWidget* pMain, const QRect& rect, const QString
 	show();
 	TDragProxy*	mpDragProxy = new TDragProxy(this);
 	mpDragProxy->SetBorderWidth(5, 5, 5, 5);
-}
-
-void MainWidget::setMain(AbstractWidget* pMain, const QRect& rect)
-{
-	if (m_pWidget) {
-		m_pWidget->close();
-	}
-	m_pWidget = pMain;
-	if (BtnSet)
-		if (m_pWidget->windowTitle() != "LoginSystem") BtnSet->hide();
-		else BtnSet->show();
-	!rect.isValid() ? this->setGeometry(pMain->geometry()) : this->setGeometry(rect);
-   	gridLayout_2->addWidget(m_pWidget, 1, 0);
-  	gridLayout_2->setContentsMargins(QMargins(3, 0, 3, 3));
-
-	InitAanimation();
-	this->setWindowTitle(pMain->windowTitle());
-	this->setWindowIcon(QIcon(QString(IMAGE) + "Titlepicture.JPG"));
-	m_pWidget->show();
-	show();
-// 	this->update();
-// 	this->repaint();
 }
 
 void MainWidget::paintEvent(QPaintEvent* event) {
@@ -86,6 +63,7 @@ MainWidget::MainWidget(QWidget *ject /*= 0*/) : Animation(ject), m_pWidget(nullp
 	m_pSigQueue = new SignalQueue;
 	m_pSigQueue->start();
 	m_pSigQueue->SetUserIdentify(this, SystemUser::MAINWIDGET);
+	Set_Qss();
 }
 
 MainWidget::~MainWidget()
@@ -143,7 +121,7 @@ void MainWidget::setInitUi(const QRect& rect) {
 	BtnClose = new QPushButton(this);
 	BtnClose->setIcon(QIcon(QString(IMAGE) + "Standby.png"));
 	connect(BtnClose, &QPushButton::clicked, [this](){
-		m_pSigQueue->Send_Message(Signal_::WINDOWCLOSE, nullptr);
+		m_pSigQueue->Send_Message(Signal_::WINDOWCLOSE, m_pWidget);
 	});
 	connect(BtnMin, &QPushButton::clicked, [this](){
 		m_pSigQueue->Send_Message(Signal_::WINDOWMIN, nullptr);

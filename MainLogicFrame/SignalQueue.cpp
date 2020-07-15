@@ -17,7 +17,6 @@ SignalQueue::~SignalQueue()
 	m_isRuning = false;
 	m_waitMutex.wakeOne();
 	sleep(1);
-	deleteLater();
 }
 
 void SignalQueue::Send_Message(Signal_ signal_, void* param) { 
@@ -28,18 +27,17 @@ void SignalQueue::Send_Message(Signal_ signal_, void* param) {
 	push_queue(p);
 }
 
-void SignalQueue::Send_Message(Signal_ signal_, void *widget, const QString strChild, const QString strParent, AbstractWidget* Tgt) {
-	m_ParamInfo.params = widget;
+void SignalQueue::Send_Message(Signal_ signal_, void *widget, const QString strChild, AbstractWidget* Tgt) {
+	m_ParamInfo.m_Params = widget;
 	m_ParamInfo.strTgtName = strChild;
-	m_ParamInfo.m_strPerious = strParent;
-	m_ParamInfo.perious = Tgt;
+	m_ParamInfo.m_PreviousWidget = Tgt;
 	Send_Message(signal_, &m_ParamInfo);
 }          
 
 void SignalQueue::Send_Message(Signal_ signal_, void *param, AbstractWidget* that)
 {
-	m_ParamInfo.params = param;
-	m_ParamInfo.perious = that;
+	m_ParamInfo.m_Params = param;
+	m_ParamInfo.m_PreviousWidget = that;
 	Send_Message(signal_, &m_ParamInfo);
 }
 
@@ -67,7 +65,7 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	switch (p.first) {
 	case Signal_::WINDOWCLOSE:
 	case Signal_::WINDOWEXIT:
-		emit UpdateWindowGeometry();  
+		emit g_pSignal->UpdateWindowGeometry(static_cast<AbstractWidget*>(p.second));  
 		emit ExitSystem();
 		break;
 	case Signal_::WINDOWMAX:
@@ -92,20 +90,20 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	case Signal_::RELOADUI:
 	{
 		ParamInfo* paraminfo = (ParamInfo *)p.second;
-		AbstractWidget *that = static_cast<AbstractWidget*>(paraminfo->params);
-		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->UpdataGeometry(paraminfo->perious);
-		QRect rect = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->FindChildUiLocation(that, paraminfo->strTgtName, paraminfo->m_strPerious);
+		AbstractWidget *that = static_cast<AbstractWidget*>(paraminfo->m_Params);
+		MainFrame* pFrame = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
+		pFrame->UpdataGeometry(paraminfo->m_PreviousWidget);
 		emit hide_Window();
 		msleep(800);
-		emit ReloadUI(that, rect);
+		emit g_pSignal->showWindow(that, pFrame->GetParentName(that));
 	}		
 		break;
 	case Signal_::SWITCHPLUGIN:
 	{ 
 		ParamInfo* paraminfo = (ParamInfo *)p.second;
 		emit close_Window();
-		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->MainFrame::FreeLib(paraminfo->perious);
-		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->LoadLib((char*)paraminfo->params);
+		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->MainFrame::FreeLib(paraminfo->m_PreviousWidget);
+		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->LoadLib((char*)paraminfo->m_Params);
 	}
 		break;
 	case Signal_::INITIALIZENETWORK:
@@ -113,9 +111,6 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		break;
 	case Signal_::PLUGINNAMECHANGED:
 
-		break;
-	case Signal_::MAKEPLUGINFILE:
-		emit MakeFile(p.second);
 		break;
 	default:
 		break;
@@ -131,13 +126,12 @@ void SignalQueue::SetUserIdentify(void *pIdentify, SystemUser SysUser) {
 	switch (SysUser)
 	{
 	case SystemUser::MAINFRAME:
-		connect(this, SIGNAL(MakeFile(void *)), (MainFrame*)pIdentify, SLOT(MakePluginsProtobufFile(void*)));
-		connect(this, SIGNAL(UpdateWindowGeometry()), (MainFrame*)pIdentify, SLOT(UpdataGeometry()));
+		connect(this, SIGNAL(UpdateWindowGeometry(AbstractWidget*)), (MainFrame*)pIdentify, SLOT(UpdataGeometry(AbstractWidget*)));	
+		connect(this, SIGNAL(showWindow(AbstractWidget*, const QString&)), (MainFrame*)pIdentify, SLOT(Initialize_WidgetInterface(AbstractWidget*, const QString&)));
 		break;
 	case SystemUser::MAINWIDGET:
 		connect(this, SIGNAL(ExitSystem()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(closeWindow()));
 		connect(this, SIGNAL(minWindow()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(showMinimized()));
-		connect(this, SIGNAL(ReloadUI(AbstractWidget*, const QRect &)), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(setMain(AbstractWidget*, const QRect &)));
 		connect(this, SIGNAL(close_Window()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(close()));
 		connect(this, SIGNAL(hide_Window()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(hide()));
 		break;
@@ -149,13 +143,9 @@ void SignalQueue::SetUserIdentify(void *pIdentify, SystemUser SysUser) {
 }
 
 void SignalQueue::DeleteAll(MainWidget* pTgtWidget) {
-	static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->UpdataGeometry(pTgtWidget->GetInstance());
-	for (QMap<SystemUser, void*>::iterator it = m_mapUser.begin();
-		it != m_mapUser.end();it++) 
-		if (static_cast<MainWidget*>((*it)) == pTgtWidget) {
-			m_mapUser.erase(it);
-			break;
-		}
+	m_mapUser.erase(std::remove_if(m_mapUser.begin(), m_mapUser.end(), [pTgtWidget](void* arg) {
+		return static_cast<MainWidget*>(arg) == pTgtWidget;
+	}));
 	int size = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->RemoveWidget(pTgtWidget);
 	delete pTgtWidget;
 	pTgtWidget = NULL;
@@ -165,6 +155,8 @@ void SignalQueue::DeleteAll(MainWidget* pTgtWidget) {
 	m_isRuning = false;
 	m_waitMutex.wakeOne();
 	deleteLater();
+	delete g_pSignal;
+	qDebug() << "remove finish";
 }
 
 void * SignalQueue::ReturnUser(SystemUser SystemUser) {

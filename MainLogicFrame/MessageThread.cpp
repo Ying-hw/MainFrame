@@ -11,7 +11,7 @@ MessageThread::~MessageThread()
 {
 	m_isRuning = false;
 	m_waitMutex.wakeOne();
-	deleteLater();
+	sleep(1);
 }
 
 void MessageThread::run()

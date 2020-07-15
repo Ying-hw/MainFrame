@@ -27,7 +27,6 @@ public:
 
 public slots: 
 	void closeWindow();
-	void setMain(AbstractWidget* pMain, const QRect& rect);
 private:
 	AbstractWidget* m_pWidget;
 	QString m_strQssConfig;

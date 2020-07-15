@@ -41,13 +41,12 @@ bool AbstractWidget::PlugIsRuning(const QString& strPlug, const QString& strInst
 
 void AbstractWidget::SendSIG(Signal_ sig, void *arg)
 {
-	QString strName = QCoreApplication::applicationName();
 	MainFrame* frame = static_cast<MainFrame*>(g_pSignal->ReturnUser(SystemUser::MAINFRAME));
 	SignalQueue* pTgtQueue =  frame->GetTgtSigQueueInstance(this);
 	switch (sig)
 	{
 	case Signal_::RELOADUI:
-		pTgtQueue->Recv_Message((AbstractWidget*)arg, strName, this);
+		pTgtQueue->Recv_Message((AbstractWidget*)arg, this);
 		break;
 	case Signal_::INVALID:
 		break;

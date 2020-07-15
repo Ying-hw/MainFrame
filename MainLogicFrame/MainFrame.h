@@ -50,7 +50,7 @@ public:
 	/// \param[in] ChildName 子节点名称
 	/// \param[in] strParent 父项名称
 	/// \retval 返回界面位置
-	const QRect FindChildUiLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent);
+	const QRect GetTargetLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent);
 
 	/// \brief 检查给定的插件或者实例是否在运行状态中
 	/// 如果给定的插件或者实例正在加载的状态就运行消息线程，给上层插件主动发消息
@@ -84,11 +84,6 @@ public:
 	/// \brief 返回插件实例 ------- 待废弃
 	AbstractWidget* LoadLib(const QString strTargetName, bool noShow);
 
-	/// \brief 初始化网络抽象类
-	/// 通过父类指针指向子类，实现多态虚函数特性，可自由调用子类接口
-	/// \param[in] net 所继承的子类
-	void Initialize_NetInterface(AbstractNetWork* net);
-
 	/// \brief 获取目标子类的信号集
 	/// \param[in] pTgtChild 目标子类
 	/// \retval 返回信号集实例
@@ -104,12 +99,27 @@ public:
 	/// \retval 返回剩余数量
 	int RemoveWidget(MainWidget* mainWidget);
 
+	/// \brief 根据子项获取父项的名称
+	/// \param[in] ChildWidget 子项
+	/// \retval 返回父项的名称
+	const QString GetParentName(const AbstractWidget* ChildWidget);
+
+	/// \brief 初始化网络抽象类
+	/// 通过父类指针指向子类，实现多态虚函数特性，可自由调用子类接口
+	/// \param[in] net 所继承的子类
+	void Initialize_NetInterface(AbstractNetWork* net);
+
 public slots:
-	void MakePluginsProtobufFile(void* source);  //待废弃
 	
+	/// \brief 初始化widget并且显示
+	/// \param[in] pTgtWidget 目标Widget
+	/// \param[in] strChildName 对应的类名称
+	void Initialize_WidgetInterface(AbstractWidget* pTgtWidget, const QString& strParentName);
+
 	/// \brief 更新窗口位置
 	/// \param Tgt 窗口位置
 	void UpdataGeometry(AbstractWidget* Tgt);
+
 signals:
 	/// \brief 释放插件信号
 	/// \param[in] strPlugName 插件名称
@@ -144,7 +154,7 @@ private slots:
 
 	/// \brief 初始化当前插件界面
 	/// \param[in] targetPlug 当前插件
-	void InitCurrentWidget(const PluginInfo* targetPlug);
+	void LinkCurrentWidgetInterface(const PluginInfo* targetPlug);
 private:
 	QFile m_logFile;										///< 日志文件
 	QList<QLibrary*> m_LstLoadlib;							///< 加载库

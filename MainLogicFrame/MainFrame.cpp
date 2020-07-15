@@ -10,7 +10,7 @@ MainFrame::MainFrame() : QObject(), m_pMsgThread(NULL) {
 	m_logFile.setFileName(QString(LOG) + strDate + ".txt");
 	m_logFile.open(QIODevice::Append);
 	connect(this, SIGNAL(ReleaseWidget(const QString&)), this, SLOT(ReleaseCurrentWidget(const QString&)));
-	connect(this, SIGNAL(InitWidget(const PluginInfo*)), this, SLOT(InitCurrentWidget(const PluginInfo*)));
+	connect(this, SIGNAL(InitWidget(const PluginInfo*)), this, SLOT(LinkCurrentWidgetInterface(const PluginInfo*)));
 	g_pSignal->SetUserIdentify(this, SystemUser::MAINFRAME);
 	ConfigPlug();
 	//StartPluginControl();
@@ -18,11 +18,6 @@ MainFrame::MainFrame() : QObject(), m_pMsgThread(NULL) {
 
 MainFrame::~MainFrame() {
 	m_logFile.close();
-	for (QLibrary* lib : m_LstLoadlib) {
-		lib->unload();
-		delete lib;
-		lib = NULL;
-	}
 	UpdateConfigFile();
 	if (m_pMsgThread) {
 		delete m_pMsgThread;
@@ -33,14 +28,21 @@ MainFrame::~MainFrame() {
 			delete Tgt;
 			Tgt = NULL;
 		}
+	for (QLibrary* lib : m_LstLoadlib) {
+		lib->unload();
+		delete lib;
+		lib = NULL;
+	}
 }
 
 // \todo待完成，当有多个插件加载的时候释放目标错误
 void MainFrame::ReleaseCurrentWidget(const QString& strPlugName) {
 	if (m_mapMainWidget.contains(m_mapAbstractWidget[strPlugName])) {
-		delete m_mapMainWidget[m_mapAbstractWidget[strPlugName]];
+		MainWidget* Tgt = m_mapMainWidget[m_mapAbstractWidget[strPlugName]];
 		m_mapMainWidget.remove(m_mapAbstractWidget[strPlugName]);
 		m_mapAbstractWidget.remove(strPlugName);
+		delete Tgt;
+		Tgt = NULL;
 	}
 	
 	for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin();
@@ -86,7 +88,7 @@ void MainFrame::FindPlugin() {
 			}
 			else {
 				this->m_LstLoadlib.append(lib);
-				InitCurrentWidget(&info);
+				LinkCurrentWidgetInterface(&info);
 			}
 		}});
 }
@@ -151,27 +153,30 @@ void MainFrame::Initialize_NetInterface(AbstractNetWork* net)
 	net->initCommunication();
 }
 
+void MainFrame::Initialize_WidgetInterface(AbstractWidget* pTgtWidget, const QString& strParentName)
+{
+	m_mapAbstractWidget[pTgtWidget->metaObject()->className()] = pTgtWidget;
+	const QRect rect = GetTargetLocation(pTgtWidget, pTgtWidget->metaObject()->className(), strParentName);
+	MainWidget* pmainWidget = new MainWidget;
+	m_mapMainWidget[pTgtWidget] = pmainWidget;
+	pmainWidget->setMain(pTgtWidget, rect, pTgtWidget->windowTitle());
+}
+
 SignalQueue* MainFrame::GetTgtSigQueueInstance(AbstractWidget* pTgtChild)
 {
 	return m_mapMainWidget[pTgtChild]->m_pSigQueue;
 }
 
-void MainFrame::InitCurrentWidget(const PluginInfo* targetPlug) {
+void MainFrame::LinkCurrentWidgetInterface(const PluginInfo* targetPlug) {
 	typedef AbstractWidget* (*pFunction)();     
 	pFunction pfun = (pFunction)(m_LstLoadlib.last()->resolve("Handle"));
-	if (pfun) {
-		AbstractWidget* target = pfun();
-		m_mapAbstractWidget[targetPlug->m_str_name] = qobject_cast<AbstractWidget*>(target);
-		const QRect rect = FindChildUiLocation(target, target->metaObject()->className(), targetPlug->m_str_name);
-		MainWidget* pmainWidget = new MainWidget;
-		m_mapMainWidget[qobject_cast<AbstractWidget*>(target)] = pmainWidget;
-		pmainWidget->setMain(qobject_cast<AbstractWidget*>(target), rect, target->windowTitle());
-	}
+	if (pfun) 
+		Initialize_WidgetInterface(pfun(), targetPlug->m_str_name);
 	else
 		qDebug() << QString::fromLocal8Bit("空的");
 }
 
-const QRect MainFrame::FindChildUiLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent) {
+const QRect MainFrame::GetTargetLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent) {
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size(); i++) 
 		for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin(); it != m_LstLoadlib.end(); it++)
 			if ((*it)->fileName().contains(QString::fromStdString(m_pAllPlugins.plugin(i).name())))
@@ -180,7 +185,7 @@ const QRect MainFrame::FindChildUiLocation(const AbstractWidget* targetWidget, c
 						QString strRect = QString::fromStdString(m_pAllPlugins.mutable_plugin(i)->mutable_child(j)->location());
 						return STRTOLOCATION(strRect)
 					}
-	for (int i = 0; i < m_pAllPlugins.plugin_size(); i++) {
+	for (int i = 0; i < m_pAllPlugins.plugin_size(); i++) 
 		if (m_pAllPlugins.plugin(i).name() == strParent.toStdString()) {
 			plugins_childplugin* pChilds = m_pAllPlugins.mutable_plugin(i)->add_child();
 			pChilds->set_childname(ChildName.toStdString());
@@ -188,7 +193,6 @@ const QRect MainFrame::FindChildUiLocation(const AbstractWidget* targetWidget, c
 			QString strLocation = LOCATIONTOSTR(targetWidget);
 			pChilds->set_location(strLocation.toStdString());
 		}
-	}
 	return targetWidget->geometry();
 }
 
@@ -213,50 +217,15 @@ bool MainFrame::CheckPlugIsRuning(const QString& strPlugName, const QString& str
 	return false;
 }
 
-void MainFrame::MakePluginsProtobufFile(void* source)
-{
-	std::vector<PluginInfo>* soucrePlugin = (std::vector<PluginInfo>*)source;
-	for (std::vector<PluginInfo>::iterator it = soucrePlugin->begin();
-		it != soucrePlugin->end(); it++) {
-		plugins* plug = m_pAllPlugins.add_plugin();
-		plug->set_isstart(it->m_isStart);
-		plug->set_name(it->m_str_name.toStdString());
-		plug->set_path(it->m_str_path.toStdString());
-	}
-	Allplugins locationPlugins;
-	QFile pluginFile("../Data/Config/plugin");
-	if (pluginFile.open(QIODevice::ReadWrite)) {
-		QByteArray allLocationInfo = pluginFile.readAll();
-		if (locationPlugins.ParseFromArray(allLocationInfo.data(), allLocationInfo.size()))
-			if (locationPlugins.plugin_size() != 0)
-				for (int j = 0; j < m_pAllPlugins.plugin_size(); j++)
-					for (int i = 0; i < locationPlugins.plugin_size(); i++)
-						if (m_pAllPlugins.mutable_plugin(j)->name() == locationPlugins.mutable_plugin(i)->name()) {
-							m_pAllPlugins.mutable_plugin(j)->set_isstart(locationPlugins.mutable_plugin(i)->isstart());
-							for (int index = 0; index < locationPlugins.mutable_plugin(i)->child_size(); index++) {
-								plugins_childplugin* pChild = m_pAllPlugins.mutable_plugin(j)->add_child();
-								pChild->set_childname(locationPlugins.mutable_plugin(i)->child(index).childname());
-								pChild->set_location(locationPlugins.mutable_plugin(i)->child(index).location());
-								pChild->set_title(locationPlugins.mutable_plugin(i)->child(index).title());
-							}
-						}
-					}
-	std::string strAllData = m_pAllPlugins.SerializeAsString();
-	pluginFile.seek(0);
-	pluginFile.write(strAllData.c_str());
-	pluginFile.close(); 
-	ConfigPlug(); 
-}
-
 void MainFrame::UpdataGeometry(AbstractWidget* Tgt) {
 	QString strName = Tgt->metaObject()->className();
+	qDebug() << "strName::" << m_mapMainWidget.size() << "   " << m_mapMainWidget << "   " << Tgt;
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size();i++) {
 		for (int j = 0; j < m_pAllPlugins.mutable_plugin(i)->child_size(); j++) {
 			plugins_childplugin* plug = m_pAllPlugins.mutable_plugin(i)->mutable_child(j);
-			if (QString::fromLocal8Bit(plug->childname().c_str()) == strName) {
+			if (QString::fromStdString(plug->childname()) == strName) {
 				QString strLocation = QString("%1,%2,%3,%4").arg(m_mapMainWidget[Tgt]->geometry().x()).arg(m_mapMainWidget[Tgt]->y())
 					.arg(m_mapMainWidget[Tgt]->width()).arg(m_mapMainWidget[Tgt]->height());
-				qDebug() << "strLocation" << strLocation;
 				plug->set_location(strLocation.toStdString());
 			}
 		}
@@ -276,7 +245,30 @@ void MainFrame::UpdataGeometry(const QString& strPlugName)
 int MainFrame::RemoveWidget(MainWidget* mainWidget)
 {
 	m_mapMainWidget.remove(mainWidget->GetInstance());
-	return m_mapMainWidget.size();
+	return std::count_if(m_mapMainWidget.begin(), m_mapMainWidget.end(), [](const MainWidget* mainWidget) {
+		return !mainWidget->isHidden();
+	});
+}
+
+const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
+{
+	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [ChildWidget](const AbstractWidget* AbsWidget) {
+		return AbsWidget == ChildWidget;
+	});
+	if (it != m_mapAbstractWidget.end())
+	{
+		for (int i = 0; i < m_pAllPlugins.plugin_size(); i++) {
+			if (m_pAllPlugins.mutable_plugin(i)->name() == it.key().toStdString())
+				return it.key();
+			for (int j = 0; j < m_pAllPlugins.mutable_plugin(i)->child_size(); j++) {
+				plugins_childplugin* plug = m_pAllPlugins.mutable_plugin(i)->mutable_child(j);
+				if (QString::fromStdString(plug->childname()) == it.key()) {
+					return it.key();
+				}
+			}
+		}
+	}
+	return "";
 }
 
 void MainFrame::ConfigPlug() {
