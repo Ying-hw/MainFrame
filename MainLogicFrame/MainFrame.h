@@ -50,7 +50,7 @@ public:
 	/// \param[in] ChildName 子节点名称
 	/// \param[in] strParent 父项名称
 	/// \retval 返回界面位置
-	const QRect GetTargetLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent);
+	const QRect GetNewTargetLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent);
 
 	/// \brief 检查给定的插件或者实例是否在运行状态中
 	/// 如果给定的插件或者实例正在加载的状态就运行消息线程，给上层插件主动发消息

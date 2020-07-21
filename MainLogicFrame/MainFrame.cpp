@@ -156,7 +156,7 @@ void MainFrame::Initialize_NetInterface(AbstractNetWork* net)
 void MainFrame::Initialize_WidgetInterface(AbstractWidget* pTgtWidget, const QString& strParentName)
 {
 	m_mapAbstractWidget[pTgtWidget->metaObject()->className()] = pTgtWidget;
-	const QRect rect = GetTargetLocation(pTgtWidget, pTgtWidget->metaObject()->className(), strParentName);
+	const QRect rect = GetNewTargetLocation(pTgtWidget, pTgtWidget->metaObject()->className(), strParentName);
 	MainWidget* pmainWidget = new MainWidget;
 	m_mapMainWidget[pTgtWidget] = pmainWidget;
 	pmainWidget->setMain(pTgtWidget, rect, pTgtWidget->windowTitle());
@@ -176,7 +176,7 @@ void MainFrame::LinkCurrentWidgetInterface(const PluginInfo* targetPlug) {
 		qDebug() << QString::fromLocal8Bit("¿ÕµÄ");
 }
 
-const QRect MainFrame::GetTargetLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent) {
+const QRect MainFrame::GetNewTargetLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent) {
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size(); i++) 
 		for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin(); it != m_LstLoadlib.end(); it++)
 			if ((*it)->fileName().contains(QString::fromStdString(m_pAllPlugins.plugin(i).name())))

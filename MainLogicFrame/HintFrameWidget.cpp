@@ -1,21 +1,48 @@
 #include "stdafx.h"
 #include "HintFrameWidget.h"
 
-HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint, QObject* parent) : m_strHintText(strHint)
+extern SignalQueue* g_pSignal;
+
+HintFrameWidget::HintFrameWidget(QString strHint, AbstractWidget* parent) : m_strHintText(strHint), m_ParentWidget(parent), QWidget(parent)
 {
+	//setStyleSheet("background-color: black;");
 	setWindowFlags(Qt::FramelessWindowHint);
-	initSize(originPoint);
+	setAttribute(Qt::WA_DeleteOnClose);
+	initSize();
+	connect(&m_TimeClose, &QTimer::timeout, this, &HintFrameWidget::CloseHintWindow);
+	m_TimeClose.start(2000);
 }
 
-void HintFrameWidget::initSize(const QPoint& originPoint)
+HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint, AbstractNetWork* parent) : m_strHintText(strHint)
 {
+	//setStyleSheet("background-color: black;");
 	QFont f;
 	f.setFamily("Microsoft YaHei");
 	f.setPixelSize(18);  //此处应该根据系统的分辨率调整
 	QFontMetrics fm(f);
 	QRect re = fm.boundingRect(m_strHintText);
-	re.setTopLeft(originPoint);
 	re.setSize(QSize(re.width(), re.height() * 3));
+	re.moveCenter(originPoint);
+	this->setGeometry(re);
+}
+
+HintFrameWidget::~HintFrameWidget()
+{
+	
+}
+
+void HintFrameWidget::initSize()
+{
+	QFont f;
+	f.setFamily("Microsoft YaHei");
+	f.setPixelSize(14);  //此处应该根据系统的分辨率调整
+	QFontMetrics fm(f);
+	QRect re = fm.boundingRect(m_strHintText);
+	QPoint cen = m_ParentWidget->rect().center();
+	cen.setX(m_ParentWidget->rect().center().x() - re.width());
+	re.moveTo(cen);
+	re.setWidth(re.width() * 3);
+	re.setHeight(re.height() * 2);
 	this->setGeometry(re);
 }
 
@@ -27,13 +54,25 @@ void HintFrameWidget::showEvent(QShowEvent *event)
 	showOpacity->setEndValue(1);
 	showOpacity->setEasingCurve(QEasingCurve::Linear);
 	showOpacity->start();
-
-	QPainter paint(this);
-	paint.drawText(rect(), Qt::AlignCenter, m_strHintText);
 	QWidget::showEvent(event);
 }
 
-void HintFrameWidget::closeEvent(QCloseEvent *event)
+void HintFrameWidget::paintEvent(QPaintEvent* event)
+{
+	QPainter paint;
+	paint.begin(this);
+	QColor colors = QColor(Qt::GlobalColor::white);
+	QPen pen(colors);
+	paint.setPen(pen);
+	paint.drawText(rect(), Qt::AlignCenter, m_strHintText);
+	paint.setBrush(QBrush(QColor(1,1,1,180)));
+	paint.drawRect(rect());
+
+	paint.end();
+	QWidget::paintEvent(event);
+}
+
+void HintFrameWidget::CloseHintWindow()
 {
 	QPropertyAnimation* closeOpacity = new QPropertyAnimation(this, "windowOpacity");
 	closeOpacity->setDuration(1000);
@@ -41,6 +80,6 @@ void HintFrameWidget::closeEvent(QCloseEvent *event)
 	closeOpacity->setEndValue(0);
 	closeOpacity->setEasingCurve(QEasingCurve::Linear);
 	closeOpacity->start();
-	QWidget::closeEvent(event);
+	close();
 }
 

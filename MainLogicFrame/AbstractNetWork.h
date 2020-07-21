@@ -30,7 +30,7 @@ public:
 	AbstractNetWork(ProtoType Type, QHostAddress addrs, int port, QObject* parent = 0);
 	virtual ~AbstractNetWork();
 	virtual int SendMsg(const QString& strContent);
-	void initCommunication();
+	virtual void initCommunication();
 	void* ReturnCurrentTargetSocket();
 	void SetAddrInfo(QHostAddress host, int port);
 	void SetCommunicationProtocol(ProtoType type);

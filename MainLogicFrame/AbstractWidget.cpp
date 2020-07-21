@@ -46,7 +46,8 @@ void AbstractWidget::SendSIG(Signal_ sig, void *arg)
 	switch (sig)
 	{
 	case Signal_::RELOADUI:
-		pTgtQueue->Recv_Message((AbstractWidget*)arg, this);
+	case Signal_::SHOW_ABSTRACTWIDGET:
+		pTgtQueue->Recv_Message(sig, (AbstractWidget*)arg, this, true);
 		break;
 	case Signal_::INVALID:
 		break;

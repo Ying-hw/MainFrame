@@ -2,6 +2,7 @@
 #include "MainFrame.h"
 #include "MainWidget.h"
 #include "SignalQueue.h"
+
 SignalQueue* g_pSignal = NULL;
 
 
@@ -73,8 +74,6 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	case Signal_::WINDOWMIN:
 		emit minWindow();
 		break;
-	case Signal_::IGNORESIGNAL:
-		break;
 	case Signal_::FREEPLUG:
 		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->FreeLib(*(QString*)p.second);
 		break;
@@ -111,6 +110,15 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		break;
 	case Signal_::PLUGINNAMECHANGED:
 
+		break;
+	case Signal_::SHOW_ABSTRACTWIDGET:
+	{
+		ParamInfo* paraminfo = (ParamInfo *)p.second;
+		AbstractWidget *that = static_cast<AbstractWidget*>(paraminfo->m_Params);
+		MainFrame* pFrame = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
+		pFrame->UpdataGeometry(paraminfo->m_PreviousWidget);
+		emit g_pSignal->showWindow(that, pFrame->GetParentName(that));
+	}
 		break;
 	default:
 		break;
@@ -156,7 +164,6 @@ void SignalQueue::DeleteAll(MainWidget* pTgtWidget) {
 	m_waitMutex.wakeOne();
 	deleteLater();
 	delete g_pSignal;
-	qDebug() << "remove finish";
 }
 
 void * SignalQueue::ReturnUser(SystemUser SystemUser) {

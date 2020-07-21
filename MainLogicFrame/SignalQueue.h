@@ -41,7 +41,7 @@ public:
 	void removeUser(SystemUser SysUser);
 	template<typename T> void Recv_Message(Signal_ SIG, T t, AbstractWidget* that);
 	template<typename T> void Recv_Message(Signal_ SIG, T t);
-	template<typename T> void Recv_Message(T* t, AbstractWidget* Tgt);
+	template<typename T> void Recv_Message(Signal_ SI, T* t, AbstractWidget* Tgt, bool isUi);
 signals:
 	void hide_Window();
 	void close_Window();
@@ -67,10 +67,10 @@ void SignalQueue::Recv_Message(Signal_ SIG, T t)
 }
 
 template<typename T>
-void SignalQueue::Recv_Message(T* t, AbstractWidget* TgtWidget)
+void SignalQueue::Recv_Message(Signal_ SIG, T* t, AbstractWidget* TgtWidget, bool isUi)
 {
 	qDebug() << t->metaObject()->className();
-	Send_Message(Signal_::RELOADUI, t, t->metaObject()->className(), TgtWidget);
+	Send_Message(SIG, t, t->metaObject()->className(), TgtWidget);
 }
 
 template<typename T>
