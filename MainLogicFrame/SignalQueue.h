@@ -2,11 +2,11 @@
 #define   __SIGNALQUEUE__
 #include "MainFrame_global.h"
 #include "Signal.h"
-#include <QObject>
 
 class SignalQueue;
 class MainWidget;
 class AbstractWidget;
+class AbstractNetWork;
 
 extern MAINFRAME_EXPORT SignalQueue* g_pSignal;
 #define GETINSTANCE SignalQueue::GetTargetInstance
@@ -36,12 +36,12 @@ public:
 	void Send_Message(Signal_ signal_, void *param, AbstractWidget* that);
 	static void* GetTargetInstance(QString strTarget);
 	void SetUserIdentify(void *, SystemUser user);
-	void DeleteAll(MainWidget* pTgtWidget);
 	void *ReturnUser(SystemUser user);
 	void removeUser(SystemUser SysUser);
 	template<typename T> void Recv_Message(Signal_ SIG, T t, AbstractWidget* that);
 	template<typename T> void Recv_Message(Signal_ SIG, T t);
 	template<typename T> void Recv_Message(Signal_ SI, T* t, AbstractWidget* Tgt, bool isUi);
+	void DeleteAll(MainWidget* pTgtWidget);
 signals:
 	void hide_Window();
 	void close_Window();
@@ -50,6 +50,7 @@ signals:
 	void maxWindow();
 	void showWindow(AbstractWidget* that, const QString& strParentName);
 	void UpdateWindowGeometry(AbstractWidget* that);
+	void InitNet(AbstractNetWork* net);
 private:
 	bool m_isRuning;
 	QQueue<QPair<Signal_, void *>> m_queue;

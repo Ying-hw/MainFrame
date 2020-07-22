@@ -10,7 +10,7 @@ AbstractWidget::AbstractWidget(QWidget* parent /*= 0*/)
 
 AbstractWidget::~AbstractWidget()
 {
-	OnClose();
+
 }
 
 void AbstractWidget::OnMessage()

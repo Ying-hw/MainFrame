@@ -8,7 +8,7 @@ SignalQueue* g_pSignal = NULL;
 
 SignalQueue::SignalQueue() : QThread(), m_isRuning(true), m_CurrentSignal(Signal_::INVALID)
 {
-	if (!g_pSignal)
+	if (!g_pSignal) 
 		g_pSignal = this;
 	m_Mutex.lock();
 }
@@ -21,7 +21,7 @@ SignalQueue::~SignalQueue()
 }
 
 void SignalQueue::Send_Message(Signal_ signal_, void* param) { 
-	m_CurrentSignal = signal_;    
+	m_CurrentSignal = signal_;  
 	QPair<Signal_, void *> p;
 	p.first = signal_;
 	p.second = param;
@@ -75,12 +75,12 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		emit minWindow();
 		break;
 	case Signal_::FREEPLUG:
-		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->FreeLib(*(QString*)p.second);
+		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->FreeLib(*(QString*)p.second);
 		break;
 	case Signal_::LOADPLUG: 
 	{
 		QString strpTarget = (char *)p.second; 
-		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->LoadLib(strpTarget);
+		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->LoadLib(strpTarget);
 	}
 		break;
 	case Signal_::WRITELOG:
@@ -101,12 +101,12 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	{ 
 		ParamInfo* paraminfo = (ParamInfo *)p.second;
 		emit close_Window();
-		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->MainFrame::FreeLib(paraminfo->m_PreviousWidget);
-		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->LoadLib((char*)paraminfo->m_Params);
+		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->MainFrame::FreeLib(paraminfo->m_PreviousWidget);
+		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->LoadLib((char*)paraminfo->m_Params);
 	}
 		break;
 	case Signal_::INITIALIZENETWORK:
-		static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->Initialize_NetInterface((AbstractNetWork*)p.second);
+		emit g_pSignal->InitNet((AbstractNetWork*)p.second);
 		break;
 	case Signal_::PLUGINNAMECHANGED:
 
@@ -136,6 +136,7 @@ void SignalQueue::SetUserIdentify(void *pIdentify, SystemUser SysUser) {
 	case SystemUser::MAINFRAME:
 		connect(this, SIGNAL(UpdateWindowGeometry(AbstractWidget*)), (MainFrame*)pIdentify, SLOT(UpdataGeometry(AbstractWidget*)));	
 		connect(this, SIGNAL(showWindow(AbstractWidget*, const QString&)), (MainFrame*)pIdentify, SLOT(Initialize_WidgetInterface(AbstractWidget*, const QString&)));
+		connect(this, SIGNAL(InitNet(AbstractNetWork*)), (MainFrame*)pIdentify, SLOT(Initialize_NetInterface(AbstractNetWork*)));
 		break;
 	case SystemUser::MAINWIDGET:
 		connect(this, SIGNAL(ExitSystem()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(closeWindow()));
@@ -154,16 +155,20 @@ void SignalQueue::DeleteAll(MainWidget* pTgtWidget) {
 	m_mapUser.erase(std::remove_if(m_mapUser.begin(), m_mapUser.end(), [pTgtWidget](void* arg) {
 		return static_cast<MainWidget*>(arg) == pTgtWidget;
 	}));
-	int size = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->RemoveWidget(pTgtWidget);
+	MainFrame* frame = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
+	int ResidueCount = frame->RemoveWidget(pTgtWidget);
+	pTgtWidget->deleteLater();
 	delete pTgtWidget;
 	pTgtWidget = NULL;
-	if (size > 0) 
+	if (ResidueCount > 0)
 		return;
-	delete static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
 	m_isRuning = false;
 	m_waitMutex.wakeOne();
 	deleteLater();
+	delete frame;
+	frame = NULL;
 	delete g_pSignal;
+	g_pSignal = NULL;
 }
 
 void * SignalQueue::ReturnUser(SystemUser SystemUser) {

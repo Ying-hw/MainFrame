@@ -6,7 +6,6 @@
 #include "plugin.pb.h"
 #include "AbstractNetWork.h"
 #include "AbstractWidget.h"
-#include <QLibrary>
 
 #define   CONFIG   "../Data/Config/"
 #define   LOG      "../Data/Log/"
@@ -104,13 +103,12 @@ public:
 	/// \retval 返回父项的名称
 	const QString GetParentName(const AbstractWidget* ChildWidget);
 
+public slots:
 	/// \brief 初始化网络抽象类
 	/// 通过父类指针指向子类，实现多态虚函数特性，可自由调用子类接口
 	/// \param[in] net 所继承的子类
 	void Initialize_NetInterface(AbstractNetWork* net);
 
-public slots:
-	
 	/// \brief 初始化widget并且显示
 	/// \param[in] pTgtWidget 目标Widget
 	/// \param[in] strChildName 对应的类名称
@@ -163,6 +161,7 @@ private:
 	Allplugins m_pAllPlugins;								///< 待废弃
 	QMap<QString, AbstractWidget*> m_mapAbstractWidget;		///< 插件或插件中的实例名称-抽象插件基类
 	MessageThread* m_pMsgThread;							///< 消息线程
+	AbstractNetWork* m_net;
 };
 
 #endif // MAINFRAME_H

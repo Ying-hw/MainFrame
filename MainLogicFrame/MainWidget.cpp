@@ -68,13 +68,17 @@ MainWidget::MainWidget(QWidget *ject /*= 0*/) : Animation(ject), m_pWidget(nullp
 
 MainWidget::~MainWidget()
 {
-	if (m_pWidget) {
-		delete m_pWidget;
-		m_pWidget = NULL;
-	}
+	deleteLater();
 	if (m_pSigQueue) {
+		m_pSigQueue->deleteLater();
 		delete m_pSigQueue;
 		m_pSigQueue = NULL;
+	}
+	if (m_pWidget) {
+		m_pWidget->deleteLater();
+		m_pWidget->OnClose();
+		delete m_pWidget;
+		m_pWidget = NULL;
 	}
 }
 

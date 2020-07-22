@@ -34,6 +34,8 @@ public:
 	void* ReturnCurrentTargetSocket();
 	void SetAddrInfo(QHostAddress host, int port);
 	void SetCommunicationProtocol(ProtoType type);
+public slots:
+	virtual void ReleaseCommuncation();
 protected slots:
 	virtual int RecvMessage() = 0;
 	virtual void ProcessError();
@@ -42,7 +44,7 @@ private slots:
 	void SelectNetabOnline();
 	void processSelectResult(QHostInfo host);
 private:
-	QTcpSocket m_Tcp;
+	QTcpSocket* m_Tcp;
 	QUdpSocket m_Udp;
 	ProtoType m_prototype;
 	QNetworkAccessManager m_AccessMan;

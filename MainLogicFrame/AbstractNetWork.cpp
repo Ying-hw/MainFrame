@@ -2,32 +2,15 @@
 #include "AbstractNetWork.h"
 #include "MacroDefine.h"
 #include "HintFrameWidget.h"
-#include <QHostInfo>
 
 AbstractNetWork::AbstractNetWork(ProtoType Type, QHostAddress addrs, int port, QObject* parent) :
-	QObject(parent), m_prototype(Type), m_pReply(nullptr), isNeytErrorWidgetShow(false) {
+	QObject(parent), m_prototype(Type), m_pReply(nullptr), isNeytErrorWidgetShow(false), m_Tcp(NULL) {
 	m_addrInfo.m_addr = addrs;
 	m_addrInfo.m_port = port;
 }
 
 AbstractNetWork::~AbstractNetWork(){
-	switch (m_prototype)
-	{
-	case ProtoType::FTP:
-		break;
-	case ProtoType::HTTP:
-		break;
-	case ProtoType::TCP:
-		m_Tcp.close();
-		break;
-	case ProtoType::UDP:
-		m_Udp.close();
-		break;
-	case ProtoType::SMTP:
-		break;
-	default:
-		break;
-	}
+	
 }
 
 
@@ -41,7 +24,7 @@ int AbstractNetWork::SendMsg(const QString& strContent)
 	case ProtoType::HTTP:
 		break;
 	case ProtoType::TCP:
-		size = m_Tcp.write(strContent.toUtf8());
+		size = m_Tcp->write(strContent.toUtf8());
 		break;
 	case ProtoType::UDP:
 		size = m_Udp.write(strContent.toUtf8());
@@ -68,9 +51,10 @@ void AbstractNetWork::initCommunication()
 	case ProtoType::HTTP:
 		break;
 	case ProtoType::TCP:
-		connect(&m_Tcp, SIGNAL(connected()), this, SLOT(connected()));
-		connect(&m_Tcp, SIGNAL(readyRead()), this, SLOT(RecvMessage()));
-		m_Tcp.connectToHost(m_addrInfo.m_addr, m_addrInfo.m_port);
+		m_Tcp = new QTcpSocket();
+		connect(m_Tcp, SIGNAL(connected()), this, SLOT(connected()));
+		connect(m_Tcp, SIGNAL(readyRead()), this, SLOT(RecvMessage()));
+		m_Tcp->connectToHost(m_addrInfo.m_addr, m_addrInfo.m_port);
 		break;
 	case ProtoType::UDP:
 		connect(&m_Udp, SIGNAL(connected()), this, SLOT(connected()));
@@ -108,6 +92,34 @@ void AbstractNetWork::SetAddrInfo(QHostAddress host, int port)
 {
 	m_addrInfo.m_addr = host;
 	m_addrInfo.m_port = port;
+}
+
+void AbstractNetWork::ReleaseCommuncation()
+{
+	timer.stop();
+	switch (m_prototype)
+	{
+	case ProtoType::FTP:
+		break;
+	case ProtoType::HTTP:
+		break;
+	case ProtoType::TCP:
+		if (m_Tcp->isOpen())
+			m_Tcp->close();
+		m_Tcp->deleteLater();
+		delete m_Tcp;
+		m_Tcp = NULL;
+		break;
+	case ProtoType::UDP:
+		m_Udp.close();
+		break;
+	case ProtoType::SMTP:
+		break;
+	default:
+		break;
+	}
+	deleteLater();
+	qDebug() << "111111111111111111111111111111111";
 }
 
 void AbstractNetWork::ProcessError()

@@ -108,13 +108,13 @@
     <QtMoc Include="HintFrameWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="AbstractNetWork.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="AbstractWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="MessageThread.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AbstractNetWork.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

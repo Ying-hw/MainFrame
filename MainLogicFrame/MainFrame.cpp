@@ -111,8 +111,7 @@ void MainFrame::LoadLib(const QString strTargetName) {
 		return plug.m_str_name == strTargetName;
 	});
 	if (targetPlug) {
-		for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin();
-			it != m_LstLoadlib.end();it++) 
+		for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin();it != m_LstLoadlib.end();it++) 
 			if ((*it)->fileName().contains(targetPlug->m_str_name)) 
 				return;
 		QLibrary* lib = new QLibrary(targetPlug->m_str_path + "/" + strTargetName);
@@ -139,10 +138,9 @@ AbstractWidget* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 			m_logFile.write(strError.toLocal8Bit());
 		}
 		else {
-			typedef AbstractWidget* (*pFunction)();
-			pFunction pfun = (pFunction)(lib->resolve("Handle"));
-			if (pfun) 
-				return pfun();
+			AbstractWidget* (*pFunction)() = (AbstractWidget * (*)())(lib->resolve("Handle"));
+			if (pFunction)
+				return pFunction();
 		}
 	}
 	return nullptr;
@@ -151,19 +149,24 @@ AbstractWidget* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 void MainFrame::Initialize_NetInterface(AbstractNetWork* net)
 {
 	net->initCommunication();
+	m_net = net;
 }
 
-void MainFrame::Initialize_WidgetInterface(AbstractWidget* pTgtWidget, const QString& strParentName)
+void MainFrame::Initialize_WidgetInterface(AbstractWidget* pTgtChildWidget, const QString& strParentName)
 {
-	m_mapAbstractWidget[pTgtWidget->metaObject()->className()] = pTgtWidget;
-	const QRect rect = GetNewTargetLocation(pTgtWidget, pTgtWidget->metaObject()->className(), strParentName);
+	m_mapAbstractWidget[pTgtChildWidget->metaObject()->className()] = pTgtChildWidget;
+	const QRect rect = GetNewTargetLocation(pTgtChildWidget, pTgtChildWidget->metaObject()->className(), strParentName);
 	MainWidget* pmainWidget = new MainWidget;
-	m_mapMainWidget[pTgtWidget] = pmainWidget;
-	pmainWidget->setMain(pTgtWidget, rect, pTgtWidget->windowTitle());
+	m_mapMainWidget[pTgtChildWidget] = pmainWidget;
+	pmainWidget->setMain(pTgtChildWidget, rect, pTgtChildWidget->windowTitle());
 }
 
 SignalQueue* MainFrame::GetTgtSigQueueInstance(AbstractWidget* pTgtChild)
 {
+	if (!m_mapMainWidget.contains(pTgtChild)) {
+		MainWidget* pmainWidget = new MainWidget;
+		m_mapMainWidget[pTgtChild] = pmainWidget;
+	}
 	return m_mapMainWidget[pTgtChild]->m_pSigQueue;
 }
 
@@ -219,7 +222,6 @@ bool MainFrame::CheckPlugIsRuning(const QString& strPlugName, const QString& str
 
 void MainFrame::UpdataGeometry(AbstractWidget* Tgt) {
 	QString strName = Tgt->metaObject()->className();
-	qDebug() << "strName::" << m_mapMainWidget.size() << "   " << m_mapMainWidget << "   " << Tgt;
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size();i++) {
 		for (int j = 0; j < m_pAllPlugins.mutable_plugin(i)->child_size(); j++) {
 			plugins_childplugin* plug = m_pAllPlugins.mutable_plugin(i)->mutable_child(j);
@@ -245,6 +247,7 @@ void MainFrame::UpdataGeometry(const QString& strPlugName)
 int MainFrame::RemoveWidget(MainWidget* mainWidget)
 {
 	m_mapMainWidget.remove(mainWidget->GetInstance());
+	m_net->ReleaseCommuncation();
 	return std::count_if(m_mapMainWidget.begin(), m_mapMainWidget.end(), [](const MainWidget* mainWidget) {
 		return !mainWidget->isHidden();
 	});
@@ -255,19 +258,16 @@ const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
 	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [ChildWidget](const AbstractWidget* AbsWidget) {
 		return AbsWidget == ChildWidget;
 	});
-	if (it != m_mapAbstractWidget.end())
-	{
+	if (it != m_mapAbstractWidget.end()) 
 		for (int i = 0; i < m_pAllPlugins.plugin_size(); i++) {
 			if (m_pAllPlugins.mutable_plugin(i)->name() == it.key().toStdString())
 				return it.key();
 			for (int j = 0; j < m_pAllPlugins.mutable_plugin(i)->child_size(); j++) {
 				plugins_childplugin* plug = m_pAllPlugins.mutable_plugin(i)->mutable_child(j);
-				if (QString::fromStdString(plug->childname()) == it.key()) {
+				if (QString::fromStdString(plug->childname()) == it.key())
 					return it.key();
-				}
 			}
 		}
-	}
 	return "";
 }
 
