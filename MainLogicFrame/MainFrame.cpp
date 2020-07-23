@@ -186,6 +186,7 @@ void MainFrame::LinkCurrentWidgetInterface(const PluginInfo* targetPlug) {
 }
 
 const QRect MainFrame::GetNewTargetLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent) {
+	qDebug() << "mingcheng qwi " << ChildName << strParent;
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size(); i++) 
 		for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin(); it != m_LstLoadlib.end(); it++)
 			if ((*it)->fileName().contains(QString::fromStdString(m_pAllPlugins.plugin(i).name())))
@@ -265,14 +266,22 @@ const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
 	if (it != m_mapAbstractWidget.end()) 
 		for (int i = 0; i < m_pAllPlugins.plugin_size(); i++) {
 			if (m_pAllPlugins.mutable_plugin(i)->name() == it.key().toStdString())
-				return it.key();
+				return m_pAllPlugins.mutable_plugin(i)->name().c_str();
 			for (int j = 0; j < m_pAllPlugins.mutable_plugin(i)->child_size(); j++) {
 				plugins_childplugin* plug = m_pAllPlugins.mutable_plugin(i)->mutable_child(j);
 				if (QString::fromStdString(plug->childname()) == it.key())
-					return it.key();
+					return m_pAllPlugins.mutable_plugin(i)->name().c_str();
 			}
 		}
 	return "";
+}
+
+const QString MainFrame::GetMyselfName(const AbstractWidget* AbsWidget)
+{
+	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [AbsWidget](const AbstractWidget* AbsWidget) {
+		return AbsWidget == AbsWidget;
+	});
+	return it != m_mapAbstractWidget.end() ? it.key() : "";
 }
 
 void MainFrame::ConfigPlug() {

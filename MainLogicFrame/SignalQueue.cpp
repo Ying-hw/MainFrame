@@ -94,7 +94,7 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		pFrame->UpdataGeometry(paraminfo->m_PreviousWidget);
 		emit hide_Window();
 		msleep(800);
-		emit g_pSignal->showWindow(that, pFrame->GetParentName(that));
+		emit g_pSignal->showWindow(that, pFrame->GetParentName(paraminfo->m_PreviousWidget));
 	}		
 		break;
 	case Signal_::SWITCHPLUGIN:
@@ -119,8 +119,7 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		ParamInfo* paraminfo = (ParamInfo *)p.second;
 		AbstractWidget *that = static_cast<AbstractWidget*>(paraminfo->m_Params);
 		MainFrame* pFrame = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
-		pFrame->UpdataGeometry(paraminfo->m_PreviousWidget);
-		emit g_pSignal->showWindow(that, pFrame->GetParentName(that));
+		emit g_pSignal->showWindow(that, pFrame->GetParentName(paraminfo->m_PreviousWidget));
 	}
 		break;
 	default:
@@ -167,7 +166,7 @@ void SignalQueue::DeleteAll(MainWidget* pTgtWidget) {
 	}));
 	MainFrame* frame = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
 	int ResidueCount = frame->GetShowWidgetCount(pTgtWidget);
-	const QString strName = frame->GetParentName(pTgtWidget->GetInstance());
+	const QString strName = frame->GetMyselfName(pTgtWidget->GetInstance());
 	emit frame->ReleaseWidget(strName, false);
 	if (ResidueCount > 0)
 		return;

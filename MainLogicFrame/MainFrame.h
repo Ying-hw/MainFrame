@@ -102,6 +102,12 @@ public:
 	/// \param[in] ChildWidget 子项
 	/// \retval 返回父项的名称
 	const QString GetParentName(const AbstractWidget* ChildWidget);
+
+	/// \brief 根据对应的widget获取本身的名字
+	/// \param[in] AbsWidget 目标widget
+	/// \retval 返回自身的名称
+	const QString GetMyselfName(const AbstractWidget* AbsWidget);
+
 public slots:
 	/// \brief 初始化网络抽象类
 	/// 通过父类指针指向子类，实现多态虚函数特性，可自由调用子类接口
