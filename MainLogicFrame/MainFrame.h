@@ -96,23 +96,23 @@ public:
 	/// 在释放之前删除对应的界面，并且返回剩余数量
 	/// \param[in] mainWidget 对应的widget
 	/// \retval 返回剩余数量
-	int RemoveWidget(MainWidget* mainWidget);
+	int GetShowWidgetCount(MainWidget* mainWidget);
 
 	/// \brief 根据子项获取父项的名称
 	/// \param[in] ChildWidget 子项
 	/// \retval 返回父项的名称
 	const QString GetParentName(const AbstractWidget* ChildWidget);
-
 public slots:
 	/// \brief 初始化网络抽象类
 	/// 通过父类指针指向子类，实现多态虚函数特性，可自由调用子类接口
-	/// \param[in] net 所继承的子类
-	void Initialize_NetInterface(AbstractNetWork* net);
+	/// \param[in] net 所继承的网络接口子类
+	/// \param[in] strChildName 对应的类名称
+	void Initialize_NetInterface(AbstractNetWork* net, const QString& strChildName);
 
 	/// \brief 初始化widget并且显示
 	/// \param[in] pTgtWidget 目标Widget
 	/// \param[in] strChildName 对应的类名称
-	void Initialize_WidgetInterface(AbstractWidget* pTgtWidget, const QString& strParentName);
+	void Initialize_WidgetInterface(AbstractWidget* pTgtWidget, const QString& strChildName);
 
 	/// \brief 更新窗口位置
 	/// \param Tgt 窗口位置
@@ -121,7 +121,8 @@ public slots:
 signals:
 	/// \brief 释放插件信号
 	/// \param[in] strPlugName 插件名称
-	void ReleaseWidget(const QString& strPlugName);
+	/// \param[in] isParent 父窗口
+	void ReleaseWidget(const QString& strPlugName, bool isParent);
 
 	/// \brief 初始化插件中的界面
 	/// \param[in] targetPlug 目标插件信息
@@ -148,7 +149,8 @@ private:
 private slots:
 	/// \brief 释放当前插件界面
 	/// \param[in] strPlugName 插件名称
-	void ReleaseCurrentWidget(const QString& strPlugName);
+	/// \param[in] isParent 父窗口
+	void ReleaseCurrentWidget(const QString& strPlugName, bool isParent);
 
 	/// \brief 初始化当前插件界面
 	/// \param[in] targetPlug 当前插件
@@ -161,7 +163,7 @@ private:
 	Allplugins m_pAllPlugins;								///< 待废弃
 	QMap<QString, AbstractWidget*> m_mapAbstractWidget;		///< 插件或插件中的实例名称-抽象插件基类
 	MessageThread* m_pMsgThread;							///< 消息线程
-	AbstractNetWork* m_net;
+	QMap<QString, AbstractNetWork*> m_mapAbstractNet;       ///< 窗口对应的名称--窗口对应的网络接口
 };
 
 #endif // MAINFRAME_H

@@ -106,7 +106,10 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	}
 		break;
 	case Signal_::INITIALIZENETWORK:
-		emit g_pSignal->InitNet((AbstractNetWork*)p.second);
+	{
+		ParamInfo* paraminfo = (ParamInfo*)p.second;
+		emit g_pSignal->InitNet((AbstractNetWork*)paraminfo->m_Params, paraminfo->strTgtName);
+	}
 		break;
 	case Signal_::PLUGINNAMECHANGED:
 
@@ -136,7 +139,7 @@ void SignalQueue::SetUserIdentify(void *pIdentify, SystemUser SysUser) {
 	case SystemUser::MAINFRAME:
 		connect(this, SIGNAL(UpdateWindowGeometry(AbstractWidget*)), (MainFrame*)pIdentify, SLOT(UpdataGeometry(AbstractWidget*)));	
 		connect(this, SIGNAL(showWindow(AbstractWidget*, const QString&)), (MainFrame*)pIdentify, SLOT(Initialize_WidgetInterface(AbstractWidget*, const QString&)));
-		connect(this, SIGNAL(InitNet(AbstractNetWork*)), (MainFrame*)pIdentify, SLOT(Initialize_NetInterface(AbstractNetWork*)));
+		connect(this, SIGNAL(InitNet(AbstractNetWork*, const QString&)), (MainFrame*)pIdentify, SLOT(Initialize_NetInterface(AbstractNetWork*, const QString&)));
 		break;
 	case SystemUser::MAINWIDGET:
 		connect(this, SIGNAL(ExitSystem()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(closeWindow()));
@@ -151,15 +154,21 @@ void SignalQueue::SetUserIdentify(void *pIdentify, SystemUser SysUser) {
 	}
 }
 
+void SignalQueue::Recv_Message(Signal_ SIG, AbstractNetWork* pNet, QString strName)
+{
+	m_ParamInfo.m_Params = pNet;
+	m_ParamInfo.strTgtName = strName;
+	Send_Message(SIG, &m_ParamInfo);
+}
+
 void SignalQueue::DeleteAll(MainWidget* pTgtWidget) {
 	m_mapUser.erase(std::remove_if(m_mapUser.begin(), m_mapUser.end(), [pTgtWidget](void* arg) {
 		return static_cast<MainWidget*>(arg) == pTgtWidget;
 	}));
 	MainFrame* frame = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
-	int ResidueCount = frame->RemoveWidget(pTgtWidget);
-	pTgtWidget->deleteLater();
-	delete pTgtWidget;
-	pTgtWidget = NULL;
+	int ResidueCount = frame->GetShowWidgetCount(pTgtWidget);
+	const QString strName = frame->GetParentName(pTgtWidget->GetInstance());
+	emit frame->ReleaseWidget(strName, false);
 	if (ResidueCount > 0)
 		return;
 	m_isRuning = false;

@@ -9,7 +9,7 @@ MainFrame::MainFrame() : QObject(), m_pMsgThread(NULL) {
 	QString strDate = QDate::currentDate().toString(Qt::ISODate);
 	m_logFile.setFileName(QString(LOG) + strDate + ".txt");
 	m_logFile.open(QIODevice::Append);
-	connect(this, SIGNAL(ReleaseWidget(const QString&)), this, SLOT(ReleaseCurrentWidget(const QString&)));
+	connect(this, SIGNAL(ReleaseWidget(const QString&, bool)), this, SLOT(ReleaseCurrentWidget(const QString&, bool)));
 	connect(this, SIGNAL(InitWidget(const PluginInfo*)), this, SLOT(LinkCurrentWidgetInterface(const PluginInfo*)));
 	g_pSignal->SetUserIdentify(this, SystemUser::MAINFRAME);
 	ConfigPlug();
@@ -36,9 +36,15 @@ MainFrame::~MainFrame() {
 }
 
 // \todo待完成，当有多个插件加载的时候释放目标错误
-void MainFrame::ReleaseCurrentWidget(const QString& strPlugName) {
+void MainFrame::ReleaseCurrentWidget(const QString& strPlugName, bool isParent) {
 	if (m_mapMainWidget.contains(m_mapAbstractWidget[strPlugName])) {
 		MainWidget* Tgt = m_mapMainWidget[m_mapAbstractWidget[strPlugName]];
+		for (QMap<QString, AbstractNetWork*>::iterator it = m_mapAbstractNet.begin(); it != m_mapAbstractNet.end(); it++) 
+			if (it != m_mapAbstractNet.end()) {
+				(*it)->ReleaseCommuncation();
+				m_mapAbstractNet.erase(it);
+				break;
+			}
 		m_mapMainWidget.remove(m_mapAbstractWidget[strPlugName]);
 		m_mapAbstractWidget.remove(strPlugName);
 		delete Tgt;
@@ -46,7 +52,7 @@ void MainFrame::ReleaseCurrentWidget(const QString& strPlugName) {
 	}
 	
 	for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin();
-		it != m_LstLoadlib.end();it++) {
+		isParent && it != m_LstLoadlib.end();it++) {
 		if ((*it)->fileName().contains(strPlugName)) {
 			(*it)->unload();
 			m_LstLoadlib.erase(it);
@@ -103,7 +109,7 @@ void MainFrame::FreeLib(AbstractWidget* pTgt) {
 void MainFrame::FreeLib(const QString& strPlugName)
 {
 	UpdataGeometry(strPlugName);
-	emit ReleaseWidget(strPlugName);
+	emit ReleaseWidget(strPlugName, true);
 }
 
 void MainFrame::LoadLib(const QString strTargetName) {
@@ -146,10 +152,10 @@ AbstractWidget* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 	return nullptr;
 }
 
-void MainFrame::Initialize_NetInterface(AbstractNetWork* net)
+void MainFrame::Initialize_NetInterface(AbstractNetWork* net, const QString& strChildName)
 {
 	net->initCommunication();
-	m_net = net;
+	m_mapAbstractNet[strChildName] = net;
 }
 
 void MainFrame::Initialize_WidgetInterface(AbstractWidget* pTgtChildWidget, const QString& strParentName)
@@ -244,10 +250,8 @@ void MainFrame::UpdataGeometry(const QString& strPlugName)
 					UpdataGeometry(m_mapAbstractWidget[strPlugName]);
 }
 
-int MainFrame::RemoveWidget(MainWidget* mainWidget)
+int MainFrame::GetShowWidgetCount(MainWidget* mainWidget)
 {
-	m_mapMainWidget.remove(mainWidget->GetInstance());
-	m_net->ReleaseCommuncation();
 	return std::count_if(m_mapMainWidget.begin(), m_mapMainWidget.end(), [](const MainWidget* mainWidget) {
 		return !mainWidget->isHidden();
 	});

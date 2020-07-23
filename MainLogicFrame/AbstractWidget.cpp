@@ -54,6 +54,9 @@ void AbstractWidget::SendSIG(Signal_ sig, void *arg)
 	case Signal_::SWITCHPLUGIN:
 		pTgtQueue->Recv_Message(sig, arg, this);
 		break;
+	case Signal_::INITIALIZENETWORK:
+		pTgtQueue->Recv_Message(sig, (AbstractNetWork*)arg, this->metaObject()->className());
+		break;
 	default:
 		pTgtQueue->Recv_Message(sig, arg);
 		break;

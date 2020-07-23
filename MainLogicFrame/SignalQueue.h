@@ -40,7 +40,8 @@ public:
 	void removeUser(SystemUser SysUser);
 	template<typename T> void Recv_Message(Signal_ SIG, T t, AbstractWidget* that);
 	template<typename T> void Recv_Message(Signal_ SIG, T t);
-	template<typename T> void Recv_Message(Signal_ SI, T* t, AbstractWidget* Tgt, bool isUi);
+	template<typename T> void Recv_Message(Signal_ SIG, T* t, AbstractWidget* Tgt, bool isUi);
+	void Recv_Message(Signal_ SIG, AbstractNetWork* pNet, QString strName);
 	void DeleteAll(MainWidget* pTgtWidget);
 signals:
 	void hide_Window();
@@ -50,7 +51,7 @@ signals:
 	void maxWindow();
 	void showWindow(AbstractWidget* that, const QString& strParentName);
 	void UpdateWindowGeometry(AbstractWidget* that);
-	void InitNet(AbstractNetWork* net);
+	void InitNet(AbstractNetWork* net, const QString& strTgtName);
 private:
 	bool m_isRuning;
 	QQueue<QPair<Signal_, void *>> m_queue;
