@@ -50,6 +50,7 @@ void Animation::closeAnimation(bool closeHide) {
 	m_Animation_Opacity->setStartValue(1);
 	m_Animation_Opacity->setEndValue(0);
 	m_Animation_Opacity->setEasingCurve(QEasingCurve::Linear);
+	m_Animation_Opacity->start();
 }
 
 void Animation::InitAanimation()

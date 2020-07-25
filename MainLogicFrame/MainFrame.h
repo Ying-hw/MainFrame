@@ -86,7 +86,7 @@ public:
 	/// \brief 获取目标子类的信号集
 	/// \param[in] pTgtChild 目标子类
 	/// \retval 返回信号集实例
-	SignalQueue* GetTgtSigQueueInstance(AbstractWidget* pTgtChild);
+	SignalQueue* GetTgtSigQueueInstance(const AbstractWidget* pTgtChild);
 
 	/// \brief 更新该插件所有的窗口位置
 	/// \param strPlugName 插件名称

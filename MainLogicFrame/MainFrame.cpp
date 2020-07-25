@@ -145,8 +145,11 @@ AbstractWidget* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 		}
 		else {
 			AbstractWidget* (*pFunction)() = (AbstractWidget * (*)())(lib->resolve("Handle"));
-			if (pFunction)
-				return pFunction();
+			if (pFunction) {
+				AbstractWidget* pAbsWidget = pFunction();
+				pAbsWidget->m_pInstanceWidget = pAbsWidget;
+				return pAbsWidget;
+			}
 		}
 	}
 	return nullptr;
@@ -167,20 +170,24 @@ void MainFrame::Initialize_WidgetInterface(AbstractWidget* pTgtChildWidget, cons
 	pmainWidget->setMain(pTgtChildWidget, rect, pTgtChildWidget->windowTitle());
 }
 
-SignalQueue* MainFrame::GetTgtSigQueueInstance(AbstractWidget* pTgtChild)
+SignalQueue* MainFrame::GetTgtSigQueueInstance(const AbstractWidget* pTgtChild)
 {
-	if (!m_mapMainWidget.contains(pTgtChild)) {
+	AbstractWidget* widget = const_cast<AbstractWidget*>(pTgtChild);
+	if (!m_mapMainWidget.contains(widget)) {
 		MainWidget* pmainWidget = new MainWidget;
-		m_mapMainWidget[pTgtChild] = pmainWidget;
+		m_mapMainWidget[widget] = pmainWidget;
 	}
-	return m_mapMainWidget[pTgtChild]->m_pSigQueue;
+	return m_mapMainWidget[widget]->m_pSigQueue;
 }
 
 void MainFrame::LinkCurrentWidgetInterface(const PluginInfo* targetPlug) {
 	typedef AbstractWidget* (*pFunction)();     
 	pFunction pfun = (pFunction)(m_LstLoadlib.last()->resolve("Handle"));
-	if (pfun) 
-		Initialize_WidgetInterface(pfun(), targetPlug->m_str_name);
+	if (pfun) {
+		AbstractWidget* widget = pfun();
+		widget->m_pInstanceWidget = widget;
+		Initialize_WidgetInterface(widget, targetPlug->m_str_name);
+	}
 	else
 		qDebug() << QString::fromLocal8Bit("¿ÕµÄ");
 }
@@ -261,7 +268,7 @@ int MainFrame::GetShowWidgetCount(MainWidget* mainWidget)
 const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
 {
 	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [ChildWidget](const AbstractWidget* AbsWidget) {
-		return AbsWidget == ChildWidget;
+		return AbsWidget == ChildWidget->m_pInstanceWidget;
 	});
 	if (it != m_mapAbstractWidget.end()) 
 		for (int i = 0; i < m_pAllPlugins.plugin_size(); i++) {

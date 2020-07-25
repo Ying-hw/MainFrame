@@ -28,18 +28,18 @@ void SignalQueue::Send_Message(Signal_ signal_, void* param) {
 	push_queue(p);
 }
 
-void SignalQueue::Send_Message(Signal_ signal_, void *widget, const QString strChild, AbstractWidget* Tgt) {
-	m_ParamInfo.m_Params = widget;
-	m_ParamInfo.strTgtName = strChild;
-	m_ParamInfo.m_PreviousWidget = Tgt;
-	Send_Message(signal_, &m_ParamInfo);
-}          
+void SignalQueue::Send_Message(Signal_ SIG, AbstractNetWork* pNet, QString strName)
+{
+	m_ParamInfo.m_Params = pNet;
+	m_ParamInfo.strTgtName = strName;
+	Send_Message(SIG, &m_ParamInfo);
+}
 
-void SignalQueue::Send_Message(Signal_ signal_, void *param, AbstractWidget* that)
+void SignalQueue::Send_Message(Signal_ SIG, void* param, const AbstractWidget* widget)
 {
 	m_ParamInfo.m_Params = param;
-	m_ParamInfo.m_PreviousWidget = that;
-	Send_Message(signal_, &m_ParamInfo);
+	m_ParamInfo.m_pOldWidget = const_cast<AbstractWidget*>(widget);
+	Send_Message(SIG, &m_ParamInfo);
 }
 
 void* SignalQueue::GetTargetInstance(QString strTarget)
@@ -69,6 +69,9 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		emit g_pSignal->UpdateWindowGeometry(static_cast<AbstractWidget*>(p.second));  
 		emit ExitSystem();
 		break;
+	case Signal_::CLOSE:
+		emit close_Window();
+		break;
 	case Signal_::WINDOWMAX:
 		break;
 	case Signal_::WINDOWMIN:
@@ -84,24 +87,13 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	}
 		break;
 	case Signal_::WRITELOG:
-		//static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->WriteLog((const char *)p.second);
-		break;
-	case Signal_::RELOADUI:
-	{
-		ParamInfo* paraminfo = (ParamInfo *)p.second;
-		AbstractWidget *that = static_cast<AbstractWidget*>(paraminfo->m_Params);
-		MainFrame* pFrame = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
-		pFrame->UpdataGeometry(paraminfo->m_PreviousWidget);
-		emit hide_Window();
-		msleep(800);
-		emit g_pSignal->showWindow(that, pFrame->GetParentName(paraminfo->m_PreviousWidget));
-	}		
+		//static_cast<MainFrame*>(m_mapUser[SystemUser::MAINFRAME])->WriteLog((const char *)p.second);		
 		break;
 	case Signal_::SWITCHPLUGIN:
 	{ 
 		ParamInfo* paraminfo = (ParamInfo *)p.second;
 		emit close_Window();
-		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->MainFrame::FreeLib(paraminfo->m_PreviousWidget);
+		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->MainFrame::FreeLib(paraminfo->m_pOldWidget);
 		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->LoadLib((char*)paraminfo->m_Params);
 	}
 		break;
@@ -116,10 +108,9 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		break;
 	case Signal_::SHOW_ABSTRACTWIDGET:
 	{
-		ParamInfo* paraminfo = (ParamInfo *)p.second;
-		AbstractWidget *that = static_cast<AbstractWidget*>(paraminfo->m_Params);
+		AbstractWidget *that = static_cast<AbstractWidget*>(p.second);
 		MainFrame* pFrame = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
-		emit g_pSignal->showWindow(that, pFrame->GetParentName(paraminfo->m_PreviousWidget));
+		emit g_pSignal->showWindow(that, pFrame->GetParentName(that));
 	}
 		break;
 	default:
@@ -151,13 +142,6 @@ void SignalQueue::SetUserIdentify(void *pIdentify, SystemUser SysUser) {
 	default:
 		break;
 	}
-}
-
-void SignalQueue::Recv_Message(Signal_ SIG, AbstractNetWork* pNet, QString strName)
-{
-	m_ParamInfo.m_Params = pNet;
-	m_ParamInfo.strTgtName = strName;
-	Send_Message(SIG, &m_ParamInfo);
 }
 
 void SignalQueue::DeleteAll(MainWidget* pTgtWidget) {

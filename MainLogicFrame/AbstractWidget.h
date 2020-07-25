@@ -23,22 +23,25 @@ public:
 
 	/// \brief 输出log
 	/// \param[in] strTgtLog 日志内容
-	void Log(const QString& strTgtLog);
+	void Log(const QString& strTgtLog) const;
 
 	/// \brief 计算分辨率大小，并且返回计算后的合适大小
 	/// \param[in] size 原来的大小
 	/// \retval 返回计算后的值
-	int CalculateResolution(const int& size);
+	int CalculateResolution(const int& size) const;
 
 	/// \brief 根据给定的插件实例判断是否在运行
 	/// \param[in] strPlug 插件名称
 	/// \param[in] strInstance 插件实例名称
-	bool PlugIsRuning(const QString& strPlug, const QString& strInstance);
+	bool PlugIsRuning(const QString& strPlug, const QString& strInstance) const;
 
 	/// \brief 发送信号
 	/// \param[in] sig 信号种类
 	/// \param[in] arg 信号参数
-	void SendSIG(Signal_ sig, void* arg);
+	void SendSIG(Signal_ sig, void* arg) const;
+private:
+	static AbstractWidget* m_pInstanceWidget;
+	friend class MainFrame;
 };
 
 #endif
