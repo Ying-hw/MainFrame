@@ -4,9 +4,6 @@
 
 void MainWidget::setMain(AbstractWidget* pMain, const QRect& rect, const QString& strTitle) {
 	m_pWidget = pMain;
-	if (BtnSet)
-		if (m_pWidget->windowTitle() != "LoginSystem") BtnSet->hide();
-		else BtnSet->show();
 	setInitUi(rect);
 	InitAanimation();
 	this->setWindowTitle(strTitle.toLocal8Bit().data());
@@ -30,9 +27,6 @@ AbstractWidget* MainWidget::GetInstance()
 }
 
 void MainWidget::Set_Qss() {
-	setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowSystemMenuHint 
-		| Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
-	
 	QFile QssFile(QString(CONFIG) + "DefaultQss.qss");
 	if (!QssFile.open(QIODevice::ReadOnly)) {
 		QMessageBox::warning(this, QString::fromLocal8Bit("¾¯¸æ£¡"),
@@ -58,12 +52,15 @@ void MainWidget::closeWindow() {
 }
 
 MainWidget::MainWidget(QWidget *ject /*= 0*/) : Animation(ject), m_pWidget(nullptr),
-		BtnClose(NULL), BtnSet(NULL), gridLayout_2(NULL), m_pSigQueue(NULL) {
+		BtnClose(NULL), gridLayout_2(NULL), m_pSigQueue(NULL) {
 	setAttribute(Qt::WA_TranslucentBackground);
+	setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowSystemMenuHint
+		| Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
 	m_pSigQueue = new SignalQueue;
 	m_pSigQueue->start();
 	m_pSigQueue->SetUserIdentify(this, SystemUser::MAINWIDGET);
-	Set_Qss();
+	if (qApp->styleSheet().isEmpty())
+		Set_Qss();	
 }
 
 MainWidget::~MainWidget()
@@ -87,18 +84,16 @@ void MainWidget::setInitUi(const QRect& rect) {
 	if (BtnClose) {
 		BtnClose->close();
 		BtnMin->close();
-		BtnSet->close();
 	}
 	rect.isValid() ? this->setGeometry(rect) : this->setGeometry(m_pWidget->geometry());
  	m_pWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
- 	//setStyleSheet("color:rgb(30,100,100);");
 	gridLayout_2 = new QGridLayout(this);
 	pHbLayout = new QHBoxLayout(this);
 
 	BtnPicture = new QPushButton(this);
 	BtnPicture->setIcon(QIcon(QString(IMAGE) + "Titlepicture.JPG"));
 	BtnPicture->setIconSize(QSize(45, 45));
-	BtnPicture->setStyleSheet("QPushButton{border:none;}");
+	BtnPicture->setObjectName("BtnPicture");
 	pHbLayout->addWidget(BtnPicture);
 
 	QPushButton *BtnText = new QPushButton(this);
@@ -111,11 +106,6 @@ void MainWidget::setInitUi(const QRect& rect) {
 	QSpacerItem* horizontalSpacer = new QSpacerItem(40, 20,
 		QSizePolicy::Expanding, QSizePolicy::Minimum);
 	pHbLayout->addItem(horizontalSpacer);
-
-	BtnSet = new QPushButton(this);
-	BtnSet->setIcon(QIcon(QString(IMAGE) + "Gear.png"));
-	BtnSet->setFlat(true);
-	pHbLayout->addWidget(BtnSet);
 
 	BtnMin = new QPushButton(this);
 	BtnMin->setIcon(QIcon(QString(IMAGE) + "Minus.png"));
@@ -136,13 +126,9 @@ void MainWidget::setInitUi(const QRect& rect) {
 
 	BtnClose->setObjectName("BtnClose");
 	BtnMin->setObjectName("BtnMin");
-	BtnSet->setObjectName("BtnSet");
 	BtnClose->show();
 	BtnMin->show();
-	BtnSet->show();
 
-	if (m_pWidget->windowTitle() != "LoginSystem") BtnSet->hide();
-	else BtnSet->show();
 	gridLayout_2->addLayout(pHbLayout, 0, 0);
 	gridLayout_2->addWidget(m_pWidget, 1, 0);
 	gridLayout_2->setContentsMargins(QMargins(3,0,3,3));

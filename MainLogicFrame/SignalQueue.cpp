@@ -93,8 +93,9 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	{ 
 		ParamInfo* paraminfo = (ParamInfo *)p.second;
 		emit close_Window();
-		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->MainFrame::FreeLib(paraminfo->m_pOldWidget);
+		
 		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->LoadLib((char*)paraminfo->m_Params);
+		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->MainFrame::FreeLib(paraminfo->m_pOldWidget);
 	}
 		break;
 	case Signal_::INITIALIZENETWORK:

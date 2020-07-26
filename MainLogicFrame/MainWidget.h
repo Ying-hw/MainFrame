@@ -33,7 +33,6 @@ private:
 	QGridLayout *gridLayout_2;
 	QHBoxLayout *pHbLayout;
 	QPushButton *BtnPicture;
-	QPushButton *BtnSet;
 	QPushButton *BtnMin;
 	QPushButton *BtnClose;
 	SignalQueue* m_pSigQueue;

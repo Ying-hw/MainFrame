@@ -285,8 +285,8 @@ const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
 
 const QString MainFrame::GetMyselfName(const AbstractWidget* AbsWidget)
 {
-	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [AbsWidget](const AbstractWidget* AbsWidget) {
-		return AbsWidget == AbsWidget;
+	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [AbsWidget](const AbstractWidget* widget) {
+		return widget == AbsWidget;
 	});
 	return it != m_mapAbstractWidget.end() ? it.key() : "";
 }
