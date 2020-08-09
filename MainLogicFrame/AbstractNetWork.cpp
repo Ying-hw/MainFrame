@@ -53,12 +53,12 @@ void AbstractNetWork::initCommunication()
 	case ProtoType::TCP:
 		m_Tcp = new QTcpSocket();
 		connect(m_Tcp, SIGNAL(connected()), this, SLOT(connected()));
-		connect(m_Tcp, SIGNAL(readyRead()), this, SLOT(RecvMessage()));
+		connect(m_Tcp, SIGNAL(readyRead()), this, SLOT(RecvMsg()));
 		m_Tcp->connectToHost(m_addrInfo.m_addr, m_addrInfo.m_port);
 		break;
 	case ProtoType::UDP:
 		connect(&m_Udp, SIGNAL(connected()), this, SLOT(connected()));
-		connect(&m_Udp, SIGNAL(readyRead()), this, SLOT(RecvMessage()));
+		connect(&m_Udp, SIGNAL(readyRead()), this, SLOT(RecvMsg()));
 		m_Udp.connectToHost(m_addrInfo.m_addr, m_addrInfo.m_port);
 		break;
 	case ProtoType::SMTP:

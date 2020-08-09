@@ -18,13 +18,15 @@ Animation::~Animation()
 }
 
 void Animation::showEvent(QShowEvent *event) {
-	if (!m_IsShow)
+	if (!m_IsShow) {
+		m_IsShow = true;
 		return;
-
+	}
 	QParallelAnimationGroup* group = new QParallelAnimationGroup(this);
 	group->addAnimation(m_Animation_Opacity);
 	group->addAnimation(m_Animation_Geometry);
 	group->start();
+	QWidget::showEvent(event);
 }
 
 void Animation::setAnimation(bool isShow /*= true*/)
@@ -35,6 +37,7 @@ void Animation::setAnimation(bool isShow /*= true*/)
 void Animation::hideEvent(QHideEvent *event)
 {
 	closeAnimation(false);
+	QWidget::hideEvent(event);
 }
 
 void Animation::closeEvent(QCloseEvent *event)
@@ -43,9 +46,10 @@ void Animation::closeEvent(QCloseEvent *event)
 }
 
 void Animation::closeAnimation(bool closeHide) {
-	if (!m_IsShow) 
+	if (!m_IsShow) {
+		m_IsShow = true;
 		return;
-	//设置关闭时的动画
+	}
 	m_Animation_Opacity->setDuration(600);
 	m_Animation_Opacity->setStartValue(1);
 	m_Animation_Opacity->setEndValue(0);

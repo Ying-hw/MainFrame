@@ -134,7 +134,7 @@ void SignalQueue::SetUserIdentify(void *pIdentify, SystemUser SysUser) {
 		break;
 	case SystemUser::MAINWIDGET:
 		connect(this, SIGNAL(ExitSystem()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(closeWindow()));
-		connect(this, SIGNAL(minWindow()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(showMinimized()));
+		connect(this, SIGNAL(minWindow()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(showMin()));
 		connect(this, SIGNAL(close_Window()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(close()));
 		connect(this, SIGNAL(hide_Window()), static_cast<MainWidget*>(m_mapUser[SystemUser::MAINWIDGET]), SLOT(hide()));
 		break;

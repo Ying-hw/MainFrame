@@ -51,6 +51,12 @@ void MainWidget::closeWindow() {
 	}
 }
 
+void MainWidget::showMin()
+{
+	setAnimation(false);
+	showMinimized();
+}
+
 MainWidget::MainWidget(QWidget *ject /*= 0*/) : Animation(ject), m_pWidget(nullptr),
 		BtnClose(NULL), gridLayout_2(NULL), m_pSigQueue(NULL) {
 	setAttribute(Qt::WA_TranslucentBackground);

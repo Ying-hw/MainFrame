@@ -37,7 +37,7 @@ public:
 public slots:
 	virtual void ReleaseCommuncation();
 protected slots:
-	virtual int RecvMessage() = 0;
+	virtual int RecvMsg() = 0;
 	virtual void ProcessError();
 	virtual void connected();
 private slots:

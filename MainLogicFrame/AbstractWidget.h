@@ -39,6 +39,7 @@ public:
 	/// \param[in] sig 信号种类
 	/// \param[in] arg 信号参数
 	void SendSIG(Signal_ sig, void* arg) const;
+
 private:
 	static AbstractWidget* m_pInstanceWidget;
 	friend class MainFrame;
