@@ -26,7 +26,8 @@ void AbstractWidget::OnClose()
 
 void AbstractWidget::Log(const QString& strTgtLog) const
 {
-
+	MainFrame* frame = (MainFrame *)g_pSignal->ReturnUser(SystemUser::MAINFRAME);
+	frame->WriteLog(strTgtLog, this);
 }
 
 int AbstractWidget::CalculateResolution(const int& size) const

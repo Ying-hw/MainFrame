@@ -37,7 +37,7 @@ MainFrame::~MainFrame() {
 
 // \todo待完成，当有多个插件加载的时候释放目标错误
 void MainFrame::ReleaseCurrentWidget(const QString& strPlugName, bool isParent) {
-	if (m_mapMainWidget.contains(m_mapAbstractWidget[strPlugName])) {
+	if (m_mapAbstractWidget.contains(strPlugName) && m_mapMainWidget.contains(m_mapAbstractWidget[strPlugName])) {
 		MainWidget* Tgt = m_mapMainWidget[m_mapAbstractWidget[strPlugName]];
 		for (QMap<QString, AbstractNetWork*>::iterator it = m_mapAbstractNet.begin(); it != m_mapAbstractNet.end(); it++) 
 			if (it != m_mapAbstractNet.end()) {
@@ -99,10 +99,12 @@ void MainFrame::FindPlugin() {
 		}});
 }
 
-void MainFrame::FreeLib(AbstractWidget* pTgt) {
-	for (QMap<QString, AbstractWidget*>::iterator it = m_mapAbstractWidget.begin();
-		it != m_mapAbstractWidget.end();it++) 
-		if ((*it) == pTgt)
+void MainFrame::FreeLib(AbstractWidget* pTgtOldWidget) {
+	QMap<QString, AbstractWidget*>::iterator it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [pTgtOldWidget](const AbstractWidget* widget) {
+		return pTgtOldWidget == widget;
+	});
+
+	if (it != m_mapAbstractWidget.end())
 			FreeLib(it.key());
 }
 
@@ -158,7 +160,8 @@ AbstractWidget* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 void MainFrame::Initialize_NetInterface(AbstractNetWork* net, const QString& strChildName)
 {
 	net->initCommunication();
-	m_mapAbstractNet[strChildName] = net;
+	if (strChildName != QString::fromLocal8Bit("未知"))
+		m_mapAbstractNet[strChildName] = net;
 }
 
 void MainFrame::Initialize_WidgetInterface(AbstractWidget* pTgtChildWidget, const QString& strParentName)
@@ -280,7 +283,7 @@ const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
 					return m_pAllPlugins.mutable_plugin(i)->name().c_str();
 			}
 		}
-	return "";
+	return QString::fromLocal8Bit("未知");
 }
 
 const QString MainFrame::GetMyselfName(const AbstractWidget* AbsWidget)
@@ -288,7 +291,15 @@ const QString MainFrame::GetMyselfName(const AbstractWidget* AbsWidget)
 	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [AbsWidget](const AbstractWidget* widget) {
 		return widget == AbsWidget;
 	});
-	return it != m_mapAbstractWidget.end() ? it.key() : "";
+	return it != m_mapAbstractWidget.end() ? it.key() : QString::fromLocal8Bit("未知");
+}
+
+void MainFrame::WriteLog(const QString& strLog, const AbstractWidget* target)
+{
+	QString strCurrentDate = QDateTime::currentDateTime().toString("MM-dd hh:mm:ss");
+	QString strWriteText = QString::fromLocal8Bit("%1 插件：%2 子类：%3 日志：%4").arg(strCurrentDate).arg(GetParentName(target)).arg(GetMyselfName(target)).arg(strLog);
+	strWriteText += "\n";
+	m_logFile.write(strWriteText.toLocal8Bit());
 }
 
 void MainFrame::ConfigPlug() {

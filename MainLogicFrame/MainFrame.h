@@ -108,6 +108,11 @@ public:
 	/// \retval 返回自身的名称
 	const QString GetMyselfName(const AbstractWidget* AbsWidget);
 
+	/// \brief 写日志
+	/// \param[in] strLog 日志代码
+	/// \param[in] target 当前插件实例
+	void WriteLog(const QString& strLog, const AbstractWidget* target);
+
 public slots:
 	/// \brief 初始化网络抽象类
 	/// 通过父类指针指向子类，实现多态虚函数特性，可自由调用子类接口

@@ -24,7 +24,8 @@ int AbstractNetWork::SendMsg(const QString& strContent)
 	case ProtoType::HTTP:
 		break;
 	case ProtoType::TCP:
-		size = m_Tcp->write(strContent.toUtf8());
+		if (m_Tcp)
+			size = m_Tcp->write(strContent.toUtf8());
 		break;
 	case ProtoType::UDP:
 		size = m_Udp.write(strContent.toUtf8());
