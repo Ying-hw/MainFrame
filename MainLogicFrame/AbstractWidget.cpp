@@ -24,10 +24,10 @@ void AbstractWidget::OnClose()
 
 }
 
-void AbstractWidget::Log(const QString& strTgtLog) const
+void AbstractWidget::Log(LogGrade grade, const QString& strTgtLog)
 {
 	MainFrame* frame = (MainFrame *)g_pSignal->ReturnUser(SystemUser::MAINFRAME);
-	frame->WriteLog(strTgtLog, this);
+	frame->WriteLog(grade, strTgtLog);
 }
 
 int AbstractWidget::CalculateResolution(const int& size) const

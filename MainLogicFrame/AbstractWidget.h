@@ -7,6 +7,12 @@ class MAINFRAME_EXPORT AbstractWidget : public QWidget
 {
 	Q_OBJECT
 public:
+	enum class LogGrade {
+		SeriousError,
+		Error,
+		Warning,
+		Tips
+	};
 	/// \brief 构造函数
 	/// \param[in] parent 父窗口
 	AbstractWidget(QWidget* parent = 0);
@@ -22,8 +28,9 @@ public:
 	virtual void OnClose();
 
 	/// \brief 输出log
+	/// \brief Grade 日志等级
 	/// \param[in] strTgtLog 日志内容
-	void Log(const QString& strTgtLog) const;
+	static void Log(LogGrade Grade, const QString& strTgtLog);
 
 	/// \brief 计算分辨率大小，并且返回计算后的合适大小
 	/// \param[in] size 原来的大小

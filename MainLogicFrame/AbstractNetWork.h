@@ -10,9 +10,9 @@
 #include <QHostInfo>
 
 struct socketAddrInfo {
-	socketAddrInfo(QHostAddress addr, int port) : m_addr(addr), m_port(port) {}
+	socketAddrInfo(QString addr, int port) : m_strAddr(addr), m_port(port) {}
 	socketAddrInfo() {};
-	QHostAddress m_addr;
+	QString m_strAddr;
 	int m_port;
 };
 
@@ -27,21 +27,20 @@ public:
 		SMTP,
 		HTTP
 	};
-	AbstractNetWork(ProtoType Type, QHostAddress addrs, int port, QObject* parent = 0);
+	AbstractNetWork(ProtoType Type, QString addrs, int port, QObject* parent = 0);
 	virtual ~AbstractNetWork();
 	virtual int SendMsg(const QString& strContent);
-	virtual void initCommunication();
+	void initCommunication(QHostAddress addr);
 	void* ReturnCurrentTargetSocket();
-	void SetAddrInfo(QHostAddress host, int port);
 	void SetCommunicationProtocol(ProtoType type);
-public slots:
-	virtual void ReleaseCommuncation();
+	void StartTimer();
+	void ReleaseCommuncation();
 protected slots:
 	virtual int RecvMsg() = 0;
 	virtual void ProcessError();
 	virtual void connected();
 private slots:
-	void SelectNetabOnline();
+	void CheckNetIsOnline();
 	void processSelectResult(QHostInfo host);
 private:
 	QTcpSocket* m_Tcp;
@@ -49,8 +48,8 @@ private:
 	ProtoType m_prototype;
 	QNetworkAccessManager m_AccessMan;
 	QNetworkReply* m_pReply;
-	QTimer timer;
-	bool isNeytErrorWidgetShow;
+	QTimer m_timer;
+	bool m_isNetErrorShow;
 	socketAddrInfo m_addrInfo;
 };
 

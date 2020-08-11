@@ -13,7 +13,6 @@ MainFrame::MainFrame() : QObject(), m_pMsgThread(NULL) {
 	connect(this, SIGNAL(InitWidget(const PluginInfo*)), this, SLOT(LinkCurrentWidgetInterface(const PluginInfo*)));
 	g_pSignal->SetUserIdentify(this, SystemUser::MAINFRAME);
 	ConfigPlug();
-	//StartPluginControl();
 }
 
 MainFrame::~MainFrame() {
@@ -35,13 +34,12 @@ MainFrame::~MainFrame() {
 	}
 }
 
-// \todo待完成，当有多个插件加载的时候释放目标错误
+// 删除释放目标
 void MainFrame::ReleaseCurrentWidget(const QString& strPlugName, bool isParent) {
 	if (m_mapAbstractWidget.contains(strPlugName) && m_mapMainWidget.contains(m_mapAbstractWidget[strPlugName])) {
 		MainWidget* Tgt = m_mapMainWidget[m_mapAbstractWidget[strPlugName]];
 		for (QMap<QString, AbstractNetWork*>::iterator it = m_mapAbstractNet.begin(); it != m_mapAbstractNet.end(); it++) 
-			if (it != m_mapAbstractNet.end()) {
-				(*it)->ReleaseCommuncation();
+			if (it.key() == strPlugName) {
 				m_mapAbstractNet.erase(it);
 				break;
 			}
@@ -50,7 +48,7 @@ void MainFrame::ReleaseCurrentWidget(const QString& strPlugName, bool isParent) 
 		delete Tgt;
 		Tgt = NULL;
 	}
-	
+
 	for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin();
 		isParent && it != m_LstLoadlib.end();it++) {
 		if ((*it)->fileName().contains(strPlugName)) {
@@ -62,16 +60,6 @@ void MainFrame::ReleaseCurrentWidget(const QString& strPlugName, bool isParent) 
 }
 
 
-void MainFrame::StartPluginControl() {
-	QLibrary lib(QString("./PluginControl"));
-	if (lib.load()) {
-		void (*pFunction)() = lib.resolve("Handle");
-		pFunction();
-	}
-	else
-		QMessageBox::warning(NULL, QString::fromLocal8Bit("错误"), lib.errorString());
-}
-
 void MainFrame::UpdateConfigFile() {
 	QFile pluginFile("../Data/Config/plugin");
 	if (pluginFile.open(QIODevice::WriteOnly)) {
@@ -79,7 +67,7 @@ void MainFrame::UpdateConfigFile() {
 		pluginFile.close();
 	}
 	else 
-		QMessageBox::warning(NULL, QString::fromLocal8Bit("错误"), pluginFile.errorString());
+		WriteLog(AbstractWidget::LogGrade::Error, pluginFile.errorString());
 }
 
 void MainFrame::FindPlugin() {
@@ -89,7 +77,7 @@ void MainFrame::FindPlugin() {
 			QLibrary* lib = new QLibrary(info.m_str_path + "/" + info.m_str_name);
 			if (!lib->load()) {
 				QString strError = lib->errorString();
-				m_logFile.write(strError.toLocal8Bit());
+				WriteLog(AbstractWidget::LogGrade::SeriousError, strError);
 				return;
 			}
 			else {
@@ -125,7 +113,7 @@ void MainFrame::LoadLib(const QString strTargetName) {
 		QLibrary* lib = new QLibrary(targetPlug->m_str_path + "/" + strTargetName);
 		if (!lib->load()) {
 			QString strError = lib->errorString();
-			m_logFile.write(strError.toLocal8Bit());
+			WriteLog(AbstractWidget::LogGrade::SeriousError, strError);
 		}
 		else { 
 			m_LstLoadlib.append(lib);
@@ -143,7 +131,7 @@ AbstractWidget* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 		QLibrary* lib = new QLibrary(targetPlug->m_str_path + "/" + strTargetName);
 		if (!lib->load()) {
 			QString strError = lib->errorString();
-			m_logFile.write(strError.toLocal8Bit());
+			WriteLog(AbstractWidget::LogGrade::SeriousError, strError);
 		}
 		else {
 			AbstractWidget* (*pFunction)() = (AbstractWidget * (*)())(lib->resolve("Handle"));
@@ -159,7 +147,7 @@ AbstractWidget* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 
 void MainFrame::Initialize_NetInterface(AbstractNetWork* net, const QString& strChildName)
 {
-	net->initCommunication();
+	net->StartTimer();
 	if (strChildName != QString::fromLocal8Bit("未知"))
 		m_mapAbstractNet[strChildName] = net;
 }
@@ -192,7 +180,7 @@ void MainFrame::LinkCurrentWidgetInterface(const PluginInfo* targetPlug) {
 		Initialize_WidgetInterface(widget, targetPlug->m_str_name);
 	}
 	else
-		qDebug() << QString::fromLocal8Bit("空的");
+		WriteLog(AbstractWidget::LogGrade::Warning, m_LstLoadlib.last()->errorString());
 }
 
 const QRect MainFrame::GetNewTargetLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent) {
@@ -294,10 +282,29 @@ const QString MainFrame::GetMyselfName(const AbstractWidget* AbsWidget)
 	return it != m_mapAbstractWidget.end() ? it.key() : QString::fromLocal8Bit("未知");
 }
 
-void MainFrame::WriteLog(const QString& strLog, const AbstractWidget* target)
+void MainFrame::WriteLog(AbstractWidget::LogGrade Grade, const QString& strLog)
 {
 	QString strCurrentDate = QDateTime::currentDateTime().toString("MM-dd hh:mm:ss");
-	QString strWriteText = QString::fromLocal8Bit("%1 插件：%2 子类：%3 日志：%4").arg(strCurrentDate).arg(GetParentName(target)).arg(GetMyselfName(target)).arg(strLog);
+	QString strGrade;
+	switch (Grade)
+	{
+	case AbstractWidget::LogGrade::Error:
+		strGrade = QString::fromLocal8Bit("错误");
+		break;
+	case  AbstractWidget::LogGrade::Tips:
+		strGrade = QString::fromLocal8Bit("提示");
+		break;
+	case AbstractWidget::LogGrade::SeriousError:
+		strGrade = QString::fromLocal8Bit("严重错误");
+		break;
+	case AbstractWidget::LogGrade::Warning:
+		strGrade = QString::fromLocal8Bit("警告");
+		break;
+	default:
+		strGrade = QString::fromLocal8Bit("未知等级");
+		break;
+	}
+	QString strWriteText = QString::fromLocal8Bit("%1 等级：%2 日志：%3").arg(strCurrentDate).arg(strGrade).arg(strLog);
 	strWriteText += "\n";
 	m_logFile.write(strWriteText.toLocal8Bit());
 }

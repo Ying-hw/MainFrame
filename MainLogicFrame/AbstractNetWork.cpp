@@ -3,9 +3,9 @@
 #include "MacroDefine.h"
 #include "HintFrameWidget.h"
 
-AbstractNetWork::AbstractNetWork(ProtoType Type, QHostAddress addrs, int port, QObject* parent) :
-	QObject(parent), m_prototype(Type), m_pReply(nullptr), isNeytErrorWidgetShow(false), m_Tcp(NULL) {
-	m_addrInfo.m_addr = addrs;
+AbstractNetWork::AbstractNetWork(ProtoType Type, QString addrs, int port, QObject* parent) :
+	QObject(parent), m_prototype(Type), m_pReply(nullptr), m_isNetErrorShow(false), m_Tcp(NULL) {
+	m_addrInfo.m_strAddr = addrs;
 	m_addrInfo.m_port = port;
 }
 
@@ -36,36 +36,38 @@ int AbstractNetWork::SendMsg(const QString& strContent)
 		break;
 	}
 	if (size == -1)
-		isNeytErrorWidgetShow = false;
+		m_isNetErrorShow = false;
 	return size;
 }
 
-void AbstractNetWork::initCommunication()
+void AbstractNetWork::initCommunication(QHostAddress strAddr)
 {
-	timer.setInterval(3000);
-	connect(&timer, SIGNAL(timeout()), this, SLOT(SelectNetabOnline()));
-	timer.start();
-	switch (m_prototype)
+	if (!m_Tcp)
 	{
-	case ProtoType::FTP:
-		break;
-	case ProtoType::HTTP:
-		break;
-	case ProtoType::TCP:
-		m_Tcp = new QTcpSocket();
-		connect(m_Tcp, SIGNAL(connected()), this, SLOT(connected()));
-		connect(m_Tcp, SIGNAL(readyRead()), this, SLOT(RecvMsg()));
-		m_Tcp->connectToHost(m_addrInfo.m_addr, m_addrInfo.m_port);
-		break;
-	case ProtoType::UDP:
-		connect(&m_Udp, SIGNAL(connected()), this, SLOT(connected()));
-		connect(&m_Udp, SIGNAL(readyRead()), this, SLOT(RecvMsg()));
-		m_Udp.connectToHost(m_addrInfo.m_addr, m_addrInfo.m_port);
-		break;
-	case ProtoType::SMTP:
-		break;
-	default:
-		break;
+		switch (m_prototype)
+		{
+		case ProtoType::FTP:
+			break;
+		case ProtoType::HTTP:
+			break;
+		case ProtoType::TCP:
+		{
+			m_Tcp = new QTcpSocket();
+			connect(m_Tcp, SIGNAL(connected()), this, SLOT(connected()));
+			connect(m_Tcp, SIGNAL(readyRead()), this, SLOT(RecvMsg()));
+			m_Tcp->connectToHost(strAddr, m_addrInfo.m_port);
+		}
+			break;
+		case ProtoType::UDP:
+			connect(&m_Udp, SIGNAL(connected()), this, SLOT(connected()));
+			connect(&m_Udp, SIGNAL(readyRead()), this, SLOT(RecvMsg()));
+			m_Udp.connectToHost(m_addrInfo.m_strAddr, m_addrInfo.m_port);
+			break;
+		case ProtoType::SMTP:
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -78,7 +80,7 @@ void* AbstractNetWork::ReturnCurrentTargetSocket()
 	case ProtoType::HTTP:
 		break;
 	case ProtoType::TCP:
-		return (void*)&m_Tcp;
+		return (void*)m_Tcp;
 	case ProtoType::UDP:
 		return (void*)&m_Udp;
 	case ProtoType::SMTP:
@@ -89,15 +91,9 @@ void* AbstractNetWork::ReturnCurrentTargetSocket()
 	return NULL;
 }
 
-void AbstractNetWork::SetAddrInfo(QHostAddress host, int port)
-{
-	m_addrInfo.m_addr = host;
-	m_addrInfo.m_port = port;
-}
-
 void AbstractNetWork::ReleaseCommuncation()
 {
-	timer.stop();
+	m_timer.stop();
 	switch (m_prototype)
 	{
 	case ProtoType::FTP:
@@ -134,27 +130,38 @@ void AbstractNetWork::connected()
 	qDebug() << strHintError;
 }
 
+
 void AbstractNetWork::SetCommunicationProtocol(ProtoType type)
 {
 	m_prototype = type;
 }
 
-void AbstractNetWork::SelectNetabOnline()
+void AbstractNetWork::StartTimer()
 {
-	QHostInfo::lookupHost("www.baidu.com", this, SLOT(processSelectResult(QHostInfo)));
+	m_timer.setInterval(3000);
+	connect(&m_timer, SIGNAL(timeout()), this, SLOT(CheckNetIsOnline()));
+	m_timer.start();
+}
+
+void AbstractNetWork::CheckNetIsOnline()
+{
+	if (!m_addrInfo.m_strAddr.isEmpty())
+		QHostInfo::lookupHost(m_addrInfo.m_strAddr, this, SLOT(processSelectResult(QHostInfo)));
 }
 
 void AbstractNetWork::processSelectResult(QHostInfo host)
 {
 	if (host.error() != QHostInfo::NoError) {
-		if (!isNeytErrorWidgetShow) {
+		if (!m_isNetErrorShow) {
 			QDesktopWidget destop;
 			HintFrameWidget* hint = new HintFrameWidget(host.errorString(), destop.rect().center(), this);
 			hint->show();
 			ProcessError();
 		}
-		isNeytErrorWidgetShow = true;
+		m_isNetErrorShow = true;
 	}
-	else
-		isNeytErrorWidgetShow = false;
+	else {
+		m_isNetErrorShow = false;
+		initCommunication(host.addresses().first());
+	}
 }
