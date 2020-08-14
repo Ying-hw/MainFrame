@@ -43,9 +43,11 @@ public:
 	bool PlugIsRuning(const QString& strPlug, const QString& strInstance) const;
 
 	/// \brief 发送信号
+	/// 信号类型可分为命令类型和线程类型，命令类型发送立刻执行，等待执行完成，线程类型执行系统线程，不等待，默认为线程
 	/// \param[in] sig 信号种类
 	/// \param[in] arg 信号参数
-	void SendSIG(Signal_ sig, void* arg) const;
+	/// \param[in] type 信号类型
+	void SendSIG(Signal_ sig, void* arg, Signal_Type type = Signal_Type::THREAD) const;
 
 private:
 	static AbstractWidget* m_pInstanceWidget;

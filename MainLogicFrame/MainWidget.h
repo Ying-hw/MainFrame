@@ -5,12 +5,6 @@
 #include "MainFrame_global.h"
 #include "Animation.h"
 #include "AbstractWidget.h"
-#include <QGridLayout>
-
-
-#define   CONFIG   "../Data/Config/"
-#define   LOG      "../Data/Log/"
-#define   IMAGE    "../Data/Image/"
 
 extern SignalQueue* g_pSignal;
 

@@ -1,7 +1,7 @@
 #ifndef   __SIGNALQUEUE__
 #define   __SIGNALQUEUE__
 #include "MainFrame_global.h"
-#include "Signal.h"
+#include "MacroDefine.h"
 
 class SignalQueue;
 class MainWidget;

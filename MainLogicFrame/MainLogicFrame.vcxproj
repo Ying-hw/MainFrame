@@ -291,7 +291,6 @@ xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x
     <ClInclude Include="MessageTemplate.h" />
     <ClInclude Include="plugin.pb.h" />
     <ClInclude Include="PluginInfo.h" />
-    <ClInclude Include="Signal.h" />
     <QtMoc Include="SignalQueue.h">
     </QtMoc>
     <ClInclude Include="stdafx.h" />

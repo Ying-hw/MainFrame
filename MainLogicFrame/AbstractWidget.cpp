@@ -41,7 +41,7 @@ bool AbstractWidget::PlugIsRuning(const QString& strPlug, const QString& strInst
 	return frame->CheckPlugIsRuning(strPlug, strInstance);
 }
 
-void AbstractWidget::SendSIG(Signal_ sig, void *arg) const
+void AbstractWidget::SendSIG(Signal_ sig, void *arg, Signal_Type type) const
 {
 	MainFrame* frame = static_cast<MainFrame*>(g_pSignal->ReturnUser(SystemUser::MAINFRAME));
 	SignalQueue* pTgtQueue =  frame->GetTgtSigQueueInstance(this);
@@ -50,7 +50,10 @@ void AbstractWidget::SendSIG(Signal_ sig, void *arg) const
 	case Signal_::INVALID:
 		break;
 	case Signal_::INITIALIZENETWORK:
-		pTgtQueue->Send_Message(sig, (AbstractNetWork*)arg, this->metaObject()->className());
+		if (type == Signal_Type::CMD)
+			frame->Initialize_NetInterface((AbstractNetWork*)arg, this->metaObject()->className()); 
+		else
+			pTgtQueue->Send_Message(sig, (AbstractNetWork*)arg, this->metaObject()->className());
 		break;
 	case Signal_::SWITCHPLUGIN:
 		pTgtQueue->Send_Message(sig, arg, this);

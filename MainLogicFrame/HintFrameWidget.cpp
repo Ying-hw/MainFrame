@@ -10,12 +10,24 @@ HintFrameWidget::HintFrameWidget(QString strHint, AbstractWidget* parent) : m_st
 	setAttribute(Qt::WA_DeleteOnClose);
 	initSize();
 	connect(&m_TimeClose, &QTimer::timeout, this, &HintFrameWidget::CloseHintWindow);
-	m_TimeClose.start(2000);
+	m_TimeClose.start(3000);
 }
 
 HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint, AbstractNetWork* parent) : m_strHintText(strHint)
 {
 	//setStyleSheet("background-color: black;");
+	QFont f;
+	f.setFamily("Microsoft YaHei");
+	f.setPixelSize(18);  //此处应该根据系统的分辨率调整
+	QFontMetrics fm(f);
+	QRect re = fm.boundingRect(m_strHintText);
+	re.setSize(QSize(re.width(), re.height() * 3));
+	re.moveCenter(originPoint);
+	this->setGeometry(re);
+}
+
+HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint)
+{
 	QFont f;
 	f.setFamily("Microsoft YaHei");
 	f.setPixelSize(18);  //此处应该根据系统的分辨率调整

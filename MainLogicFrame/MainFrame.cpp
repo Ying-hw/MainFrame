@@ -147,8 +147,7 @@ AbstractWidget* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 
 void MainFrame::Initialize_NetInterface(AbstractNetWork* net, const QString& strChildName)
 {
-	net->StartTimer();
-	if (strChildName != QString::fromLocal8Bit("δ֪"))
+	if (strChildName != QString::fromLocal8Bit("δ֪")) 
 		m_mapAbstractNet[strChildName] = net;
 }
 

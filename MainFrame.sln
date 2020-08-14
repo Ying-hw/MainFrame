@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MainLogicFrame", "MainLogic
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Main", "Main\Main.vcxproj", "{63A7CC13-F036-4956-A0C8-72890CFBBBDC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginControl", "PluginControl\PluginControl.vcxproj", "{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -33,14 +31,6 @@ Global
 		{63A7CC13-F036-4956-A0C8-72890CFBBBDC}.Release|Win32.Build.0 = Release|Win32
 		{63A7CC13-F036-4956-A0C8-72890CFBBBDC}.Release|x64.ActiveCfg = Release|x64
 		{63A7CC13-F036-4956-A0C8-72890CFBBBDC}.Release|x64.Build.0 = Release|x64
-		{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}.Debug|Win32.ActiveCfg = Debug|Win32
-		{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}.Debug|Win32.Build.0 = Debug|Win32
-		{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}.Debug|x64.ActiveCfg = Debug|x64
-		{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}.Debug|x64.Build.0 = Debug|x64
-		{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}.Release|Win32.ActiveCfg = Release|Win32
-		{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}.Release|Win32.Build.0 = Release|Win32
-		{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}.Release|x64.ActiveCfg = Release|x64
-		{E2DF0C31-8A09-4A93-A205-A323F5C47DE0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,9 +4,13 @@
 #include "HintFrameWidget.h"
 
 AbstractNetWork::AbstractNetWork(ProtoType Type, QString addrs, int port, QObject* parent) :
-	QObject(parent), m_prototype(Type), m_pReply(nullptr), m_isNetErrorShow(false), m_Tcp(NULL) {
+	QThread(parent), m_prototype(Type), m_pReply(nullptr), m_Tcp(NULL), m_size(0) {
 	m_addrInfo.m_strAddr = addrs;
 	m_addrInfo.m_port = port;
+	DnsDispose* dns =  &DnsDispose::GetDnsInstance(addrs);
+	connect(dns, SIGNAL(NetError(const QString &)), this, SLOT(ProcessError(const QString&)));
+	dns->ExcuteInitNetFunction(this);
+	m_mutex.lock();
 }
 
 AbstractNetWork::~AbstractNetWork(){
@@ -14,7 +18,7 @@ AbstractNetWork::~AbstractNetWork(){
 }
 
 
-int AbstractNetWork::SendMsg(const QString& strContent)
+int AbstractNetWork::SendMsg()
 {
 	int size = 0;
 	switch (m_prototype)
@@ -24,19 +28,19 @@ int AbstractNetWork::SendMsg(const QString& strContent)
 	case ProtoType::HTTP:
 		break;
 	case ProtoType::TCP:
-		if (m_Tcp)
-			size = m_Tcp->write(strContent.toUtf8());
+		if (!m_Tcp)
+			m_waitMutex.wait(&m_mutex);
+		size = m_Tcp->write(m_strContent.toUtf8());
+		qDebug() << m_strContent.toUtf8();
 		break;
 	case ProtoType::UDP:
-		size = m_Udp.write(strContent.toUtf8());
+		size = m_Udp.writeDatagram(m_strContent.toUtf8(), QHostAddress(m_addrInfo.m_strAddr), m_addrInfo.m_port);
 		break;
 	case ProtoType::SMTP:
 		break;
 	default:
 		break;
 	}
-	if (size == -1)
-		m_isNetErrorShow = false;
 	return size;
 }
 
@@ -59,15 +63,14 @@ void AbstractNetWork::initCommunication(QHostAddress strAddr)
 		}
 			break;
 		case ProtoType::UDP:
-			connect(&m_Udp, SIGNAL(connected()), this, SLOT(connected()));
 			connect(&m_Udp, SIGNAL(readyRead()), this, SLOT(RecvMsg()));
-			m_Udp.connectToHost(m_addrInfo.m_strAddr, m_addrInfo.m_port);
 			break;
 		case ProtoType::SMTP:
 			break;
 		default:
 			break;
 		}
+		m_waitMutex.wakeOne();
 	}
 }
 
@@ -93,7 +96,6 @@ void* AbstractNetWork::ReturnCurrentTargetSocket()
 
 void AbstractNetWork::ReleaseCommuncation()
 {
-	m_timer.stop();
 	switch (m_prototype)
 	{
 	case ProtoType::FTP:
@@ -119,7 +121,22 @@ void AbstractNetWork::ReleaseCommuncation()
 	qDebug() << "111111111111111111111111111111111";
 }
 
-void AbstractNetWork::ProcessError()
+void AbstractNetWork::run()
+{
+	SendMsg();
+}
+
+int AbstractNetWork::Send(const QString& strContent)
+{
+	m_strContent = const_cast<QString&>(strContent);
+	if (m_Tcp)
+		return SendMsg();
+	else 
+		start();
+	return 0;
+}
+
+void AbstractNetWork::ProcessError(const QString& strError)
 {
 
 }
@@ -136,32 +153,59 @@ void AbstractNetWork::SetCommunicationProtocol(ProtoType type)
 	m_prototype = type;
 }
 
-void AbstractNetWork::StartTimer()
+
+
+
+DnsDispose::DnsDispose(QString addrs, QObject* parent /*= 0*/) : QThread(parent), m_strAddr(addrs), m_isNetErrorShow(false), m_NetWork(NULL)
 {
-	m_timer.setInterval(3000);
-	connect(&m_timer, SIGNAL(timeout()), this, SLOT(CheckNetIsOnline()));
-	m_timer.start();
+	QTimer timer;
+	timer.setInterval(3000);
+	connect(&timer, &QTimer::timeout, this, [this]() {
+		start();
+	});
+	timer.start();
+	start();
 }
 
-void AbstractNetWork::CheckNetIsOnline()
+DnsDispose::~DnsDispose()
 {
-	if (!m_addrInfo.m_strAddr.isEmpty())
-		QHostInfo::lookupHost(m_addrInfo.m_strAddr, this, SLOT(processSelectResult(QHostInfo)));
+
 }
 
-void AbstractNetWork::processSelectResult(QHostInfo host)
+
+void DnsDispose::run()
+{
+	if (!m_strAddr.isEmpty())
+		QHostInfo::lookupHost(m_strAddr, this, SLOT(processDnsResult(QHostInfo)));
+}
+
+void DnsDispose::ExcuteInitNetFunction(AbstractNetWork* that)
+{
+	m_NetWork = that;
+}
+
+DnsDispose& DnsDispose::GetDnsInstance(QString strAddr)
+{
+	static DnsDispose m_Dns(strAddr);
+	return m_Dns;
+}
+
+void DnsDispose::processDnsResult(QHostInfo host)
 {
 	if (host.error() != QHostInfo::NoError) {
 		if (!m_isNetErrorShow) {
 			QDesktopWidget destop;
-			HintFrameWidget* hint = new HintFrameWidget(host.errorString(), destop.rect().center(), this);
+			HintFrameWidget* hint = new HintFrameWidget(host.errorString(), destop.rect().center());
 			hint->show();
-			ProcessError();
+			emit NetError(host.errorString());
 		}
 		m_isNetErrorShow = true;
 	}
 	else {
 		m_isNetErrorShow = false;
-		initCommunication(host.addresses().first());
+		m_addr = host.addresses().first();
+		if (m_NetWork)
+			m_NetWork->initCommunication(m_addr);
 	}
 }
+

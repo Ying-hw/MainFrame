@@ -15,8 +15,31 @@ struct socketAddrInfo {
 	QString m_strAddr;
 	int m_port;
 };
+class AbstractNetWork;
 
-class MAINFRAME_EXPORT AbstractNetWork : public QObject
+class MAINFRAME_EXPORT DnsDispose : public QThread {
+	Q_OBJECT
+public:
+	DnsDispose(QString addrs, QObject* parent = 0);
+	~DnsDispose();
+
+	void run();
+	void ExcuteInitNetFunction(AbstractNetWork* that);
+	static DnsDispose& GetDnsInstance(QString addr);
+signals:
+	void NetError(const QString &strError);
+public slots:
+	void processDnsResult(QHostInfo host);
+private:
+	QString m_strAddr;
+	bool m_isNetErrorShow;
+	AbstractNetWork* m_NetWork;
+	QHostAddress m_addr;
+};
+
+
+
+class MAINFRAME_EXPORT AbstractNetWork : public QThread
 {
 	Q_OBJECT
 public:
@@ -29,28 +52,28 @@ public:
 	};
 	AbstractNetWork(ProtoType Type, QString addrs, int port, QObject* parent = 0);
 	virtual ~AbstractNetWork();
-	virtual int SendMsg(const QString& strContent);
-	void initCommunication(QHostAddress addr);
+	virtual int SendMsg();
 	void* ReturnCurrentTargetSocket();
 	void SetCommunicationProtocol(ProtoType type);
-	void StartTimer();
 	void ReleaseCommuncation();
+	void run();
+	int Send(const QString& strContent);
+	void initCommunication(QHostAddress addr);
 protected slots:
 	virtual int RecvMsg() = 0;
-	virtual void ProcessError();
+	virtual void ProcessError(const QString& strError);
 	virtual void connected();
-private slots:
-	void CheckNetIsOnline();
-	void processSelectResult(QHostInfo host);
 private:
 	QTcpSocket* m_Tcp;
 	QUdpSocket m_Udp;
 	ProtoType m_prototype;
 	QNetworkAccessManager m_AccessMan;
 	QNetworkReply* m_pReply;
-	QTimer m_timer;
-	bool m_isNetErrorShow;
 	socketAddrInfo m_addrInfo;
+	QMutex m_mutex;
+	QWaitCondition m_waitMutex;
+	QString m_strContent;
+	int m_size;
 };
 
 #endif // NETWORK_H

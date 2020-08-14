@@ -10,6 +10,7 @@ class MAINFRAME_EXPORT HintFrameWidget : public QWidget
 public:
 	HintFrameWidget(QString strHint, AbstractWidget* parent);
 	HintFrameWidget(QString strHint, QPoint originPoint, AbstractNetWork* parent);
+	HintFrameWidget(QString strHint, QPoint originPoint);
 	~HintFrameWidget();
 	void initSize();
 	void showEvent(QShowEvent *event);

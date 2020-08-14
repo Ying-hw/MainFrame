@@ -7,20 +7,6 @@
 #include "AbstractNetWork.h"
 #include "AbstractWidget.h"
 
-#define   CONFIG   "../Data/Config/"
-#define   LOG      "../Data/Log/"
-#define   IMAGE    "../Data/Image/"
-
-#define LOCATION
-#define STRTOLOCATION(LOCATION) QRect(LOCATION.section(",",0,0).toInt(), \
-									LOCATION.section(",", 1, 1).toInt(), \
-									LOCATION.section(",", 2, 2).toInt(), \
-									LOCATION.section(",", 3, 3).toInt());   
-
-#define LOCATIONTOSTR(LOCATION) QString("%1,%2,%3,%4").arg(LOCATION->geometry().x()) \
-										.arg(LOCATION->geometry().y()).arg(LOCATION->geometry().width()) \
-										.arg(LOCATION->geometry().height());   ///< ¾ØÐÎ×ªÎª×Ö·û´®£¬´ý·ÏÆú
-
 
 namespace CommonTemplate {
 	class InitType;
