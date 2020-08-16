@@ -7,14 +7,14 @@ AbstractNetWork::AbstractNetWork(ProtoType Type, QString addrs, int port, QObjec
 	QThread(parent), m_prototype(Type), m_pReply(nullptr), m_Tcp(NULL), m_size(0) {
 	m_addrInfo.m_strAddr = addrs;
 	m_addrInfo.m_port = port;
-	DnsDispose* dns =  &DnsDispose::GetDnsInstance(addrs);
+	DnsDispose* dns = new DnsDispose(addrs, this);
 	connect(dns, SIGNAL(NetError(const QString &)), this, SLOT(ProcessError(const QString&)));
 	dns->ExcuteInitNetFunction(this);
 	m_mutex.lock();
 }
 
 AbstractNetWork::~AbstractNetWork(){
-	
+
 }
 
 
@@ -158,20 +158,20 @@ void AbstractNetWork::SetCommunicationProtocol(ProtoType type)
 
 DnsDispose::DnsDispose(QString addrs, QObject* parent /*= 0*/) : QThread(parent), m_strAddr(addrs), m_isNetErrorShow(false), m_NetWork(NULL)
 {
-	QTimer timer;
-	timer.setInterval(3000);
-	connect(&timer, &QTimer::timeout, this, [this]() {
+	
+	m_Timer.setInterval(3000);
+	connect(&m_Timer, &QTimer::timeout, this, [this]() {
 		start();
 	});
-	timer.start();
+	m_Timer.start();
 	start();
 }
 
 DnsDispose::~DnsDispose()
 {
-
+	wait();
+	m_Timer.stop();
 }
-
 
 void DnsDispose::run()
 {
@@ -184,10 +184,10 @@ void DnsDispose::ExcuteInitNetFunction(AbstractNetWork* that)
 	m_NetWork = that;
 }
 
-DnsDispose& DnsDispose::GetDnsInstance(QString strAddr)
+void DnsDispose::StopTime()
 {
-	static DnsDispose m_Dns(strAddr);
-	return m_Dns;
+	m_Timer.stop();
+	wait();
 }
 
 void DnsDispose::processDnsResult(QHostInfo host)

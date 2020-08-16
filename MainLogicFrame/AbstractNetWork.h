@@ -25,7 +25,7 @@ public:
 
 	void run();
 	void ExcuteInitNetFunction(AbstractNetWork* that);
-	static DnsDispose& GetDnsInstance(QString addr);
+	void StopTime();
 signals:
 	void NetError(const QString &strError);
 public slots:
@@ -35,6 +35,7 @@ private:
 	bool m_isNetErrorShow;
 	AbstractNetWork* m_NetWork;
 	QHostAddress m_addr;
+	QTimer m_Timer;
 };
 
 

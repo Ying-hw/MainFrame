@@ -17,7 +17,7 @@ SignalQueue::~SignalQueue()
 {
 	m_isRuning = false;
 	m_waitMutex.wakeOne();
-	sleep(1);
+	wait();
 }
 
 void SignalQueue::Send_Message(Signal_ signal_, void* param) { 
@@ -151,7 +151,7 @@ void SignalQueue::DeleteAll(MainWidget* pTgtWidget) {
 	MainFrame* frame = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
 	int ResidueCount = frame->GetShowWidgetCount(pTgtWidget);
 	const QString strName = frame->GetMyselfName(pTgtWidget->GetInstance());
-	emit frame->ReleaseWidget(strName, false);
+	emit frame->ReleaseWidget(strName, frame->isParent(strName));
 	if (ResidueCount > 0)
 		return;
 	m_isRuning = false;
@@ -159,6 +159,11 @@ void SignalQueue::DeleteAll(MainWidget* pTgtWidget) {
 	deleteLater();
 	delete frame;
 	frame = NULL;
+	auto init = g_pSignal->ReturnUser(SystemUser::MESSAGE);
+	if (init) {
+		delete init;
+		init = NULL;
+	}
 	delete g_pSignal;
 	g_pSignal = NULL;
 }

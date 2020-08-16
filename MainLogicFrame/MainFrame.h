@@ -93,6 +93,11 @@ public:
 	/// \param[in] strLog 日志代码
 	void WriteLog(AbstractWidget::LogGrade Grade, const QString& strLog);
 
+	/// \brief 判断是不是父节点
+	/// \param[in] strTraget 目标名称
+	/// \retval 返回true代表目标为父节点名称，否则为false
+	bool isParent(const QString& strTarget);
+
 public slots:
 	/// \brief 初始化网络抽象类
 	/// 通过父类指针指向子类，实现多态虚函数特性，可自由调用子类接口

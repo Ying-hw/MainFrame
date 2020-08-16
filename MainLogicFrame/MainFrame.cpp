@@ -255,6 +255,14 @@ int MainFrame::GetShowWidgetCount(MainWidget* mainWidget)
 	});
 }
 
+
+bool MainFrame::isParent(const QString& strTarget)
+{
+	return std::find_if(m_PluginConfig.begin(), m_PluginConfig.end(), [strTarget](const PluginInfo& plugin) {
+		return plugin.m_str_name == strTarget;
+	});
+}
+
 const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
 {
 	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [ChildWidget](const AbstractWidget* AbsWidget) {

@@ -54,16 +54,16 @@ namespace CommonTemplate{
 				static RegisterType<sizeof...(Tn)> m_RegType; 
 				m_RegType.ExpandValues(types...);
 				m_Params = m_RegType.GetTypesArray();
-				g_pSignal->SetUserIdentify(m_Params, SystemUser::MESSAGE);
+				g_pSignal->SetUserIdentify(this, SystemUser::MESSAGE);
 			}	
 
 	template<typename index>
 			static void * Get(index index_) {
-				Params_Array* pArray = (Params_Array*)g_pSignal->ReturnUser(SystemUser::MESSAGE);
+				InitType* init = (InitType*)g_pSignal->ReturnUser(SystemUser::MESSAGE);
 				int i = 0;
-				for (i; (pArray + i)->GetParam().m_param != nullptr; i++);
+				for (i; (init->m_Params + i)->GetParam().m_param != nullptr; i++);
 				if (index_ < i && index_ > -1) 
-					return pArray[index_].GetParam().m_param;
+					return init->m_Params[index_].GetParam().m_param;
 				return nullptr;
 			} 
 			Params_Array* m_Params;
@@ -71,8 +71,13 @@ namespace CommonTemplate{
 
 	template<typename... Tn> 
 			InitType* Send_Message(Tn... types) {
-				static InitType Init(types...);
-				return &Init;
+				InitType* init = (InitType*)g_pSignal->ReturnUser(SystemUser::MESSAGE);
+				if (init) {
+					delete init;
+					init = NULL;
+				}
+				InitType* Init = new InitType(types...);
+				return Init;
 			}
 }
 
