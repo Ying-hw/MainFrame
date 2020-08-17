@@ -6,9 +6,9 @@ void MainWidget::setMain(AbstractWidget* pMain, const QRect& rect, const QString
 	m_pWidget = pMain;
 	setInitUi(rect);
 	InitAanimation();
+	show();
 	this->setWindowTitle(strTitle.toLocal8Bit().data());
 	this->setWindowIcon(QIcon(QString(IMAGE) + "Titlepicture.JPG"));
-	show();
 	TDragProxy*	mpDragProxy = new TDragProxy(this);
 	mpDragProxy->SetBorderWidth(5, 5, 5, 5);
 }

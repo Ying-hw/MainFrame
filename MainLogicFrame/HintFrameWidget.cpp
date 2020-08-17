@@ -27,7 +27,7 @@ HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint, AbstractNe
 	this->setGeometry(re);
 }
 
-HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint)
+HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint) : m_strHintText(strHint)
 {
 	setWindowFlags(Qt::FramelessWindowHint);
 	setAttribute(Qt::WA_DeleteOnClose);

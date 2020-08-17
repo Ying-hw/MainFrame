@@ -50,7 +50,7 @@ void Animation::closeAnimation(bool closeHide) {
 		m_IsShow = true;
 		return;
 	}
-	m_Animation_Opacity->setDuration(600);
+	m_Animation_Opacity->setDuration(700);
 	m_Animation_Opacity->setStartValue(1);
 	m_Animation_Opacity->setEndValue(0);
 	m_Animation_Opacity->setEasingCurve(QEasingCurve::Linear);
@@ -70,13 +70,13 @@ void Animation::InitAanimation()
 	m_Animation_Opacity = new QPropertyAnimation(this, "windowOpacity");
 	m_Animation_Geometry = new QPropertyAnimation(this, "geometry");
 
-	m_Animation_Opacity->setDuration(600);
+	m_Animation_Opacity->setDuration(700);
 	m_Animation_Opacity->setStartValue(0);
 	m_Animation_Opacity->setEndValue(1);
 	m_Animation_Opacity->setEasingCurve(QEasingCurve::Linear);
 
 	QDesktopWidget deskTop;
-	m_Animation_Geometry->setDuration(500);
+	m_Animation_Geometry->setDuration(400);
 	m_Animation_Geometry->setStartValue(QRect(0, 0, deskTop.width(), deskTop.height()));
 	m_Animation_Geometry->setEndValue(this->geometry());
 }
