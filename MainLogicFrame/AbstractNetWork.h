@@ -58,7 +58,7 @@ public:
 	void SetCommunicationProtocol(ProtoType type);
 	void ReleaseCommuncation();
 	void run();
-	int Send(const QString& strContent);
+	int Send(std::string& strContent);
 	void initCommunication(QHostAddress addr);
 protected slots:
 	virtual int RecvMsg() = 0;
@@ -73,7 +73,7 @@ private:
 	socketAddrInfo m_addrInfo;
 	QMutex m_mutex;
 	QWaitCondition m_waitMutex;
-	QString m_strContent;
+	std::string m_strContent;
 	int m_size;
 };
 

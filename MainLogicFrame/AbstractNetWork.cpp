@@ -30,11 +30,10 @@ int AbstractNetWork::SendMsg()
 	case ProtoType::TCP:
 		if (!m_Tcp)
 			m_waitMutex.wait(&m_mutex);
-		size = m_Tcp->write(m_strContent.toUtf8());
-		qDebug() << m_strContent.toUtf8();
+		size = m_Tcp->write(m_strContent.c_str());
 		break;
 	case ProtoType::UDP:
-		size = m_Udp.writeDatagram(m_strContent.toUtf8(), QHostAddress(m_addrInfo.m_strAddr), m_addrInfo.m_port);
+		size = m_Udp.writeDatagram(m_strContent.c_str(), QHostAddress(m_addrInfo.m_strAddr), m_addrInfo.m_port);
 		break;
 	case ProtoType::SMTP:
 		break;
@@ -126,9 +125,10 @@ void AbstractNetWork::run()
 	SendMsg();
 }
 
-int AbstractNetWork::Send(const QString& strContent)
+int AbstractNetWork::Send(std::string& strContent)
 {
-	m_strContent = const_cast<QString&>(strContent);
+	
+	m_strContent = strContent.c_str();
 	if (m_Tcp)
 		return SendMsg();
 	else 

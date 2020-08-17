@@ -15,7 +15,8 @@ HintFrameWidget::HintFrameWidget(QString strHint, AbstractWidget* parent) : m_st
 
 HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint, AbstractNetWork* parent) : m_strHintText(strHint)
 {
-	//setStyleSheet("background-color: black;");
+	setWindowFlags(Qt::FramelessWindowHint);
+	setAttribute(Qt::WA_DeleteOnClose);
 	QFont f;
 	f.setFamily("Microsoft YaHei");
 	f.setPixelSize(18);  //此处应该根据系统的分辨率调整
@@ -28,6 +29,8 @@ HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint, AbstractNe
 
 HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint)
 {
+	setWindowFlags(Qt::FramelessWindowHint);
+	setAttribute(Qt::WA_DeleteOnClose);
 	QFont f;
 	f.setFamily("Microsoft YaHei");
 	f.setPixelSize(18);  //此处应该根据系统的分辨率调整
