@@ -23,6 +23,11 @@ void Animation::showEvent(QShowEvent *event) {
 		return;
 	}
 	QParallelAnimationGroup* group = new QParallelAnimationGroup(this);
+	if (m_Animation_Opacity->startValue() == 1)
+	{
+		m_Animation_Opacity->setStartValue(0);
+		m_Animation_Opacity->setEndValue(1);
+	}
 	group->addAnimation(m_Animation_Opacity);
 	group->addAnimation(m_Animation_Geometry);
 	group->start();
@@ -76,7 +81,7 @@ void Animation::InitAanimation()
 	m_Animation_Opacity->setEasingCurve(QEasingCurve::Linear);
 
 	QDesktopWidget deskTop;
-	m_Animation_Geometry->setDuration(400);
+	m_Animation_Geometry->setDuration(200);
 	m_Animation_Geometry->setStartValue(QRect(0, 0, deskTop.width(), deskTop.height()));
 	m_Animation_Geometry->setEndValue(this->geometry());
 }
