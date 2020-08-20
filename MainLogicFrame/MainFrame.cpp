@@ -48,7 +48,6 @@ void MainFrame::ReleaseCurrentWidget(const QString& strPlugName, bool isParent) 
 		delete Tgt;
 		Tgt = NULL;
 	}
-
 	for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin();
 		isParent && it != m_LstLoadlib.end();it++) {
 		if ((*it)->fileName().contains(strPlugName)) {
@@ -87,7 +86,7 @@ void MainFrame::FindPlugin() {
 		}});
 }
 
-void MainFrame::FreeLib(AbstractWidget* pTgtOldWidget) {
+void MainFrame::FreeLib(const AbstractWidget* pTgtOldWidget) {
 	QMap<QString, AbstractWidget*>::iterator it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [pTgtOldWidget](const AbstractWidget* widget) {
 		return pTgtOldWidget == widget;
 	});

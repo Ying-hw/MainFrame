@@ -49,7 +49,7 @@ public:
 	/// \brief 释放已经加载的插件
 	/// \param[in] pthis this指针
 	/// \param[in] that 目标实例
-	void FreeLib(AbstractWidget* that);
+	void FreeLib(const AbstractWidget* that);
 
 	/// \brief 释放已经加载的插件
 	/// \param[in] strPlugName 插件名称
@@ -157,6 +157,7 @@ private:
 	QMap<QString, AbstractWidget*> m_mapAbstractWidget;		///< 插件或插件中的实例名称-抽象插件基类
 	MessageThread* m_pMsgThread;							///< 消息线程
 	QMap<QString, AbstractNetWork*> m_mapAbstractNet;       ///< 窗口对应的名称--窗口对应的网络接口
+	friend class SignalQueue;
 };
 
 #endif // MAINFRAME_H
