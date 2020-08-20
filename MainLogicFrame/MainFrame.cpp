@@ -3,13 +3,13 @@
 #include "MainWidget.h"
 #include "MessageThread.h"
 
-MainFrame::MainFrame() : QObject(), m_pMsgThread(NULL) {
+MainFrame::MainFrame() : QObject(), m_pMsgThread(NULL), m_pTargetQueue(NULL) {
 	m_pMsgThread = new MessageThread(this);
 	m_pMsgThread->start();
 	QString strDate = QDate::currentDate().toString(Qt::ISODate);
 	m_logFile.setFileName(QString(LOG) + strDate + ".txt");
 	m_logFile.open(QIODevice::Append);
-	connect(this, SIGNAL(ReleaseWidget(const QString&, bool)), this, SLOT(ReleaseCurrentWidget(const QString&, bool)));
+	connect(this, SIGNAL(ReleaseWidget(const QString&, bool)), this, SLOT(ReleaseCurrentWidget(const QString&, bool)), Qt::DirectConnection);
 	connect(this, SIGNAL(InitWidget(const PluginInfo*)), this, SLOT(LinkCurrentWidgetInterface(const PluginInfo*)));
 	g_pSignal->SetUserIdentify(this, SystemUser::MAINFRAME);
 	ConfigPlug();
@@ -86,21 +86,6 @@ void MainFrame::FindPlugin() {
 		}});
 }
 
-void MainFrame::FreeLib(const AbstractWidget* pTgtOldWidget) {
-	QMap<QString, AbstractWidget*>::iterator it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [pTgtOldWidget](const AbstractWidget* widget) {
-		return pTgtOldWidget == widget;
-	});
-
-	if (it != m_mapAbstractWidget.end())
-			FreeLib(it.key());
-}
-
-void MainFrame::FreeLib(const QString& strPlugName)
-{
-	UpdataGeometry(strPlugName);
-	emit ReleaseWidget(strPlugName, true);
-}
-
 void MainFrame::LoadLib(const QString strTargetName) {
 	PluginInfo* targetPlug =  std::find_if(m_PluginConfig.begin(), m_PluginConfig.end(), [&](const PluginInfo& plug){
 		return plug.m_str_name == strTargetName;
@@ -174,6 +159,11 @@ void MainFrame::LinkCurrentWidgetInterface(const PluginInfo* targetPlug) {
 	pFunction pfun = (pFunction)(m_LstLoadlib.last()->resolve("Handle"));
 	if (pfun) {
 		AbstractWidget* widget = pfun();
+		if (m_pTargetQueue) {
+			emit m_pTargetQueue->hide_Window();
+			emit ReleaseWidget(GetMyselfName(m_pTargetQueue->m_ParamInfo.m_pOldWidget), true); 
+			m_pTargetQueue = NULL;
+		}
 		widget->m_pInstanceWidget = widget;
 		Initialize_WidgetInterface(widget, targetPlug->m_str_name);
 	}

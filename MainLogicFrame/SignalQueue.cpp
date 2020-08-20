@@ -78,7 +78,8 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		emit minWindow();
 		break;
 	case Signal_::FREEPLUG:
-		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->FreeLib(*(QString*)p.second);
+		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->UpdataGeometry(*(QString*)p.second);
+		emit static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->ReleaseWidget(*(QString*)p.second, true);
 		break;
 	case Signal_::LOADPLUG: 
 	{
@@ -91,10 +92,12 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 		break;
 	case Signal_::SWITCHPLUGIN:
 	{ 
+		MainFrame* frame = static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME]);
+		frame->m_pTargetQueue = this;
 		ParamInfo* paraminfo = (ParamInfo *)p.second;
-		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->LoadLib((char*)paraminfo->m_Params);
-		emit hide_Window();
-		static_cast<MainFrame*>(g_pSignal->m_mapUser[SystemUser::MAINFRAME])->MainFrame::FreeLib(paraminfo->m_pOldWidget);
+		frame->LoadLib((char*)paraminfo->m_Params);
+		//emit hide_Window();
+		frame->UpdataGeometry(frame->GetMyselfName(paraminfo->m_pOldWidget));
 	}
 		break;
 	case Signal_::INITIALIZENETWORK:

@@ -46,15 +46,6 @@ public:
 	/// \retval 返回true代表给定的插件名称或者实例名称正在运行中，返回false没有在运行
 	bool CheckPlugIsRuning(const QString& strPlugName, const QString& strChildName);
 
-	/// \brief 释放已经加载的插件
-	/// \param[in] pthis this指针
-	/// \param[in] that 目标实例
-	void FreeLib(const AbstractWidget* that);
-
-	/// \brief 释放已经加载的插件
-	/// \param[in] strPlugName 插件名称
-	void FreeLib(const QString& strPlugName);
-
 	/// \brief 加载插件
 	/// \param[in] pthis this指针
 	/// \param[in] strTargetName 目标插件名称
@@ -157,6 +148,7 @@ private:
 	QMap<QString, AbstractWidget*> m_mapAbstractWidget;		///< 插件或插件中的实例名称-抽象插件基类
 	MessageThread* m_pMsgThread;							///< 消息线程
 	QMap<QString, AbstractNetWork*> m_mapAbstractNet;       ///< 窗口对应的名称--窗口对应的网络接口
+	SignalQueue* m_pTargetQueue;                            ///< 代表此目标队列所指向的目标插件实例
 	friend class SignalQueue;
 };
 

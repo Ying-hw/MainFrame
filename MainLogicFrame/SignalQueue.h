@@ -55,6 +55,7 @@ private:
 	QMap<SystemUser, void*> m_mapUser; 
 	ParamInfo m_ParamInfo;
 	Signal_ m_CurrentSignal;
+	friend class MainFrame;
 };
 
 #endif  //SIGNALQUEUE__
