@@ -176,7 +176,11 @@ xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\W
       <Command>xcopy "$(ProjectDir)*.h" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\include\" /y
 xcopy "$(TargetPath)" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x64\$(Configuration)\" /y
 xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x64\$(Configuration)\" /y
-xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x64\$(Configuration)\" /y</Command>
+xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x64\$(Configuration)\" /y
+xcopy "$(ProjectDir)*.h" "$(SolutionDir)..\..\Browser\include\" /y
+xcopy "$(TargetPath)" "$(SolutionDir)..\..\Browser\x64\$(Configuration)\" /y
+xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\..\Browser\x64\$(Configuration)\" /y
+xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\Browser\x64\$(Configuration)\" /y</Command>
     </PostBuildEvent>
     <QtMoc>
       <ForceInclude>stdafx.h;../../%(Filename)%(Extension)</ForceInclude>
@@ -247,7 +251,11 @@ xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\W
       <Command>xcopy "$(ProjectDir)*.h" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\include\" /y
 xcopy "$(TargetPath)" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x64\$(Configuration)\" /y
 xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x64\$(Configuration)\" /y
-xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x64\$(Configuration)\" /y</Command>
+xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x64\$(Configuration)\" /y
+xcopy "$(ProjectDir)*.h" "$(SolutionDir)..\..\Browser\include\" /y
+xcopy "$(TargetPath)" "$(SolutionDir)..\..\Browser\x64\$(Configuration)\" /y
+xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\..\Browser\x64\$(Configuration)\" /y
+xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\Browser\x64\$(Configuration)\" /y</Command>
     </PostBuildEvent>
     <QtMoc>
       <ForceInclude>stdafx.h;../../%(Filename)%(Extension)</ForceInclude>
