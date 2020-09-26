@@ -6,6 +6,7 @@
 
 int main(int argc, char *argv[]) {
 	QApplication a(argc, argv);
+	a.setQuitOnLastWindowClosed(false);
 	QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 	QLibrary lib("./MainLogicFrame.dll");
 	if (lib.load()) {
