@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
 	a.setQuitOnLastWindowClosed(false);
 	a.setAttribute(Qt::AA_ShareOpenGLContexts);
 	QTranslator tran;
-	if(tran.load("./qt_zh_CN.qm")) a.installTranslator(&tran);
+	if(tran.load("../Data/qt_zh_CN.qm")) a.installTranslator(&tran);
 	QLibrary lib("./MainLogicFrame.dll");
 	if (lib.load()) {
 		QFunctionPointer fun = lib.resolve("Handle");
