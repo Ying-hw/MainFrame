@@ -1,22 +1,30 @@
 #include "stdafx.h"
 #include "HintFrameWidget.h"
+#include <QProgressBar>
 
 extern SignalQueue* g_pSignal;
 
-HintFrameWidget::HintFrameWidget(QString strHint, AbstractWidget* parent) : m_strHintText(strHint), m_ParentWidget(parent), QWidget(parent)
+HintFrameWidget::HintFrameWidget(QString strHint, AbstractWidget* parent, HintFrameWidget::HintType type/* = HintType::NOBLOCK*/) : m_strHintText(strHint), m_ParentWidget(parent), QWidget(parent)
 {
-	//setStyleSheet("background-color: black;");
 	setWindowFlags(Qt::FramelessWindowHint);
 	setAttribute(Qt::WA_DeleteOnClose);
-	initSize();
+	if (type == HintType::BLOCK) {
+		initBlockModel(strHint);
+		return;
+	}
 	connect(&m_TimeClose, &QTimer::timeout, this, &HintFrameWidget::CloseHintWindow);
 	m_TimeClose.start(3000);
+	initSize();
 }
 
-HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint, AbstractNetWork* parent) : m_strHintText(strHint)
+HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint, AbstractNetWork* parent, HintFrameWidget::HintType type /*= HintType::NOBLOCK*/) : m_strHintText(strHint)
 {
 	setWindowFlags(Qt::FramelessWindowHint);
 	setAttribute(Qt::WA_DeleteOnClose);
+	if (type == HintType::BLOCK) {
+		initBlockModel(strHint);
+		return;
+	}
 	QFont f;
 	f.setFamily("Microsoft YaHei");
 	f.setPixelSize(18);  //此处应该根据系统的分辨率调整
@@ -27,10 +35,14 @@ HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint, AbstractNe
 	this->setGeometry(re);
 }
 
-HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint) : m_strHintText(strHint)
+HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint, HintFrameWidget::HintType type/* = HintType::NOBLOCK*/) : m_strHintText(strHint)
 {
 	setWindowFlags(Qt::FramelessWindowHint);
 	setAttribute(Qt::WA_DeleteOnClose);
+	if (type == HintType::BLOCK) {
+		initBlockModel(strHint);
+		return;
+	}
 	QFont f;
 	f.setFamily("Microsoft YaHei");
 	f.setPixelSize(18);  //此处应该根据系统的分辨率调整
@@ -44,6 +56,28 @@ HintFrameWidget::HintFrameWidget(QString strHint, QPoint originPoint) : m_strHin
 HintFrameWidget::~HintFrameWidget()
 {
 	
+}
+
+void HintFrameWidget::initBlockModel(const QString& strHint)
+{
+	setObjectName("HintFrameWidget");
+
+	QGridLayout* lay = new QGridLayout();
+	QLabel* lab = new QLabel(strHint, this);
+	QProgressBar* bar = new QProgressBar(this);
+	bar->setRange(0, 0);
+						
+	QSpacerItem* It = new QSpacerItem(40, 20);
+	QSpacerItem* Its = new QSpacerItem(40, 20);
+	QHBoxLayout* hBox = new QHBoxLayout(); 
+	
+	hBox->addItem(It);
+	hBox->addWidget(lab);
+	hBox->addItem(Its);
+
+	lay->addLayout(hBox, 0, 0);
+	lay->addWidget(bar);
+	this->setLayout(lay);
 }
 
 void HintFrameWidget::initSize()

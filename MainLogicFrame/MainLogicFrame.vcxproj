@@ -173,10 +173,10 @@ xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\W
       <AdditionalDependencies>libprotobufd.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Widgetsd.lib;qtmaind.lib;Qt5Xmld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)*.h" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\include\" /y
-xcopy "$(TargetPath)" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x64\$(Configuration)\" /y
-xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x64\$(Configuration)\" /y
-xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\x64\$(Configuration)\" /y
+      <Command>xcopy "$(ProjectDir)*.h" "$(SolutionDir)..\QQPlugin\include\" /y
+xcopy "$(TargetPath)" "$(SolutionDir)..\QQPlugin\x64\$(Configuration)\" /y
+xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\QQPlugin\x64\$(Configuration)\" /y
+xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\QQPlugin\x64\$(Configuration)\" /y
 xcopy "$(ProjectDir)*.h" "$(SolutionDir)..\..\Browser\include\" /y
 xcopy "$(TargetPath)" "$(SolutionDir)..\..\Browser\x64\$(Configuration)\" /y
 xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\..\Browser\x64\$(Configuration)\" /y
