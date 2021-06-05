@@ -5,10 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;cxx;c;def</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h</Extensions>
-    </Filter>
     <Filter Include="Form Files">
       <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
       <Extensions>ui</Extensions>
@@ -33,86 +29,114 @@
       <Extensions>qrc;*</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
+    <Filter Include="AbstractClass">
+      <UniqueIdentifier>{152c7495-961b-425c-b564-550d0c5dd335}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Message">
+      <UniqueIdentifier>{cc8ae5ff-19fd-4fc3-9abf-3474029de142}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Other">
+      <UniqueIdentifier>{0ae554b4-3b67-4353-b458-2f04d5489209}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Frame">
+      <UniqueIdentifier>{86f968ad-9cc7-426d-a116-eee0d40f7a07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Define">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainFrame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MainWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SignalQueue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DllMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="plugin.pb.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HintFrameWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AbstractNetWork.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>AbstractClass</Filter>
     </ClCompile>
     <ClCompile Include="AbstractWidget.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>AbstractClass</Filter>
     </ClCompile>
     <ClCompile Include="MessageThread.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Message</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="SignalQueue.cpp">
+      <Filter>Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrame.cpp">
+      <Filter>Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWidget.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="HintFrameWidget.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="plugin.pb.cc">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractMainWindow.cpp">
+      <Filter>AbstractClass</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractObject.cpp">
+      <Filter>AbstractClass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
+      <Filter>Define</Filter>
     </ClInclude>
     <ClInclude Include="MainFrame_global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="plugin.pb.h">
-      <Filter>Header Files</Filter>
+      <Filter>Define</Filter>
     </ClInclude>
     <ClInclude Include="MacroDefine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PluginInfo.h">
-      <Filter>Header Files</Filter>
+      <Filter>Define</Filter>
     </ClInclude>
     <ClInclude Include="MessageTemplate.h">
-      <Filter>Header Files</Filter>
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="plugin.pb.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginInfo.h">
+      <Filter>Other</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="MainFrame.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="MainWidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="SignalQueue.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Animation.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="HintFrameWidget.h">
-      <Filter>Header Files</Filter>
+    <QtMoc Include="AbstractNetWork.h">
+      <Filter>AbstractClass</Filter>
     </QtMoc>
     <QtMoc Include="AbstractWidget.h">
-      <Filter>Header Files</Filter>
+      <Filter>AbstractClass</Filter>
     </QtMoc>
     <QtMoc Include="MessageThread.h">
-      <Filter>Header Files</Filter>
+      <Filter>Message</Filter>
     </QtMoc>
-    <QtMoc Include="AbstractNetWork.h">
-      <Filter>Header Files</Filter>
+    <QtMoc Include="Animation.h">
+      <Filter>Other</Filter>
+    </QtMoc>
+    <QtMoc Include="SignalQueue.h">
+      <Filter>Frame</Filter>
+    </QtMoc>
+    <QtMoc Include="MainFrame.h">
+      <Filter>Frame</Filter>
+    </QtMoc>
+    <QtMoc Include="MainWidget.h">
+      <Filter>Other</Filter>
+    </QtMoc>
+    <QtMoc Include="HintFrameWidget.h">
+      <Filter>Other</Filter>
+    </QtMoc>
+    <QtMoc Include="AbstractMainWindow.h">
+      <Filter>AbstractClass</Filter>
+    </QtMoc>
+    <QtMoc Include="AbstractObject.h">
+      <Filter>AbstractClass</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

@@ -82,7 +82,7 @@ public:
 	/// \brief 写日志
 	/// \param[in] Grade 日志等级
 	/// \param[in] strLog 日志代码
-	void WriteLog(AbstractWidget::LogGrade Grade, const QString& strLog);
+	void WriteLog(LogGrade Grade, const QString& strLog);
 
 	/// \brief 判断是不是父节点
 	/// \param[in] strTraget 目标名称

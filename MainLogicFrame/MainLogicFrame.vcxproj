@@ -266,7 +266,9 @@ xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\Browser\x64\$(Configurat
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AbstractMainWindow.cpp" />
     <ClCompile Include="AbstractNetWork.cpp" />
+    <ClCompile Include="AbstractObject.cpp" />
     <ClCompile Include="AbstractWidget.cpp" />
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="DllMain.cpp" />
@@ -290,6 +292,8 @@ xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\Browser\x64\$(Configurat
     <QtMoc Include="AbstractNetWork.h" />
     <QtMoc Include="AbstractWidget.h" />
     <QtMoc Include="MessageThread.h" />
+    <QtMoc Include="AbstractMainWindow.h" />
+    <QtMoc Include="AbstractObject.h" />
     <ClInclude Include="MacroDefine.h" />
     <ClInclude Include="MainFrame_global.h" />
     <QtMoc Include="MainFrame.h">

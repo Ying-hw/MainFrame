@@ -66,7 +66,7 @@ void MainFrame::UpdateConfigFile() {
 		pluginFile.close();
 	}
 	else 
-		WriteLog(AbstractWidget::LogGrade::Error, pluginFile.errorString());
+		WriteLog(LogGrade::Error, pluginFile.errorString());
 }
 
 void MainFrame::FindPlugin() {
@@ -76,7 +76,7 @@ void MainFrame::FindPlugin() {
 			QLibrary* lib = new QLibrary(info.m_str_path + "/" + info.m_str_name);
 			if (!lib->load()) {
 				QString strError = lib->errorString();
-				WriteLog(AbstractWidget::LogGrade::SeriousError, strError);
+				WriteLog(LogGrade::SeriousError, strError);
 				return;
 			}
 			else {
@@ -97,7 +97,7 @@ void MainFrame::LoadLib(const QString strTargetName) {
 		QLibrary* lib = new QLibrary(targetPlug->m_str_path + "/" + strTargetName);
 		if (!lib->load()) {
 			QString strError = lib->errorString();
-			WriteLog(AbstractWidget::LogGrade::SeriousError, strError);
+			WriteLog(LogGrade::SeriousError, strError);
 		}
 		else { 
 			m_LstLoadlib.append(lib);
@@ -115,7 +115,7 @@ AbstractWidget* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 		QLibrary* lib = new QLibrary(targetPlug->m_str_path + "/" + strTargetName);
 		if (!lib->load()) {
 			QString strError = lib->errorString();
-			WriteLog(AbstractWidget::LogGrade::SeriousError, strError);
+			WriteLog(LogGrade::SeriousError, strError);
 		}
 		else {
 			AbstractWidget* (*pFunction)() = (AbstractWidget * (*)())(lib->resolve("Handle"));
@@ -168,7 +168,7 @@ void MainFrame::LinkCurrentWidgetInterface(const PluginInfo* targetPlug) {
 		Initialize_WidgetInterface(widget, targetPlug->m_str_name);
 	}
 	else
-		WriteLog(AbstractWidget::LogGrade::Warning, m_LstLoadlib.last()->errorString());
+		WriteLog(LogGrade::Warning, m_LstLoadlib.last()->errorString());
 }
 
 const QRect MainFrame::GetNewTargetLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent) {
@@ -278,22 +278,22 @@ const QString MainFrame::GetMyselfName(const AbstractWidget* AbsWidget)
 	return it != m_mapAbstractWidget.end() ? it.key() : QString::fromLocal8Bit("未知");
 }
 
-void MainFrame::WriteLog(AbstractWidget::LogGrade Grade, const QString& strLog)
+void MainFrame::WriteLog(LogGrade Grade, const QString& strLog)
 {
 	QString strCurrentDate = QDateTime::currentDateTime().toString("MM-dd hh:mm:ss");
 	QString strGrade;
 	switch (Grade)
 	{
-	case AbstractWidget::LogGrade::Error:
+	case LogGrade::Error:
 		strGrade = QString::fromLocal8Bit("错误");
 		break;
-	case  AbstractWidget::LogGrade::Tips:
+	case  LogGrade::Tips:
 		strGrade = QString::fromLocal8Bit("提示");
 		break;
-	case AbstractWidget::LogGrade::SeriousError:
+	case LogGrade::SeriousError:
 		strGrade = QString::fromLocal8Bit("严重错误");
 		break;
-	case AbstractWidget::LogGrade::Warning:
+	case LogGrade::Warning:
 		strGrade = QString::fromLocal8Bit("警告");
 		break;
 	default:

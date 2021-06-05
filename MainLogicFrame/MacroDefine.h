@@ -13,6 +13,10 @@
 #define   LOG      "../Data/Log/"
 #define   IMAGE    "../Data/Image/"
 
+#define QWIDGET    QWidget
+#define QMAINWINDOW     QMainWindow
+
+
 
 #define LOCATION
 #define STRTOLOCATION(LOCATION) QRect(LOCATION.section(",",0,0).toInt(), \
@@ -73,6 +77,13 @@ enum class SystemUser {
 enum class Signal_Type {
 	CMD,
 	THREAD
+};
+
+enum class LogGrade {
+	SeriousError,
+	Error,
+	Warning,
+	Tips
 };
 
 

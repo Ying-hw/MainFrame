@@ -30,11 +30,6 @@ void AbstractWidget::Log(LogGrade grade, const QString& strTgtLog)
 	frame->WriteLog(grade, strTgtLog);
 }
 
-int AbstractWidget::CalculateResolution(const int& size) const
-{
-	return 0;
-}
-
 bool AbstractWidget::PlugIsRuning(const QString& strPlug, const QString& strInstance) const
 {
 	MainFrame* frame = (MainFrame *)g_pSignal->ReturnUser(SystemUser::MAINFRAME);
