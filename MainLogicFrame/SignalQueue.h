@@ -15,7 +15,7 @@ struct ParamInfo{
 	ParamInfo() :m_Params(NULL), m_pOldWidget(NULL){}
 	ParamInfo(void * param, QString strTarget) : m_Params(param), strTgtName(strTarget), m_pOldWidget(NULL){}
 	void *m_Params;
-	AbstractWidget* m_pOldWidget;
+	QObject* m_pOldWidget;
 	QString strTgtName;
 };
 
@@ -32,7 +32,7 @@ public:
 	static void doit();
 	void Send_Message(Signal_ signal_, void *param); 
 	void Send_Message(Signal_ SIG, AbstractNetWork* pNet, QString strName);
-	void Send_Message(Signal_ SIG, void* param, const AbstractWidget* widget);
+	void Send_Message(Signal_ SIG, void* param, const QObject* widget);
 	static void* GetTargetInstance(QString strTarget);
 	void SetUserIdentify(void *, SystemUser user);
 	void *ReturnUser(SystemUser user);

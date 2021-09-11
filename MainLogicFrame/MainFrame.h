@@ -29,7 +29,7 @@ public:
 	/// \param[in] ChildName 子节点名称
 	/// \param[in] strParent 父项名称
 	/// \retval 返回界面位置
-	const QRect GetNewTargetLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent);
+	const QRect GetNewTargetLocation(const QWidget* targetWidget, const QString& ChildName, const QString& strParent);
 
 	/// \brief 检查给定的插件或者实例是否在运行状态中
 	/// 如果给定的插件或者实例正在加载的状态就运行消息线程，给上层插件主动发消息
@@ -57,7 +57,7 @@ public:
 	/// \brief 获取目标子类的信号集
 	/// \param[in] pTgtChild 目标子类
 	/// \retval 返回信号集实例
-	SignalQueue* GetTgtSigQueueInstance(const AbstractWidget* pTgtChild);
+	SignalQueue* GetTgtSigQueueInstance(const QObject* pTgtChild);
 
 	/// \brief 更新该插件所有的窗口位置
 	/// \param strPlugName 插件名称
@@ -77,7 +77,7 @@ public:
 	/// \brief 根据对应的widget获取本身的名字
 	/// \param[in] AbsWidget 目标widget
 	/// \retval 返回自身的名称
-	const QString GetMyselfName(const AbstractWidget* AbsWidget);
+	const QString GetMyselfName(const QObject* obj);
 
 	/// \brief 写日志
 	/// \param[in] Grade 日志等级
@@ -139,11 +139,13 @@ private slots:
 	/// \brief 初始化当前插件界面
 	/// \param[in] targetPlug 当前插件
 	void LinkCurrentWidgetInterface(const PluginInfo* targetPlug);
+
+
 private:
 	QFile m_logFile;										///< 日志文件
 	QList<QLibrary*> m_LstLoadlib;							///< 加载库
 	QVector<PluginInfo> m_PluginConfig;						///< 所有插件信息
-	QMap<AbstractWidget*, MainWidget*> m_mapMainWidget;     ///< 子窗口和框架窗口
+	QMap<QObject*, MainWidget*> m_mapMainWidget;     ///< 子窗口和框架窗口
 	Allplugins m_pAllPlugins;								///< 待废弃
 	QMap<QString, AbstractWidget*> m_mapAbstractWidget;		///< 插件或插件中的实例名称-抽象插件基类
 	MessageThread* m_pMsgThread;							///< 消息线程

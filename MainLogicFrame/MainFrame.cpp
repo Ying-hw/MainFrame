@@ -144,9 +144,9 @@ void MainFrame::Initialize_WidgetInterface(AbstractWidget* pTgtChildWidget, cons
 	pmainWidget->setMain(pTgtChildWidget, rect, pTgtChildWidget->windowTitle());
 }
 
-SignalQueue* MainFrame::GetTgtSigQueueInstance(const AbstractWidget* pTgtChild)
+SignalQueue* MainFrame::GetTgtSigQueueInstance(const QObject* pTgtChild)
 {
-	AbstractWidget* widget = const_cast<AbstractWidget*>(pTgtChild);
+	QObject* widget = const_cast<QObject*>(pTgtChild);
 	if (!m_mapMainWidget.contains(widget)) {
 		MainWidget* pmainWidget = new MainWidget;
 		m_mapMainWidget[widget] = pmainWidget;
@@ -171,7 +171,7 @@ void MainFrame::LinkCurrentWidgetInterface(const PluginInfo* targetPlug) {
 		WriteLog(LogGrade::Warning, m_LstLoadlib.last()->errorString());
 }
 
-const QRect MainFrame::GetNewTargetLocation(const AbstractWidget* targetWidget, const QString& ChildName, const QString& strParent) {
+const QRect MainFrame::GetNewTargetLocation(const QWidget* targetWidget, const QString& ChildName, const QString& strParent) {
 	qDebug() << "mingcheng qwi " << ChildName << strParent;
 	for (int i = 0; i < m_pAllPlugins.mutable_plugin()->size(); i++) 
 		for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin(); it != m_LstLoadlib.end(); it++)
@@ -207,7 +207,7 @@ bool MainFrame::CheckPlugIsRuning(const QString& strPlugName, const QString& str
 			for (int j = 0; j < m_pAllPlugins.mutable_plugin(i)->child_size();j++) 
 				if (m_pAllPlugins.mutable_plugin(i)->mutable_child(j)->childname() == strChildName.toStdString())
 					if (m_mapAbstractWidget.contains(strChildName))
-						for (QMap<AbstractWidget*, MainWidget*>::iterator it = m_mapMainWidget.begin();it != m_mapMainWidget.end(); it++)
+						for (QMap<QObject*, MainWidget*>::iterator it = m_mapMainWidget.begin();it != m_mapMainWidget.end(); it++)
 							if (it.key() == m_mapAbstractWidget[strChildName])
 								return true;
 	return false;
@@ -270,10 +270,10 @@ const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
 	return QString::fromLocal8Bit("δ֪");
 }
 
-const QString MainFrame::GetMyselfName(const AbstractWidget* AbsWidget)
+const QString MainFrame::GetMyselfName(const QObject* obj)
 {
-	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [AbsWidget](const AbstractWidget* widget) {
-		return widget == AbsWidget;
+	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [obj](const AbstractWidget* widget) {
+		return widget == obj;
 	});
 	return it != m_mapAbstractWidget.end() ? it.key() : QString::fromLocal8Bit("δ֪");
 }

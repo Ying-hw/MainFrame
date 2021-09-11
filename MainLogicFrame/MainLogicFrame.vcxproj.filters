@@ -5,10 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;cxx;c;def</Extensions>
     </Filter>
-    <Filter Include="Form Files">
-      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
-      <Extensions>ui</Extensions>
-    </Filter>
     <Filter Include="Generated Files">
       <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
       <Extensions>moc;h;cpp</Extensions>
@@ -40,10 +36,6 @@
     </Filter>
     <Filter Include="Frame">
       <UniqueIdentifier>{86f968ad-9cc7-426d-a116-eee0d40f7a07}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Define">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -88,15 +80,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Define</Filter>
-    </ClInclude>
-    <ClInclude Include="MainFrame_global.h">
-      <Filter>Define</Filter>
-    </ClInclude>
-    <ClInclude Include="MacroDefine.h">
-      <Filter>Define</Filter>
-    </ClInclude>
     <ClInclude Include="MessageTemplate.h">
       <Filter>Message</Filter>
     </ClInclude>
@@ -104,6 +87,15 @@
       <Filter>Other</Filter>
     </ClInclude>
     <ClInclude Include="PluginInfo.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="MacroDefine.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrame_global.h">
       <Filter>Other</Filter>
     </ClInclude>
   </ItemGroup>

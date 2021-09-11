@@ -11,10 +11,7 @@ Animation::Animation(QWidget *parent)
 
 Animation::~Animation()
 {
-	delete m_Animation_Opacity;
-	delete m_Animation_Geometry;
-	m_Animation_Geometry = NULL;
-	m_Animation_Opacity = NULL;
+
 }
 
 void Animation::showEvent(QShowEvent *event) {
@@ -28,8 +25,8 @@ void Animation::showEvent(QShowEvent *event) {
 		m_Animation_Opacity->setStartValue(0);
 		m_Animation_Opacity->setEndValue(1);
 	}
-	group->addAnimation(m_Animation_Opacity);
-	group->addAnimation(m_Animation_Geometry);
+	group->addAnimation(&*m_Animation_Opacity);
+	group->addAnimation(&*m_Animation_Geometry);
 	group->start();
 	QWidget::showEvent(event);
 }
@@ -64,16 +61,11 @@ void Animation::closeAnimation(bool closeHide) {
 
 void Animation::InitAanimation()
 {
-	if (m_Animation_Opacity) {
-		delete m_Animation_Opacity;
-		m_Animation_Opacity = NULL;
+	if (!m_Animation_Opacity.get() && !m_Animation_Geometry.get())
+	{
+		m_Animation_Opacity = std::make_shared<QPropertyAnimation>(new QPropertyAnimation(this, "windowOpacity"));
+		m_Animation_Geometry = std::make_shared<QPropertyAnimation>(new QPropertyAnimation(this, "geometry"));
 	}
-	if (m_Animation_Geometry) {
-		delete m_Animation_Geometry;
-		m_Animation_Geometry = NULL;
-	}
-	m_Animation_Opacity = new QPropertyAnimation(this, "windowOpacity");
-	m_Animation_Geometry = new QPropertyAnimation(this, "geometry");
 
 	m_Animation_Opacity->setDuration(700);
 	m_Animation_Opacity->setStartValue(0);

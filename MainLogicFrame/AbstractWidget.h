@@ -39,8 +39,8 @@ public:
 	void SendSIG(Signal_ sig, void* arg, Signal_Type type = Signal_Type::THREAD) const;
 
 private:
-	static AbstractWidget* m_pInstanceWidget;
-	friend class MainFrame;
+	static AbstractWidget* m_pInstanceWidget;    ///< root¸ù½Úµã
+	friend class MainFrame;						
 };
 
 #endif

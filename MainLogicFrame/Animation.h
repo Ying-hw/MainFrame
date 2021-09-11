@@ -2,6 +2,7 @@
 #define ANIMATION_H
 #include "MainFrame_global.h"
 
+
 class MAINFRAME_EXPORT Animation : public QWidget
 {
 	Q_OBJECT
@@ -17,8 +18,7 @@ public slots:
 	void closeAnimation(bool closeHide);
 private:
 	bool m_IsShow;
-	QPropertyAnimation* m_Animation_Opacity;
-	QPropertyAnimation* m_Animation_Geometry;
+	std::shared_ptr<QPropertyAnimation> m_Animation_Opacity, m_Animation_Geometry;
 };
 
 
