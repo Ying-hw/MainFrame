@@ -87,9 +87,10 @@ void MainFrame::FindPlugin() {
 }
 
 void MainFrame::LoadLib(const QString strTargetName) {
-	PluginInfo* targetPlug =  std::find_if(m_PluginConfig.begin(), m_PluginConfig.end(), [&](const PluginInfo& plug){
+	auto lamda = [&](const PluginInfo& plug) {
 		return plug.m_str_name == strTargetName;
-	});
+	};
+	PluginInfo* targetPlug =  std::find_if(m_PluginConfig.begin(), m_PluginConfig.end(), lamda);
 	if (targetPlug) {
 		for (QList<QLibrary*>::iterator it = m_LstLoadlib.begin();it != m_LstLoadlib.end();it++) 
 			if ((*it)->fileName().contains(targetPlug->m_str_name)) 
@@ -108,9 +109,10 @@ void MainFrame::LoadLib(const QString strTargetName) {
 
 AbstractWidget* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 {
-	PluginInfo* targetPlug = std::find_if(m_PluginConfig.begin(), m_PluginConfig.end(), [&](const PluginInfo& plug) {
+	auto lamda = [&](const PluginInfo& plug) {
 		return plug.m_str_name == strTargetName;
-	});
+	};
+	PluginInfo* targetPlug = std::find_if(m_PluginConfig.begin(), m_PluginConfig.end(), lamda);
 	if (targetPlug) {
 		QLibrary* lib = new QLibrary(targetPlug->m_str_path + "/" + strTargetName);
 		if (!lib->load()) {
@@ -247,14 +249,16 @@ int MainFrame::GetShowWidgetCount(MainWidget* mainWidget)
 
 bool MainFrame::isParent(const QString& strTarget)
 {
-	return std::find_if(m_PluginConfig.begin(), m_PluginConfig.end(), [strTarget](const PluginInfo& plugin) {
+	auto lamda = [strTarget](const PluginInfo& plugin) {
 		return plugin.m_str_name == strTarget;
-	});
+	};
+	return std::find_if(m_PluginConfig.begin(), m_PluginConfig.end(), lamda);
 }
 
 const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
 {
-	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [ChildWidget](const AbstractWidget* AbsWidget) {
+	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), 
+		[ChildWidget](const AbstractWidget* AbsWidget) {
 		return AbsWidget == ChildWidget->m_pInstanceWidget;
 	});
 	if (it != m_mapAbstractWidget.end()) 
@@ -272,7 +276,8 @@ const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
 
 const QString MainFrame::GetMyselfName(const QObject* obj)
 {
-	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), [obj](const AbstractWidget* widget) {
+	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(),
+		[obj](const AbstractWidget* widget) {
 		return widget == obj;
 	});
 	return it != m_mapAbstractWidget.end() ? it.key() : QString::fromLocal8Bit("δ֪");

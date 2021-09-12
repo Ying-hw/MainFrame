@@ -6,7 +6,7 @@
 SignalQueue* g_pSignal = NULL;
 
 
-SignalQueue::SignalQueue() : QThread(), m_isRuning(true), m_CurrentSignal(Signal_::INVALID)
+SignalQueue::SignalQueue() : QThread(), m_isRuning(true)
 {
 	if (!g_pSignal) 
 		g_pSignal = this;
@@ -21,7 +21,6 @@ SignalQueue::~SignalQueue()
 }
 
 void SignalQueue::Send_Message(Signal_ signal_, void* param) { 
-	m_CurrentSignal = signal_;  
 	QPair<Signal_, void *> p;
 	p.first = signal_;
 	p.second = param;
@@ -119,10 +118,6 @@ void SignalQueue::selectSignal(QPair<Signal_, void *> p) {
 	default:
 		break;
 	}
-}
-
-void SignalQueue::doit() {
-	
 }
 
 void SignalQueue::SetUserIdentify(void *pIdentify, SystemUser SysUser) {

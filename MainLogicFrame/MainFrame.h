@@ -7,7 +7,7 @@
 #include "AbstractNetWork.h"
 #include "AbstractWidget.h"
 
-
+///< Ç°ÖÃÉùÃ÷
 namespace CommonTemplate {
 	class InitType;
 }

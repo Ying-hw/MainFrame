@@ -1,10 +1,28 @@
 #ifndef  __ABSTRACTMAINWINDOW__
 #define  __ABSTRACTMAINWINDOW__
-
+/*!
+ * \file AbstractMainWindow.h
+ *
+ * \brief 提供复杂菜单主窗口基类
+ *
+ * \author yhw
+ * \date 2021/09/12 13:11
+ *
+ *
+ */
 #include "MainFrame_global.h"
 #include "SignalQueue.h"
 #include <QMainWindow>
 
+
+/*!
+ * \class AbstractMainWindow
+ *
+ * \brief 提供复杂菜单主窗口基类
+ *
+ * \author yhw
+ * \date 2021年9月12日
+ */
 class MAINFRAME_EXPORT AbstractMainWindow : public QMainWindow
 {
 	Q_OBJECT

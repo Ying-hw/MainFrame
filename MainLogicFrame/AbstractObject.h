@@ -6,6 +6,7 @@
 #include "MainFrame_global.h"
 #include "SignalQueue.h"
 
+
 class MAINFRAME_EXPORT AbstractObject : public QObject
 {
 	Q_OBJECT
@@ -39,7 +40,7 @@ public:
 	void SendSIG(Signal_ sig, void* arg, Signal_Type type = Signal_Type::THREAD) const;
 
 private:
-	friend class MainFrame;
+	friend class MainFrame; ///< 友元类，可访问私有的函数
 };
 
 #endif
