@@ -3,6 +3,12 @@
 #include "SignalQueue.h"
 #include "MainFrame.h"
 
+
+void AbstractWidget::closeEvent(QCloseEvent* event)
+{
+	OnClose();
+}
+
 AbstractWidget* AbstractWidget::m_pInstanceWidget = NULL;
 AbstractWidget::AbstractWidget(QWidget* parent /*= 0*/)
 {

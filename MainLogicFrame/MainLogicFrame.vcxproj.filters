@@ -69,25 +69,22 @@
     <ClCompile Include="HintFrameWidget.cpp">
       <Filter>Other</Filter>
     </ClCompile>
-    <ClCompile Include="plugin.pb.cc">
-      <Filter>Other</Filter>
-    </ClCompile>
     <ClCompile Include="AbstractMainWindow.cpp">
       <Filter>AbstractClass</Filter>
     </ClCompile>
     <ClCompile Include="AbstractObject.cpp">
       <Filter>AbstractClass</Filter>
     </ClCompile>
+    <ClCompile Include="plugin.pb.cc">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractDialog.cpp">
+      <Filter>AbstractClass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MessageTemplate.h">
       <Filter>Message</Filter>
-    </ClInclude>
-    <ClInclude Include="plugin.pb.h">
-      <Filter>Other</Filter>
-    </ClInclude>
-    <ClInclude Include="PluginInfo.h">
-      <Filter>Other</Filter>
     </ClInclude>
     <ClInclude Include="MacroDefine.h">
       <Filter>Other</Filter>
@@ -97,6 +94,15 @@
     </ClInclude>
     <ClInclude Include="MainFrame_global.h">
       <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="plugin.pb.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginInfo.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractObject.h">
+      <Filter>AbstractClass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -127,7 +133,7 @@
     <QtMoc Include="AbstractMainWindow.h">
       <Filter>AbstractClass</Filter>
     </QtMoc>
-    <QtMoc Include="AbstractObject.h">
+    <QtMoc Include="AbstractDialog.h">
       <Filter>AbstractClass</Filter>
     </QtMoc>
   </ItemGroup>

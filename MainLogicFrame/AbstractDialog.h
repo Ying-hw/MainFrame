@@ -1,23 +1,26 @@
-#ifndef  __ABSTRACTOBJECT__
-#define  __ABSTRACTOBJECT__
-
-#include <QObject>
+#ifndef  ABSTRACTDIALOG_H
+#define ABSTRACTDIALOG_H
 
 #include "MainFrame_global.h"
 #include "SignalQueue.h"
+#include <QDialog>
+#include "AbstractObject.h"
+#include <QCloseEvent>
 
-
-class MAINFRAME_EXPORT AbstractObject 
+class AbstractDialog : public QDialog, public AbstractObject
 {
+	Q_OBJECT
 
 public:
-	AbstractObject();
-	~AbstractObject();
+	AbstractDialog(QDialog* parent = 0);
+	~AbstractDialog();
 
 	/// \brief 收消息函数
 	/// 在函数内部执行get函数即可收到消息，阻塞等待接收
 	virtual void OnMessage();
 
+	/// \brief 窗口关闭事件
+	virtual void OnClose();
 
 	/// \brief 输出log
 	/// \brief Grade 日志等级
@@ -37,7 +40,11 @@ public:
 	void SendSIG(Signal_ sig, void* arg, Signal_Type type = Signal_Type::THREAD) const;
 
 private:
-	friend class MainFrame; ///< 友元类，可访问私有的函数
+
+	void closeEvent(QCloseEvent* event);
+
+	static AbstractDialog* m_pInstanceWidget;  ///< 父窗口
+	friend class MainFrame;   ///< 友元类
 };
 
 #endif

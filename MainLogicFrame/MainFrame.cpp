@@ -3,6 +3,7 @@
 #include "MainWidget.h"
 #include "MessageThread.h"
 
+
 MainFrame::MainFrame() : QObject(), m_pMsgThread(NULL), m_pTargetQueue(NULL) {
 	m_pMsgThread = new MessageThread(this);
 	m_pMsgThread->start();
@@ -146,14 +147,14 @@ void MainFrame::Initialize_WidgetInterface(AbstractWidget* pTgtChildWidget, cons
 	pmainWidget->setMain(pTgtChildWidget, rect, pTgtChildWidget->windowTitle());
 }
 
-SignalQueue* MainFrame::GetTgtSigQueueInstance(const QObject* pTgtChild)
+SignalQueue* MainFrame::GetTgtSigQueueInstance(const AbstractObject * pTgtChild)
 {
-	QObject* widget = const_cast<QObject*>(pTgtChild);
-	if (!m_mapMainWidget.contains(widget)) {
+	AbstractObject* pTagChild = const_cast<AbstractObject*>(pTgtChild);
+	if (!m_mapMainWidget.contains(pTagChild)) {
 		MainWidget* pmainWidget = new MainWidget;
-		m_mapMainWidget[widget] = pmainWidget;
+		m_mapMainWidget[pTagChild] = pmainWidget;
 	}
-	return m_mapMainWidget[widget]->m_pSigQueue;
+	return m_mapMainWidget[pTagChild]->m_pSigQueue;
 }
 
 void MainFrame::LinkCurrentWidgetInterface(const PluginInfo* targetPlug) {
@@ -209,7 +210,7 @@ bool MainFrame::CheckPlugIsRuning(const QString& strPlugName, const QString& str
 			for (int j = 0; j < m_pAllPlugins.mutable_plugin(i)->child_size();j++) 
 				if (m_pAllPlugins.mutable_plugin(i)->mutable_child(j)->childname() == strChildName.toStdString())
 					if (m_mapAbstractWidget.contains(strChildName))
-						for (QMap<QObject*, MainWidget*>::iterator it = m_mapMainWidget.begin();it != m_mapMainWidget.end(); it++)
+						for (QMap<AbstractObject*, MainWidget*>::iterator it = m_mapMainWidget.begin();it != m_mapMainWidget.end(); it++)
 							if (it.key() == m_mapAbstractWidget[strChildName])
 								return true;
 	return false;
@@ -274,7 +275,7 @@ const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
 	return QString::fromLocal8Bit("δ֪");
 }
 
-const QString MainFrame::GetMyselfName(const QObject* obj)
+const QString MainFrame::GetMyselfName(const AbstractObject* obj)
 {
 	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(),
 		[obj](const AbstractWidget* widget) {

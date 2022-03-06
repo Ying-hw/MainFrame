@@ -65,16 +65,35 @@
   <PropertyGroup Label="UserMacros" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
-  </ImportGroup><PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'"><OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir><TargetExt>.dll</TargetExt><ExecutablePath>..\;$(ExecutablePath)</ExecutablePath><IncludePath>$(LibraryPath);$(IncludePath)</IncludePath></PropertyGroup><PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"><OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir><TargetExt>.dll</TargetExt><ExecutablePath>..\;$(ExecutablePath)</ExecutablePath></PropertyGroup><PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"><OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir><TargetExt>.dll</TargetExt></PropertyGroup><PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"><OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir><TargetExt>.dll</TargetExt></PropertyGroup>
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <TargetExt>.dll</TargetExt>
+    <ExecutablePath>..\;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(LibraryPath);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <TargetExt>.dll</TargetExt>
+    <ExecutablePath>..\;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <QtInstall>msvc2015</QtInstall>
+    <QtInstall>5.9.9_msvc2017_64</QtInstall>
     <QtModules>core;network;gui;widgets</QtModules>
     <QtPathLibraryExecutables>bin</QtPathLibraryExecutables>
     <QtHeaderSearchPath>include</QtHeaderSearchPath>
     <QtLibrarySearchPath>lib</QtLibrarySearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="QtSettings">
-    <QtInstall>msvc2017_64</QtInstall>
+    <QtInstall>5.9.9_msvc2017_64</QtInstall>
     <QtModules>core;network;gui;widgets</QtModules>
     <QtPathLibraryExecutables>bin</QtPathLibraryExecutables>
     <QtHeaderSearchPath>
@@ -83,11 +102,11 @@
     </QtLibrarySearchPath>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <QtInstall>msvc2013</QtInstall>
+    <QtInstall>5.9.9_msvc2017_64</QtInstall>
     <QtModules>core;network;gui;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="QtSettings">
-    <QtInstall>msvc2017_64</QtInstall>
+    <QtInstall>5.9.9_msvc2017_64</QtInstall>
     <QtModules>core;gui;network;widgets;xml</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
@@ -96,10 +115,6 @@
   <PropertyGroup>
     <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
   </PropertyGroup>
-  
-  
-  
-  
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;MAINFRAME_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -114,7 +129,8 @@
       <CallingConvention>Cdecl</CallingConvention>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    <MultiProcessorCompilation>true</MultiProcessorCompilation></ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).dll</OutputFile>
@@ -149,7 +165,8 @@ xcopy "$(OutDir)$(TargetName).lib" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\W
       <CallingConvention>Cdecl</CallingConvention>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    <MultiProcessorCompilation>true</MultiProcessorCompilation></ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).dll</OutputFile>
@@ -187,7 +204,8 @@ xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\Browser\x64\$(Configurat
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    <MultiProcessorCompilation>true</MultiProcessorCompilation></ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).dll</OutputFile>
@@ -223,7 +241,8 @@ xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\QQMAINPROGRAM\QQPlugin\W
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    <MultiProcessorCompilation>true</MultiProcessorCompilation></ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).dll</OutputFile>
@@ -251,6 +270,7 @@ xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\Browser\x64\$(Configurat
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AbstractDialog.cpp" />
     <ClCompile Include="AbstractMainWindow.cpp" />
     <ClCompile Include="AbstractNetWork.cpp" />
     <ClCompile Include="AbstractObject.cpp" />
@@ -278,7 +298,8 @@ xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\Browser\x64\$(Configurat
     <QtMoc Include="AbstractWidget.h" />
     <QtMoc Include="MessageThread.h" />
     <QtMoc Include="AbstractMainWindow.h" />
-    <QtMoc Include="AbstractObject.h" />
+    <QtMoc Include="AbstractDialog.h" />
+    <ClInclude Include="AbstractObject.h" />
     <ClInclude Include="MacroDefine.h" />
     <ClInclude Include="MainFrame_global.h" />
     <QtMoc Include="MainFrame.h">
@@ -286,10 +307,10 @@ xcopy "$(OutDir)$(TargetName).dll" "$(SolutionDir)..\..\Browser\x64\$(Configurat
     <QtMoc Include="MainWidget.h">
     </QtMoc>
     <ClInclude Include="MessageTemplate.h" />
-    <ClInclude Include="plugin.pb.h" />
-    <ClInclude Include="PluginInfo.h" />
     <QtMoc Include="SignalQueue.h">
     </QtMoc>
+    <ClInclude Include="plugin.pb.h" />
+    <ClInclude Include="PluginInfo.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>

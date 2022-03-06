@@ -4,7 +4,7 @@
 #include "MainFrame.h"
 
 
-AbstractObject::AbstractObject(QObject* parent /*= 0*/)
+AbstractObject::AbstractObject()
 {
 
 }
@@ -19,10 +19,6 @@ void AbstractObject::OnMessage()
 
 }
 
-void AbstractObject::OnClose()
-{
-
-}
 
 void AbstractObject::Log(LogGrade grade, const QString& strTgtLog)
 {
@@ -43,12 +39,6 @@ void AbstractObject::SendSIG(Signal_ sig, void *arg, Signal_Type type) const
 	switch (sig)
 	{
 	case Signal_::INVALID:
-		break;
-	case Signal_::INITIALIZENETWORK:
-		if (type == Signal_Type::CMD)
-			frame->Initialize_NetInterface((AbstractNetWork*)arg, this->metaObject()->className());
-		else
-			pTgtQueue->Send_Message(sig, (AbstractNetWork*)arg, this->metaObject()->className());
 		break;
 	case Signal_::SWITCHPLUGIN:
 		pTgtQueue->Send_Message(sig, arg, this);

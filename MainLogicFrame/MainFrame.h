@@ -6,7 +6,7 @@
 #include "plugin.pb.h"
 #include "AbstractNetWork.h"
 #include "AbstractWidget.h"
-
+#include "AbstractObject.h"
 ///< 前置声明
 namespace CommonTemplate {
 	class InitType;
@@ -57,7 +57,7 @@ public:
 	/// \brief 获取目标子类的信号集
 	/// \param[in] pTgtChild 目标子类
 	/// \retval 返回信号集实例
-	SignalQueue* GetTgtSigQueueInstance(const QObject* pTgtChild);
+	SignalQueue* GetTgtSigQueueInstance(const AbstractObject*  pTgtChild);
 
 	/// \brief 更新该插件所有的窗口位置
 	/// \param strPlugName 插件名称
@@ -77,7 +77,7 @@ public:
 	/// \brief 根据对应的widget获取本身的名字
 	/// \param[in] AbsWidget 目标widget
 	/// \retval 返回自身的名称
-	const QString GetMyselfName(const QObject* obj);
+	const QString GetMyselfName(const AbstractObject* obj);
 
 	/// \brief 写日志
 	/// \param[in] Grade 日志等级
@@ -145,7 +145,7 @@ private:
 	QFile m_logFile;										///< 日志文件
 	QList<QLibrary*> m_LstLoadlib;							///< 加载库
 	QVector<PluginInfo> m_PluginConfig;						///< 所有插件信息
-	QMap<QObject*, MainWidget*> m_mapMainWidget;     ///< 子窗口和框架窗口
+	QMap<AbstractObject*, MainWidget*> m_mapMainWidget;     ///< 子窗口和框架窗口
 	Allplugins m_pAllPlugins;								///< 待废弃
 	QMap<QString, AbstractWidget*> m_mapAbstractWidget;		///< 插件或插件中的实例名称-抽象插件基类
 	MessageThread* m_pMsgThread;							///< 消息线程

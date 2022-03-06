@@ -34,10 +34,10 @@ void SignalQueue::Send_Message(Signal_ SIG, AbstractNetWork* pNet, QString strNa
 	Send_Message(SIG, &m_ParamInfo);
 }
 
-void SignalQueue::Send_Message(Signal_ SIG, void* param, const QObject* widget)
+void SignalQueue::Send_Message(Signal_ SIG, void* param, const AbstractObject* widget)
 {
 	m_ParamInfo.m_Params = param;
-	m_ParamInfo.m_pOldWidget = const_cast<QObject*>(widget);
+	m_ParamInfo.m_pOldWidget = const_cast<AbstractObject*>(widget);
 	Send_Message(SIG, &m_ParamInfo);
 }
 

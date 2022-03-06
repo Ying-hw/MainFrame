@@ -2,6 +2,7 @@
 #define   __SIGNALQUEUE__
 #include "MainFrame_global.h"
 #include "MacroDefine.h"
+#include "AbstractObject.h"
 /*!
  * \file SignalQueue.h
  *
@@ -16,7 +17,7 @@ class SignalQueue;
 class MainWidget;
 class AbstractWidget;
 class AbstractNetWork;
-
+class AbstractObject;
 
 extern MAINFRAME_EXPORT SignalQueue* g_pSignal;
 
@@ -40,7 +41,7 @@ struct ParamInfo{
 	ParamInfo(void * param, QString strTarget) : m_Params(param), strTgtName(strTarget), m_pOldWidget(NULL){} 
 
 	void *m_Params;          ///< 参数
-	QObject* m_pOldWidget;   ///< 发送方
+	AbstractObject* m_pOldWidget;   ///< 发送方
 	QString strTgtName;      ///< 接收方
 };
 
@@ -78,7 +79,7 @@ public:
 	/// \param[in] SIG 信号
 	/// \param[in] param 信号参数
 	/// \param[in] widget 目标参数
-	void Send_Message(Signal_ SIG, void* param, const QObject* widget);
+	void Send_Message(Signal_ SIG, void* param, const AbstractObject* widget);
 
 	/// \brief 获取目标实例，加载目标动态库，挂载到框架中
 	/// \param[in] strTarget 目标动态库名称

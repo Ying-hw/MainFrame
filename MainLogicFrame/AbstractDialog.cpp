@@ -1,48 +1,39 @@
 #include "stdafx.h"
-#include "AbstractMainWindow.h"
-#include "SignalQueue.h"
+#include "AbstractDialog.h"
 #include "MainFrame.h"
+#include "SignalQueue.h"
 
-
-void AbstractMainWindow::closeEvent(QCloseEvent* event)
+AbstractDialog::AbstractDialog(QDialog* parent) : QDialog(parent)
 {
-	OnClose();
 }
 
-AbstractMainWindow* AbstractMainWindow::m_pInstanceWidget = NULL;
-AbstractMainWindow::AbstractMainWindow(QMainWindow* parent /*= 0*/)
+AbstractDialog::~AbstractDialog()
 {
-
 }
 
-AbstractMainWindow::~AbstractMainWindow()
+void AbstractDialog::OnMessage()
 {
 
 }
 
-void AbstractMainWindow::OnMessage()
+void AbstractDialog::OnClose()
 {
 
 }
 
-void AbstractMainWindow::OnClose()
-{
-
-}
-
-void AbstractMainWindow::Log(LogGrade grade, const QString& strTgtLog)
+void AbstractDialog::Log(LogGrade grade, const QString& strTgtLog)
 {
 	MainFrame* frame = (MainFrame *)g_pSignal->ReturnUser(SystemUser::MAINFRAME);
 	frame->WriteLog(grade, strTgtLog);
 }
 
-bool AbstractMainWindow::PlugIsRuning(const QString& strPlug, const QString& strInstance) const
+bool AbstractDialog::PlugIsRuning(const QString& strPlug, const QString& strInstance) const
 {
 	MainFrame* frame = (MainFrame *)g_pSignal->ReturnUser(SystemUser::MAINFRAME);
 	return frame->CheckPlugIsRuning(strPlug, strInstance);
 }
 
-void AbstractMainWindow::SendSIG(Signal_ sig, void *arg, Signal_Type type) const
+void AbstractDialog::SendSIG(Signal_ sig, void *arg, Signal_Type type) const
 {
 	MainFrame* frame = static_cast<MainFrame*>(g_pSignal->ReturnUser(SystemUser::MAINFRAME));
 	SignalQueue* pTgtQueue = frame->GetTgtSigQueueInstance(this);
@@ -63,4 +54,9 @@ void AbstractMainWindow::SendSIG(Signal_ sig, void *arg, Signal_Type type) const
 		pTgtQueue->Send_Message(sig, arg);
 		break;
 	}
+}
+
+void AbstractDialog::closeEvent(QCloseEvent* event)
+{
+	OnClose();
 }

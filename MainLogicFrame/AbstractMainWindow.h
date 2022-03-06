@@ -13,7 +13,8 @@
 #include "MainFrame_global.h"
 #include "SignalQueue.h"
 #include <QMainWindow>
-
+#include "AbstractObject.h"
+#include <QCloseEvent>
 
 /*!
  * \class AbstractMainWindow
@@ -23,7 +24,7 @@
  * \author yhw
  * \date 2021年9月12日
  */
-class MAINFRAME_EXPORT AbstractMainWindow : public QMainWindow
+class MAINFRAME_EXPORT AbstractMainWindow : public QMainWindow, public AbstractObject
 {
 	Q_OBJECT
 
@@ -56,6 +57,9 @@ public:
 	void SendSIG(Signal_ sig, void* arg, Signal_Type type = Signal_Type::THREAD) const;
 
 private:
+
+	void closeEvent(QCloseEvent* event);
+
 	static AbstractMainWindow* m_pInstanceWidget;  ///< 父窗口
 	friend class MainFrame;   ///< 友元类
 };

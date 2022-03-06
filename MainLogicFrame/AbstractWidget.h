@@ -2,8 +2,10 @@
 #define  __ABSTRACTWIDGET__
 #include "MainFrame_global.h"
 #include "SignalQueue.h"
+#include "AbstractObject.h"
+#include <QCloseEvent>
 
-class MAINFRAME_EXPORT AbstractWidget : public QWidget
+class MAINFRAME_EXPORT AbstractWidget : public QWidget, public AbstractObject
 {
 	Q_OBJECT
 public:
@@ -39,6 +41,9 @@ public:
 	void SendSIG(Signal_ sig, void* arg, Signal_Type type = Signal_Type::THREAD) const;
 
 private:
+
+	void closeEvent(QCloseEvent* event);
+
 	static AbstractWidget* m_pInstanceWidget;    ///< root¸ù½Úµã
 	friend class MainFrame;						
 };
