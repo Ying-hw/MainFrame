@@ -3,6 +3,7 @@
 #include "MainFrame_global.h"
 #include "MacroDefine.h"
 #include "AbstractObject.h"
+#include <QString>
 /*!
  * \file SignalQueue.h
  *

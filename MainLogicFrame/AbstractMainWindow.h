@@ -59,8 +59,6 @@ public:
 private:
 
 	void closeEvent(QCloseEvent* event);
-
-	static AbstractMainWindow* m_pInstanceWidget;  ///< ¸¸´°¿Ú
 	friend class MainFrame;   ///< ÓÑÔªÀà
 };
 

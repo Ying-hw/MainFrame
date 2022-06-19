@@ -42,9 +42,7 @@ public:
 
 private:
 
-	void closeEvent(QCloseEvent* event);
-
-	static AbstractWidget* m_pInstanceWidget;    ///< root¸ù½Úµã
+	void closeEvent(QCloseEvent* event);    
 	friend class MainFrame;						
 };
 

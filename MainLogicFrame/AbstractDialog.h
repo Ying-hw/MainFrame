@@ -10,7 +10,6 @@
 class AbstractDialog : public QDialog, public AbstractObject
 {
 	Q_OBJECT
-
 public:
 	AbstractDialog(QDialog* parent = 0);
 	~AbstractDialog();
@@ -42,8 +41,6 @@ public:
 private:
 
 	void closeEvent(QCloseEvent* event);
-
-	static AbstractDialog* m_pInstanceWidget;  ///< ¸¸´°¿Ú
 	friend class MainFrame;   ///< ÓÑÔªÀà
 };
 

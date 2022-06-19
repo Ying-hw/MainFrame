@@ -14,7 +14,6 @@
 
 #include "MainFrame_global.h"
 #include "AbstractWidget.h"
-#include "AbstractNetWork.h"
 
 /*!
  * \class HintFrameWidget

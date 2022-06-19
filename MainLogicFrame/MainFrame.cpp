@@ -124,7 +124,7 @@ AbstractWidget* MainFrame::LoadLib(const QString strTargetName, bool noShow)
 			AbstractWidget* (*pFunction)() = (AbstractWidget * (*)())(lib->resolve("Handle"));
 			if (pFunction) {
 				AbstractWidget* pAbsWidget = pFunction();
-				pAbsWidget->m_pInstanceWidget = pAbsWidget;
+				pAbsWidget->m_pObjectInstance = pAbsWidget;
 				return pAbsWidget;
 			}
 		}
@@ -140,6 +140,7 @@ void MainFrame::Initialize_NetInterface(AbstractNetWork* net, const QString& str
 
 void MainFrame::Initialize_WidgetInterface(AbstractWidget* pTgtChildWidget, const QString& strParentName)
 {
+
 	m_mapAbstractWidget[pTgtChildWidget->metaObject()->className()] = pTgtChildWidget;
 	const QRect rect = GetNewTargetLocation(pTgtChildWidget, pTgtChildWidget->metaObject()->className(), strParentName);
 	MainWidget* pmainWidget = new MainWidget;
@@ -167,7 +168,7 @@ void MainFrame::LinkCurrentWidgetInterface(const PluginInfo* targetPlug) {
 			emit ReleaseWidget(GetMyselfName(m_pTargetQueue->m_ParamInfo.m_pOldWidget), true); 
 			m_pTargetQueue = NULL;
 		}
-		widget->m_pInstanceWidget = widget;
+		widget->m_pObjectInstance = widget;
 		Initialize_WidgetInterface(widget, targetPlug->m_str_name);
 	}
 	else
@@ -260,7 +261,7 @@ const QString MainFrame::GetParentName(const AbstractWidget* ChildWidget)
 {
 	auto it = std::find_if(m_mapAbstractWidget.begin(), m_mapAbstractWidget.end(), 
 		[ChildWidget](const AbstractWidget* AbsWidget) {
-		return AbsWidget == ChildWidget->m_pInstanceWidget;
+		return AbsWidget == ChildWidget->m_pObjectInstance;
 	});
 	if (it != m_mapAbstractWidget.end()) 
 		for (int i = 0; i < m_pAllPlugins.plugin_size(); i++) {
@@ -333,6 +334,7 @@ void MainFrame::ConfigPlug() {
 		std::string strContent = configfile.readAll().toStdString();
 		isOpend = configPlug.ParseFromString(strContent);
 	}
+	std::string strD =  configPlug.DebugString();
 	for (QVector<PluginInfo>::iterator it = m_PluginConfig.begin();
 		it != m_PluginConfig.end(); it++) {
 		plugins* plug = m_pAllPlugins.add_plugin();

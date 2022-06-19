@@ -5,7 +5,8 @@
 
 #include "MainFrame_global.h"
 #include "SignalQueue.h"
-
+#include <QString>
+#include "TreeStruct.h"
 
 class MAINFRAME_EXPORT AbstractObject 
 {
@@ -37,7 +38,9 @@ public:
 	void SendSIG(Signal_ sig, void* arg, Signal_Type type = Signal_Type::THREAD) const;
 
 private:
-	friend class MainFrame; ///< 友元类，可访问私有的函数
+	friend class MainFrame;					///< 友元类，可访问私有的函数
+	AbstractObject* m_pObjectInstance;		///< root根节点
+	friend class Tree_ApiFun::TreeFunction;  ///< 内部数据结构
 };
 
 #endif

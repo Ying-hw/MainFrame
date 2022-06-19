@@ -9,7 +9,6 @@ void AbstractMainWindow::closeEvent(QCloseEvent* event)
 	OnClose();
 }
 
-AbstractMainWindow* AbstractMainWindow::m_pInstanceWidget = NULL;
 AbstractMainWindow::AbstractMainWindow(QMainWindow* parent /*= 0*/)
 {
 

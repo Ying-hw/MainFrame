@@ -45,9 +45,6 @@
     <ClCompile Include="DllMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AbstractNetWork.cpp">
-      <Filter>AbstractClass</Filter>
-    </ClCompile>
     <ClCompile Include="AbstractWidget.cpp">
       <Filter>AbstractClass</Filter>
     </ClCompile>
@@ -81,6 +78,9 @@
     <ClCompile Include="AbstractDialog.cpp">
       <Filter>AbstractClass</Filter>
     </ClCompile>
+    <ClCompile Include="TreeStruct.cpp">
+      <Filter>Frame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MessageTemplate.h">
@@ -104,11 +104,11 @@
     <ClInclude Include="AbstractObject.h">
       <Filter>AbstractClass</Filter>
     </ClInclude>
+    <ClInclude Include="TreeStruct.h">
+      <Filter>Frame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="AbstractNetWork.h">
-      <Filter>AbstractClass</Filter>
-    </QtMoc>
     <QtMoc Include="AbstractWidget.h">
       <Filter>AbstractClass</Filter>
     </QtMoc>

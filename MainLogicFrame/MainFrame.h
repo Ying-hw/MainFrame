@@ -4,7 +4,6 @@
 #include "PluginInfo.h"
 #include "SignalQueue.h"
 #include "plugin.pb.h"
-#include "AbstractNetWork.h"
 #include "AbstractWidget.h"
 #include "AbstractObject.h"
 ///< Ç°ÖÃÉùÃ÷

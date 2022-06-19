@@ -4,7 +4,7 @@
 #include "MainFrame.h"
 
 
-AbstractObject::AbstractObject()
+AbstractObject::AbstractObject() : m_pObjectInstance(nullptr)
 {
 
 }
